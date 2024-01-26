@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>copy</title>
+</head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap { height: 1000px; width: 1000px}
+</style>
+
+<body>
+    <div id="myfirstmap"></div>
+    <script>
+        var mymap = L.map('myfirstmap').setView([35.933314441209096, -79.08508518218996], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(mymap);
+    var castlebury = L.marker([35.93400974556513, -79.08772230148317]).addTo(mymap)
+    castlebury.bindPopup("<b>Castleberry Mill Site</b><br>William Castleberry's slaves built a mill here around 1763. The site was later owned by Buck Taylor a revolutionary War veteran whose maltreatment of the people he enslaved is notorious.").openPopup();
+    var yeargan = L.marker([35.920695692685605, -79.06349658966066]).addTo(mymap)
+    yeargan.bindPopup("<b>Yeargan Mill Site</b><br>This mill was built by Benjamin Yeargan about the year 1790.  Yeargain petitioned to make it a public mill in 1793").openPopup();
+    var brockwell = L.marker([35.92529, -79.05245]).addTo(mymap)
+    brockwell.bindPopup("<b>Brockwell Mill Site</b><br>No remnants of this former mill are apparent.").openPopup();
+    
+    
+    
+    </script>
+
+
+
+</body>
+
+
+</html>
