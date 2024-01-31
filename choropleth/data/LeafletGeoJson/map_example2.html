@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Marker</title>
+</head>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+crossorigin=""></script>
+<style>
+    #map { height: 500px;  }
+</style>
+<body>
+    <div id="map"></div>
+    <!-- Script tag with an address to the source of a js script -->
+    <script src="waypoints.js"></script> //note that the path here must be correct. in this case no path bc in same folder
+    <script>
+        var carolinaHall = [35.911276,-79.05004]
+        var map = L.map('map').setView(carolinaHall, 17);
+//Now create main basemap from Open Street Maps:
+        var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }).addTo(map);
+//Load a second layer - find others by googling "Leaflet Provider demo"
+        var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            });
+        var marker = L.marker(carolinaHall).bindPopup("<b>Carolina Hall</b>").addTo(map);
+        
+//borrow the CircleMarker style language from Leaflet Tutorial
+        var geojsonMarkerOptions = {
+            radius: 8,
+        fillColor: "#ff7800", //google 'Carolina Blue Hex Code' (or whatever) to change color
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+        };
+
+//Now let's add the waypoints to the map!
+    var myWaypoints = L.geoJSON(waypoints, {
+        pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, geojsonMarkerOptions);
+        }
+        })
+        myWaypoints.addTo(map)
+
+//Now let's make more than one layer! NOTE we brought in Esri_WorldImagery up in line 29, also defined osm at line
+        var baseMaps = {
+        "Open Street Map": osm,
+        "ESRI images": Esri_WorldImagery
+        };
+
+        var overlayMaps = {
+        "Waypoints": myWaypoints,  //Make sure to separate each new line here with a comma 
+        "Carolina Hall":marker
+        };
+        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+        
+        //Let's also put a black circle at Carolina Hall:
+        //geojsonMarkerOptions.fillColor = 'black'
+        //L.circleMarker(carolinaHall, geojsonMarkerOptions).addTo(map)
+
+</script>
+    <!-- <script src="./data/javascriptLines.js"></script> -->
+</body>
+</html>

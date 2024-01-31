@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charest="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"
+<body>
+
+</body>
+<script>
+const fileUrl = 'https://raw.githubusercontent.com/registerchilton/Geography456/main/choropleth/data/Markscleandata.csv'
+let myResult  
+Papa.parse(fileURL, {
+        download: true,
+        header: true,
+        complete: function(result) {
+        myResult = result.data
+    }
+})
+</script>
+</html>
