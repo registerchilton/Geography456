@@ -1,0 +1,15 @@
+var mindypoints = {
+    "type": "FeatureCollection",
+    "name": "MINDY",
+    "features": [
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021090818.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 8.0, "HHMM": "1800", "MSLP": 1006.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "TS", "INTENSITY": 35.0, "SS": 0.0, "LAT": 28.4, "LON": -86.8 }, "geometry": { "type": "Point", "coordinates": [ -86.8, 28.4 ] } },
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021090900.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 9.0, "HHMM": "0000", "MSLP": 1001.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "TS", "INTENSITY": 45.0, "SS": 0.0, "LAT": 29.5, "LON": -85.4 }, "geometry": { "type": "Point", "coordinates": [ -85.4, 29.5 ] } },
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021090906.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 9.0, "HHMM": "0600", "MSLP": 1001.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "TS", "INTENSITY": 35.0, "SS": 0.0, "LAT": 30.5, "LON": -83.9 }, "geometry": { "type": "Point", "coordinates": [ -83.9, 30.5 ] } },
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021090912.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 9.0, "HHMM": "1200", "MSLP": 1005.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "TD", "INTENSITY": 30.0, "SS": 0.0, "LAT": 31.2, "LON": -81.8 }, "geometry": { "type": "Point", "coordinates": [ -81.8, 31.2 ] } },
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021090918.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 9.0, "HHMM": "1800", "MSLP": 1005.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "TD", "INTENSITY": 30.0, "SS": 0.0, "LAT": 31.7, "LON": -79.4 }, "geometry": { "type": "Point", "coordinates": [ -79.4, 31.7 ] } },
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021091000.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 10.0, "HHMM": "0000", "MSLP": 1005.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "LO", "INTENSITY": 30.0, "SS": 0.0, "LAT": 32.1, "LON": -76.8 }, "geometry": { "type": "Point", "coordinates": [ -76.8, 32.1 ] } },
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021091006.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 10.0, "HHMM": "0600", "MSLP": 1005.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "LO", "INTENSITY": 30.0, "SS": 0.0, "LAT": 32.6, "LON": -74.0 }, "geometry": { "type": "Point", "coordinates": [ -74.0, 32.6 ] } },
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021091012.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 10.0, "HHMM": "1200", "MSLP": 1005.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "LO", "INTENSITY": 30.0, "SS": 0.0, "LAT": 33.2, "LON": -71.8 }, "geometry": { "type": "Point", "coordinates": [ -71.8, 33.2 ] } },
+    { "type": "Feature", "properties": { "STORMNAME": "MINDY", "DTG": 2021091018.0, "YEAR": 2021.0, "MONTH": "09", "DAY": 10.0, "HHMM": "1800", "MSLP": 1006.0, "BASIN": "al", "STORMNUM": 13.0, "STORMTYPE": "LO", "INTENSITY": 30.0, "SS": 0.0, "LAT": 33.7, "LON": -69.8 }, "geometry": { "type": "Point", "coordinates": [ -69.8, 33.7 ] } }
+    ]
+    }
