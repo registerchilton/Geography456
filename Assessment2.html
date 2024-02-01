@@ -21,6 +21,8 @@ crossorigin=""></script>
     <script>
         var MindyCenter = [29.6520,-82.3250]
         var map = L.map('map').setView(MindyCenter, 6);
+	var Landfall = [29.677017,-85.306612]
+	var marker = L.marker(Landfall).bindPopup("<b>TS Maria Landfall</b>").addTo(map);
 //Now create main basemap from Open Street Maps:
         var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19,
