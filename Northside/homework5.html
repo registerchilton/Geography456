@@ -1,0 +1,22 @@
+<!-- variable_access.html -->
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript"
+		src="module1.js">
+	</script>
+</head>
+
+<body>
+	<button onclick="f()">
+		Click here to see an array of addresses in the console
+	</button>
+
+	<script type="text/javascript">
+		function f() {
+			let StreetAddresses = Student.features.map(e=>e.attributes.StreetAddressUnofficial);
+            console.log(StreetAddresses);
+		}
+	</script>
+</body>
+</html>
