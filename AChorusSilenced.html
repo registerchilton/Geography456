@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Chorus Silenced</title>
+</head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap { height: 700px; width: 1250px}
+</style>
+
+<body>
+    <h1>A Chorus Silenced: The community of color at the University of North Carolina July 1850</h1>
+    <h2>a map by Mark Chilton, Orange County Register of Deeds, November 2023 - updated for Leaflet Febraury 2024</h2>
+    <div id="myfirstmap"></div>
+    <script>
+        var mymap = L.map('myfirstmap').setView([35.9143592, -79.0517577], 16);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(mymap);
+
+//var data27 = L.marker([36.007816, -79.102856]).addTo(mymap)
+//data27.bindPopup("Hugh Currie enslaved <b>Sandy, William, Martha & child, Beccy & child, Dilcy.</b><br>1850 Census Dist 1, page 1.").openPopup();
+
+//var data28 = L.marker([36.017438, -79.098635]).addTo(mymap)
+//data28.bindPopup("John P Faucett enslaved <b>Calvin, Rachel & one other.</b><br>1850 Census Dist 1, page 1.").openPopup();
+
+var DavidBarham = L.marker([35.9125046, -79.0514080]).addTo(mymap)
+DavidBarham.bindPopup("It is unclear where exactly <b>David [Barham]</b> lived or who his enslaver was, but he served as the steward for the UNC students in 1850, and would have commonly been found around McCorkle Place hauling firewood or fresh water to the students.<br>1850 Census Dist 1, page 5.").openPopup();
+
+var ThomasKirby = L.marker([35.9138814, -79.0468006]).addTo(mymap)
+ThomasKirby.bindPopup("It is unclear where exactly <b>Thomas [Kirby]</b> lived or who his enslaver was, but he was closely associated with the Battle family and married one the women they enslaved, Judy. He was emancipated sometime before the end of the Civil War and worked as an assistant steward at UNC.<br>").openPopup();
+
+var SamMorphis = L.marker([35.9137459, -79.0466941]).addTo(mymap)
+SamMorphis.bindPopup("It is unclear where exactly <b>Samuel [Morphis]</b> lived, but like Thomas Kirby he had some association with the Battle family and married one of the women they enslaved. Samuel was technically a slave, but was permitted to hire his own time (i.e. to keep the wages he worked for). This was not strictly legal at the time, but was an accepted practice in Chapel Hill in his case. He worked as the hack driver, transporting students and faculty by wagon to the railroad at University Station, just east of Hillsborough.<br>").openPopup();
+
+var data1 = L.marker([35.9097746, -79.0548888]).addTo(mymap)
+data1.bindPopup("Charles R Yancey enslaved <b>two people whose names are not yet found.</b><br>1850 Census Dist 1, page 5.").openPopup();
+
+var data2 = L.marker([35.9101241, -79.0551042]).addTo(mymap)
+data2.bindPopup("Catherine A Lewis enslaved <b>11 people whose names are not yet found.</b><br>1850 Census Dist 1, page 5.").openPopup();
+
+var data3 = L.marker([35.9106016, -79.0553451]).addTo(mymap)
+data3.bindPopup("John Bullock enslaved <b>2 people whose names are not yet found.</b><br>1850 Census Dist 1, page 5.").openPopup();
+
+var data4 = L.marker([35.9113061, -79.0541759]).addTo(mymap)
+data4.bindPopup("Elisha Mitchell enslaved <b>Minerva (b 1804), Summer (b 1784), his wife Edy (b 1786), and their three children Mahale (b 1815), Harriet (b 1817), and Mark (b 1819) and 14 others.</b><br>1850 Census Dist 1, page 4. Elisha Mitchell Papers, SHC.").openPopup();
+
+var data5 = L.marker([35.9128274, -79.0559335]).addTo(mymap)
+data5.bindPopup("Elizabeth Nunn enslaved <b>Mary, her sister Beck & children Alex, Dilsey, Sukey, John & Anderson.</b><br>1850 Census Dist 1, page 7.").openPopup();
+
+var data6 = L.marker([35.9129826, -79.055121]).addTo(mymap)
+data6.bindPopup("Hudson Cave enslaved <b>John, Melinda & her children James, Louisa & Henry and Lucinda & her children Joe & Mary.</b><br>1850 Census Dist 1, page 5.").openPopup();
+
+var data7 = L.marker([35.9133054, -79.0541108]).addTo(mymap)
+data7.bindPopup("Sidney Barbee enslaved <b>Judy & three others whose names are not yet found.</b><br>1850 Census Dist 1, page 5. ODB 32/420.").openPopup();
+
+var data8 = L.marker([35.9133054, -79.0541108]).addTo(mymap)
+data8.bindPopup("Turner Mason enslaved <b>Jerry, Penny, Sam, Lyddy & Rose and one other.</b><br>1850 Census Dist 1, page 5. Turner Mason’s 1852 estate file.").openPopup();
+
+var data9 = L.marker([35.9133223, -79.0562173]).addTo(mymap)
+data9.bindPopup("John W. Carr enslaved <b>Abram, Patsy, Ben, Sarah, Isaac & Charity</b>.<br>1850 Census Dist 1, page 3. This is the household in which Julian Shakespeare Carr grew up.").openPopup();
+
+var data10 = L.marker([35.9135288, -79.0555878]).addTo(mymap)
+data10.bindPopup("Jesse Hargraves enslaved <b>Nelson, Tempe & her son Hillman, Jack & his wife Ferebee, London, Joe & James and eight others.</b><br>1850 Census Dist 1, page 3. Jesse Hargraves’ will (1854).").openPopup();
+
+var data11 = L.marker([35.9140819, -79.0544218]).addTo(mymap)
+data11.bindPopup("John Hutchins enslaved <b>Maria & her children Sam & Martha-Ann, also old Maria, Jim & four others.</b><br>1850 Census Dist 1, page 3.").openPopup();
+
+var data12 = L.marker([35.914151, -79.046408]).addTo(mymap)
+data12.bindPopup("Judge & UNC Professor William H Battle enslaved <b>Cora, Washington, Robert, Lewis, Henry, Fanny, Jane & her children Sarah, Patsy, Alice, & Margaret, as well as Ann Elisa and her children Henry & Rufus.</b><br>1850 Census Dist 1, page 5. Chapel of the Cross Parish Register.").openPopup();
+
+var data13 = L.marker([35.9143592, -79.0517577]).addTo(mymap)
+data13.bindPopup("Benton Utley enslaved <b>42 people names not known, probably most of them on his plantation south of town.</b><br>1850 Census Dist 1, page 57.").openPopup();
+
+var data14 = L.marker([35.9145125, -79.0533151]).addTo(mymap)
+data14.bindPopup("Dr. George Moore enslaved <b>Andrew, Jan, Mary Ann, Martha & five others.</b><br>1850 Census Dist 1, page 5.").openPopup();
+
+var data15 = L.marker([35.914555, -79.0560735]).addTo(mymap)
+data15.bindPopup("Samuel Williams enslaved <b>1 person, name not found.</b><br>1850 Census Dist 1, page 3.").openPopup();
+
+var data16 = L.marker([35.9149068, -79.0502458]).addTo(mymap)
+data16.bindPopup("The Rev. John T. Wheat enslaved <b>just one of his brothers in Christ, name not found.</b><br>1850 Census Dist 1, page 4.").openPopup();
+
+var data17 = L.marker([35.9149117, -79.0535367]).addTo(mymap)
+data17.bindPopup("Lloyd Moore enslaved <b>Caesar, Sue, Alfred, Betsy, Caesar Jr, Caroline & Nancy in 1850</b>.<br>They appear to be listed under the name of his brother George Moore in the Census.").openPopup();
+
+var data18 = L.marker([35.9159729, -79.0474658]).addTo(mymap)
+data18.bindPopup("UNC Professor Manuel Fetter enslaved <b>Phyllis, Disey & her daughter Elizabeth, and three others</b>.<br>1850 Census Dist 1, page 4. The Chapel of the Cross Parish Register mentions Disey & her daughter Elizabeth.").openPopup();
+
+var data20 = L.marker([35.9157372, -79.0531225]).addTo(mymap)
+data20.bindPopup("Mrs Sidney Jennings enslaved <b>2 people.</b><br>1850 Census Dist 1, page 3.").openPopup();
+
+var data21 = L.marker([35.916252, -79.0516908]).addTo(mymap)
+data21.bindPopup("Joseph Kirkland enslaved <b>3 people.</b><br>1850 Census Dist 1, page 4.").openPopup();
+
+var data22 = L.marker([35.9164506, -79.0510358]).addTo(mymap)
+data22.bindPopup("Gray Utley enslaved <b>2 people.</b><br>1850 Census Dist 1, page 4.").openPopup();
+
+var data23 = L.marker([35.916588, -79.048301]).addTo(mymap)
+data23.bindPopup("UNC Professor James Phillips enslaved <b>2 people names not yet found.</b><br>1850 Census Dist 1, page 4.").openPopup();
+
+var data24 = L.marker([35.916834, -79.049658]).addTo(mymap)
+data24.bindPopup("Andrew Mickle enslaved <b>Anderson, Emma, Peggy, Amy, Silvy, and Susan.</b><br>1850 Census Dist 1, page 4. St Matthew’s Parish Register. COTC Parish Register. Estate file of William Norwood (1842).").openPopup();
+
+var data25 = L.marker([35.916932, -79.047395]).addTo(mymap)
+data25.bindPopup("UNC math tutor Charles Phillips enslaved <b>Lewis, Israel, Seimore, Mahala & her four children.</b><br>1850 Census Dist 1, page 4.").openPopup();
+
+var data26 = L.marker([35.9174624, -79.0482179]).addTo(mymap)
+data26.bindPopup("<b>Sally Mallett</b><br>enslaved 1 person. 1850 Census Dist 1, page 4.").openPopup();
+
+var data19 = L.marker([35.915354, -79.049519]).addTo(mymap)
+data19.bindPopup("UNC President David L Swain enslaved <b>Caroline (b. 1 Nov 1840), Catherine (b. 23 Mar 1842), Dicey (b. 6 Jul 18??), Emmaline (b. 1835), Frances (b. Dec 1840), George (b. Nov 1827), Hendon (b. 1834), Jackson? (b. Nov 1827), John (b. Mar 1846), Jordan (b. 1817), Laura (b. 11 Jun 1834), Louisa (b. 6 May 1831), Olive (b. 13 May 1843), Peggy (b. Jul 1827), Rose (b. 1815), Sam (b. 24 May 1846), Sarah (b. 6 Aug 1844), Simon? (b. 30 Sep 1849), and Wilson (b. Feb 1843).</b><br>1850 Census Dist 1, page 4, Swain’s Ledger Book at SHC.").openPopup();
+
+</script>
+
+
+
+</body>
+
+
+</html>
