@@ -1,0 +1,40 @@
+<!-- variable_access.html -->
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript"
+		src="module1.js">
+	</script>
+</head>
+
+<body>
+    <table id="mytable">
+        <tr>
+          <th>Address</th>
+          <th>2024 Owner</th>
+        </tr>
+      </table>
+	<button onclick="f()">
+		Click here to fill in this table from the JS file containing the GeoJSON
+	</button>
+
+	<script type="text/javascript">
+		function f() {
+    		var x = document.getElementById('mytable')
+            for (var i=0; i < Student.features.length; i++){
+                var myNewRow = document.createElement('tr');
+                var myNewCell1 =document.createElement('td');
+                var myNewCell2 =document.createElement('td');
+                myNewCell1.innerText = Student.features[i].attributes.StreetAddressUnofficial
+                myNewCell2.innerText = Student.features[i].attributes.a024OWNER
+                myNewRow.append(myNewCell1)
+                myNewRow.append(myNewCell2)
+                x.append(myNewRow);
+	    	}//end of loop
+        }//end of function
+	</script>
+
+
+
+</body>
+</html>
