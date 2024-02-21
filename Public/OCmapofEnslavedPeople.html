@@ -36,10 +36,10 @@
 
 <body>
     <h1>A Chorus Silenced: The community of color at the University of North Carolina July 1850</h1>
-    <h2>a map by Mark Chilton, Orange County Register of Deeds, November 2023 - updated for Leaflet Febraury 2024</h2>
+    <h2>a map by Mark Chilton, Orange County Register of Deeds, Febraury 2024</h2>
     
     <button onclick="f()">
-		Click here to map households of enslaved people.
+		Click here to show households of color in July 1850.
 	</button>
 
     
@@ -74,13 +74,23 @@ var redIcon = new L.Icon({
     		var x = document.getElementById('mytable')
             for (var i=0; i < myResult.length; i++){
                 var enslaver = myResult[i].enslaver
+                var verb = myResult[i].verb
                 var sources = myResult[i].sources
                 var enslaved = myResult[i].enslaved
                 var lat = myResult[i].lat
                 var long = myResult[i].long
-                var narrative = enslaver + " enslaved " + enslaved + ". Sources: " + sources
-                var data27 = L.marker([lat, long], {icon: redIcon}).addTo(mymap)
-                data27.bindPopup(narrative);
+                var status = myResult[i].status
+                var narrative = enslaver + verb + enslaved + ". Sources: " + sources
+                console.log(status);
+                if (status == 'enslaved') {
+                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(mymap)
+                    data27.bindPopup(narrative);
+                    }
+                    if (status == 'free') {
+                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(mymap)
+                    data27.bindPopup(narrative);
+                    }
+                
 	    	}//end loop
         }// end function
 
