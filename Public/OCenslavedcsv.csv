@@ -1,29 +1,29 @@
-enslaver,sources,enslaved,coordinates
-Catherine A Lewis,"Orange Co District 1, page 5",eleven people - names not yet found,"35.9101241, -79.0551042"
-Benton Utley,"Orange Co District 1, page 57","42 people names not known, probably most of them on his plantation south of town","35.9143592, -79.0517577"
-John Carr,"Orange Co District 1, page 3","Abram, Patsy, Ben, Sarah, Isaac & Charity","35.9133223, -79.0562173"
-Andrew Mickle,"Orange Co District 1, page 4; estate file of William Norwood (Mickle?s father in law);St Matthews & Chapel of the Cross Parish Registers","Anderson, Emma, and Peggy, and Amy, Silvy, and Susan","35.916834, -79.049658"
-George Moore,"Orange Co District 1, page 5","Andrew, Jan, Mary Ann, Martha & five others","35.9145125, -79.0533151"
-Lloyd Moore,appear to be listed under the name of his brother George Moore,"Caesar, Sue, Alfred, Betsy, Caesar Jr, Caroline & Nancy","35.9149117, -79.0535367"
-John P Faucett,"Orange Co District 1, page 1","Calvin, Rachel & one other","36.017438, -79.098635"
-William H Battle,"Orange Co District 1, page 5","Cora, Washington, Robert, Lewis, Henry, Fanny, Jane & her children Sarah, Patsy, Alice, & Margaret, as well as Ann Elisa and her children Henry & Rufus","35.914151, -79.046408"
-Hudson Cave,"Orange Co District 1, page 5","John, Melinda & her children James, Louisa & Henry and Lucinda & her children Joe & Mary","35.9129826, -79.0551210"
-Sidney Barbee,"Orange Co District 1, page 5",Judy & three other people,"35.9133054, -79.0541108"
-John Hutchins,"Orange Co District 1, page 3","Maria & her children Sam & Martha-Ann, also old Maria, Jim & four other people","35.9140819, -79.0544218"
-Elizabeth Nunn,"Orange Co District 1, page 7","Mary, her sister Beck & children Alex, Dilsey, Sukey, John & Anderson","35.9128274, -79.0559335"
-Elisha Mitchell,"Orange Co District 1, page 4","Minerva (b 1804), Summer (b 1784), his wife Edy (b 1786), and their three children Mahale (b 1815), Harriet (b 1817), and Mark (b 1819) and 14 others","35.9113061, -79.0541759"
-Jesse Hargraves,"Orange Co District 1, page 3","Nelson, Tempe & her son Hillman, Jack & his wife Ferebee, London, Joe & James and eight others","35.9135288, -79.0555878"
-Samuel Williams,"Orange Co District 1, page 3",one person,"35.9145550, -79.0560735"
-John Wheat,"Orange Co District 1, page 4",one person,"35.9149068, -79.0502458"
-Sally Mallett,"Orange Co District 1, page 4",one person,"35.9174624, -79.0482179"
-Manuel Fetter,"Orange Co District 1, page 4; Chapel of the Cross Parish Register","Phyllis, Disey & her daughter Elizabeth, and three other people","35.915159, -79.049439"
-Hugh Currie,"Orange Co District 1, page 1","Sandy, William, Martha & child, Beccy & child, Dilcy","36.007816, -79.102856"
-Joseph Kirkland,"Orange Co District 1, page 4",three people,"35.9162520, -79.0516908"
-Charles R Yancey,"Orange Co District 1, page 5",two people,"35.9097746, -79.0548888"
-John Bullock,"Orange Co District 1, page 5",two people,"35.9106016, -79.0553451"
-Mrs Sidney Jennings,"Orange Co District 1, page 3",two people,"35.9157372, -79.0531225"
-Gray Utley,"Orange Co District 1, page 4",two people,"35.9164506, -79.0510358"
-Turner Mason,"Orange Co District 1, page 5; Turner Mason?s 1852 estate file","Jerry, Penny, Sam, Lyddy, Rose & one other person","35.9133054, -79.0541108"
-David L Swain,"Orange Co District 1, page 4; Swain?s Ledger Book at SHC","Caroline (b. 1 Nov 1840), Catherine (b. 23 Mar 1842), Dicey (b. 6 Jul 18??), Emmaline (b. 1835), Frances (b. Dec 1840), George (b. Nov 1827), Hendon (b. 1834), Jackson? (b. Nov 1827), John (b. Mar 1846), Jordan (b. 1817), Laura (b. 11 Jun 1834), Louisa (b. 6 May 1831), Olive (b. 13 May 1843), Peggy (b. Jul 1827), Rose (b. 1815), Sam (b. 24 May 1846), Sarah (b. 6 Aug 1844), Simon? (b. 30 Sep 1849), and Wilson (b. Feb 1843)","35.915354, -79.049519"
-James Phillips,"Orange Co District 1, page 4",two people,"35.916588, -79.048301"
-Charles Phillips,"Orange Co District 1, page 4",four people,"35.916932, -79.047395"
+enslaver,sources,enslaved,lat,long
+Catherine A Lewis,"Orange Co District 1, page 5",eleven people - names not yet found,35.9101241,-79.0551042
+Benton Utley,"Orange Co District 1, page 57","42 people names not known, probably most of them on his plantation south of town",35.9143592,-79.0517577
+John Carr,"Orange Co District 1, page 3","Abram, Patsy, Ben, Sarah, Isaac & Charity",35.9133223,-79.0562173
+Andrew Mickle,"Orange Co District 1, page 4; estate file of William Norwood (Mickle?s father in law);St Matthews & Chapel of the Cross Parish Registers","Anderson, Emma, and Peggy, and Amy, Silvy, and Susan",35.916834,-79.049658
+George Moore,"Orange Co District 1, page 5","Andrew, Jan, Mary Ann, Martha & five others",35.9145125,-79.0533151
+Lloyd Moore,appear to be listed under the name of his brother George Moore,"Caesar, Sue, Alfred, Betsy, Caesar Jr, Caroline & Nancy",35.9149117,-79.0535367
+John P Faucett,"Orange Co District 1, page 1","Calvin, Rachel & one other",36.017438,-79.098635
+William H Battle,"Orange Co District 1, page 5","Cora, Washington, Robert, Lewis, Henry, Fanny, Jane & her children Sarah, Patsy, Alice, & Margaret, as well as Ann Elisa and her children Henry & Rufus",35.914151,-79.046408
+Hudson Cave,"Orange Co District 1, page 5","John, Melinda & her children James, Louisa & Henry and Lucinda & her children Joe & Mary",35.9129826,-79.055121
+Sidney Barbee,"Orange Co District 1, page 5",Judy & three other people,35.9133054,-79.0541108
+John Hutchins,"Orange Co District 1, page 3","Maria & her children Sam & Martha-Ann, also old Maria, Jim & four other people",35.9140819,-79.0544218
+Elizabeth Nunn,"Orange Co District 1, page 7","Mary, her sister Beck & children Alex, Dilsey, Sukey, John & Anderson",35.9128274,-79.0559335
+Elisha Mitchell,"Orange Co District 1, page 4","Minerva (b 1804), Summer (b 1784), his wife Edy (b 1786), and their three children Mahale (b 1815), Harriet (b 1817), and Mark (b 1819) and 14 others",35.9113061,-79.0541759
+Jesse Hargraves,"Orange Co District 1, page 3","Nelson, Tempe & her son Hillman, Jack & his wife Ferebee, London, Joe & James and eight others",35.9135288,-79.0555878
+Samuel Williams,"Orange Co District 1, page 3",one person,35.914555,-79.0560735
+John Wheat,"Orange Co District 1, page 4",one person,35.9149068,-79.0502458
+Sally Mallett,"Orange Co District 1, page 4",one person,35.9174624,-79.0482179
+Manuel Fetter,"Orange Co District 1, page 4; Chapel of the Cross Parish Register","Phyllis, Disey & her daughter Elizabeth, and three other people",35.915159,-79.049439
+Hugh Currie,"Orange Co District 1, page 1","Sandy, William, Martha & child, Beccy & child, Dilcy",36.007816,-79.102856
+Joseph Kirkland,"Orange Co District 1, page 4",three people,35.916252,-79.0516908
+Charles R Yancey,"Orange Co District 1, page 5",two people,35.9097746,-79.0548888
+John Bullock,"Orange Co District 1, page 5",two people,35.9106016,-79.0553451
+Mrs Sidney Jennings,"Orange Co District 1, page 3",two people,35.9157372,-79.0531225
+Gray Utley,"Orange Co District 1, page 4",two people,35.9164506,-79.0510358
+Turner Mason,"Orange Co District 1, page 5; Turner Mason?s 1852 estate file","Jerry, Penny, Sam, Lyddy, Rose & one other person",35.9133054,-79.0541108
+David L Swain,"Orange Co District 1, page 4; Swain?s Ledger Book at SHC","Caroline (b. 1 Nov 1840), Catherine (b. 23 Mar 1842), Dicey (b. 6 Jul 18??), Emmaline (b. 1835), Frances (b. Dec 1840), George (b. Nov 1827), Hendon (b. 1834), Jackson? (b. Nov 1827), John (b. Mar 1846), Jordan (b. 1817), Laura (b. 11 Jun 1834), Louisa (b. 6 May 1831), Olive (b. 13 May 1843), Peggy (b. Jul 1827), Rose (b. 1815), Sam (b. 24 May 1846), Sarah (b. 6 Aug 1844), Simon? (b. 30 Sep 1849), and Wilson (b. Feb 1843)",35.915354,-79.049519
+James Phillips,"Orange Co District 1, page 4",two people,35.916588,-79.048301
+Charles Phillips,"Orange Co District 1, page 4",four people,35.916932,-79.047395
