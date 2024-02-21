@@ -52,6 +52,9 @@
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(mymap);
 
+var Geog456 = L.marker([35.911304570894984, -79.04994573035994]).addTo(mymap)
+Geog456.bindPopup('Geography 456, Carolina Hall');
+	    
 //Define some green and red marker icons:
 var greenIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
