@@ -70,6 +70,7 @@
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(mymap);
+var layerGroup = L.layerGroup().addTo(mymap);
 
 //Define some green and red marker icons:
 var greenIcon = new L.Icon({
@@ -91,6 +92,7 @@ var redIcon = new L.Icon({
 });
 
     function e() {
+            layerGroup.clearLayers();
             for (var i=0; i < myResult.length; i++){
                 var pin = myResult[i].CurrentPIN
                 var address = myResult[i].StreetAddressUnofficial
@@ -99,18 +101,20 @@ var redIcon = new L.Icon({
                 var changeDate = myResult[i].ChangeDate
                 console.log(status);
                 if (changeDate >= 1970) {
-                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                     if (changeDate < 1970) {
-                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                 
 	    	}//end loop
         }// end function
+// create markers
 
 	function f() {
+        layerGroup.clearLayers();
             for (var i=0; i < myResult.length; i++){
                 var pin = myResult[i].CurrentPIN
                 var address = myResult[i].StreetAddressUnofficial
@@ -119,11 +123,11 @@ var redIcon = new L.Icon({
                 var changeDate = myResult[i].ChangeDate
                 console.log(status);
                 if (changeDate >= 1980) {
-                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                     if (changeDate < 1980) {
-                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                 
@@ -131,6 +135,7 @@ var redIcon = new L.Icon({
         }// end function
 
         function g() {
+            layerGroup.clearLayers();
             for (var i=0; i < myResult.length; i++){
                 var pin = myResult[i].CurrentPIN
                 var address = myResult[i].StreetAddressUnofficial
@@ -139,11 +144,11 @@ var redIcon = new L.Icon({
                 var changeDate = myResult[i].ChangeDate
                 console.log(status);
                 if (changeDate >= 1990) {
-                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                     if (changeDate < 1990) {
-                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                 
@@ -151,6 +156,7 @@ var redIcon = new L.Icon({
         }// end function
 
         function h() {
+            layerGroup.clearLayers();
             for (var i=0; i < myResult.length; i++){
                 var pin = myResult[i].CurrentPIN
                 var address = myResult[i].StreetAddressUnofficial
@@ -159,11 +165,11 @@ var redIcon = new L.Icon({
                 var changeDate = myResult[i].ChangeDate
                 console.log(status);
                 if (changeDate >= 2000) {
-                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                     if (changeDate < 2000) {
-                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                 
@@ -171,6 +177,7 @@ var redIcon = new L.Icon({
         }// end function
 
         function j() {
+            layerGroup.clearLayers();
             for (var i=0; i < myResult.length; i++){
                 var pin = myResult[i].CurrentPIN
                 var address = myResult[i].StreetAddressUnofficial
@@ -179,11 +186,11 @@ var redIcon = new L.Icon({
                 var changeDate = myResult[i].ChangeDate
                 console.log(status);
                 if (changeDate >= 2010) {
-                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                     if (changeDate < 2010) {
-                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                 
@@ -191,6 +198,7 @@ var redIcon = new L.Icon({
         }// end function
 
         function k() {
+            layerGroup.clearLayers();
             for (var i=0; i < myResult.length; i++){
                 var pin = myResult[i].CurrentPIN
                 var address = myResult[i].StreetAddressUnofficial
@@ -199,11 +207,11 @@ var redIcon = new L.Icon({
                 var changeDate = myResult[i].ChangeDate
                 console.log(status);
                 if (changeDate >= 2020) {
-                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: greenIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                     if (changeDate < 2020) {
-                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(mymap)
+                    var data27 = L.marker([lat, long], {icon: redIcon}).addTo(layerGroup)
                     data27.bindPopup(address);
                     }
                 
