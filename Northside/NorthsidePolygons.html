@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>African-American Land Ownership</title>
+    <script type="text/javascript"
+    src="NorthsideWGSchangeDate1.js">
+    </script>
+</head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+#myfirstmap { height: 550px; width: 550px}
+    .slider-container {
+    margin-right: 20px;
+    display: flex;
+    align-items: left;
+    flex-direction: column;
+}
+
+.slider {
+    width: 550px; 
+}
+
+.tick-container {
+    display: flex;
+    justify-content: space-between;
+    width: 550px;
+    margin-top: 5px;
+}
+
+.tick {
+    font-size: 12px; 
+    color: #888; 
+}
+</style>
+
+<body>
+    <h1>Changes in African-American Landownership in <br>the Northside Neighborhood, Chapel Hill, NC</h1>
+    <h3>Click a button below to display a year. <br>
+    <FONT COLOR="GREEN">Green indicates African-American ownership in the year selected.</FONT><br>
+    <FONT COLOR="RED">Red indicates African-American owned previously.</FONT></h3>
+
+    <div class="slider-container">
+      <input type="range" min="1980" max="2024" value="2" class="slider" id="slider" oninput='f()'>
+          <div class="tick-container">
+              <span class="tick">1980</span>
+              <span class="tick">1984</span>
+              <span class="tick">1988</span>
+              <span class="tick">1992</span>
+              <span class="tick">1996</span>
+              <span class="tick">2000</span>
+              <span class="tick">2004</span>
+              <span class="tick">2008</span>
+              <span class="tick">2012</span>
+              <span class="tick">2016</span>
+              <span class="tick">2020</span>
+              <span class="tick">2024</span>
+          </div>
+      </div>
+  
+    <div id="myfirstmap"></div>
+    <script>
+        var mymap = L.map('myfirstmap').setView([35.91587645213845, -79.06359860746367], 16);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(mymap);
+var layerGroup = L.layerGroup().addTo(mymap);
+
+//Define some green and red marker icons:
+var greenIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+var redIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+// function for populating the map 
+	function f() {
+            layerGroup.clearLayers();
+            var AfAmOwned = 0
+            var slider = document.getElementById('slider');
+            var sliderYear = slider.value;
+            for (var i=0; i < 422; i++){
+                var changeDate = northside[0].features[i].properties.NorthsideRaceOfOwnerscsvChangeDate
+                var boundary = northside[0].features[i].geometry.coordinates
+                if (changeDate >= sliderYear) {
+                    var nextTract = L.polygon(boundary, {color: 'green', fillColor: 'green', fillOpacity: 0.5}).addTo(layerGroup);
+                    AfAmOwned = AfAmOwned + 1;
+                    }
+                if (changeDate < sliderYear) {
+                    var nextTract = L.polygon(boundary, {color: 'red', fillColor: 'red', fillOpacity: 0.5}).addTo(layerGroup);
+                    }
+	    	}//end i loop
+        console.log(sliderYear);
+        var comment = sliderYear
+        var popup = L.popup()
+             .setLatLng([35.91218438434356, -79.05969813840295]).setContent(AfAmOwned + " of 422 properties<br> AfAm owned in " + sliderYear).openOn(mymap);
+        }// end function
+
+
+
+</script>
+ </body>
+
+</html>
