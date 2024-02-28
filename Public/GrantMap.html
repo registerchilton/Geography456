@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grant Mapping Utility</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+#myfirstmap { height: 550px; width: 80pct}
+</style>
+
+<body>
+<button onclick="affix()">Move the green tract to the fixed layer</button>
+<div id="myfirstmap"></div>
+
+</body>
+
+<script>
+var tempPlace
+var mymap = L.map('myfirstmap').setView([35.90295606777789, -79.0610467531703], 13);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+var greenLayer = L.layerGroup().addTo(mymap);
+var redLayer = L.layerGroup().addTo(mymap);
+mymap.on('click', onMapClick);
+mymap.on('contextmenu', pickUpTract);
+
+var NSscaling = 0.000180923
+var EWscaling = 0.000223644
+
+var legals = [
+    ["N", 20.59, "W", 47, "N", 40, "E", 115, "S", 60.59, "W", 68, "Gv784 to Mark Morgan"],
+    ["N", 70, "E", 20, "N", 20, "W", 60, "S", 90, "E", 40, "Gv226 to John Patterson"],
+    ["W", 65, "S", 30, "W", 9.5, "S", 41, "E", 74.5, "S", 5, "E", 60, "N", 31, "W", 60, "N", 35, "Ofile1521 to Hardy Morgan"],
+    ["S", 33, "E", 95.5, "N", 33, "W", 95.5, "Ofile2022 to M Morgan & John Daniel"],
+    ["W", 58, "S", 83.5, "E", 58, "N", 83.5, "Ofile0849 to John Morgan"],
+    ["W", 58.75, "S", 85.25, "E", 58.75, "N", 85.25, "Ofile0922 to John Daniel"],
+    ["N", 44.72, "W", 44.72, "S", 44.72, "E", 44.72, "Ofile1524 to John Morgan"],
+    ["W", 60, "N", 107, "E", 60, "S", 107, "Ofile1525 to John Morgan"],
+    ["N", 70, "E", 10, "N", 30, "E", 28, "S", 100, "W", 38, "Ofile1526 to John Morgan"],
+    ["N", 52.25, "W", 58, "S", 44.25, "W", 14, "S", 8, "E", 72, "Ofile2042 to M Morgan & John Daniel"],
+    ["S", 35, "E", 57, "N", 35, "W", 57, "Ofile2105 to M Morgan & John Daniel"],
+    ["N", 8, "E", 30, "E", 95, "S", 8, "W", 125, "Ofile1796 to Joel Moody"]
+    ]
+
+var redTracts = []
+var greenTracts = []
+var temparray = []
+var centerMap = mymap.getCenter();
+var pickupLat
+var pickupLong
+var totalLats = 0
+var totalLongs = 0
+initialLat = centerMap['lat']
+initialLong = centerMap['lng']
+var centroid
+var centroids = []
+var centroidLat
+var centroidLong
+var nearestCentroid
+var removalTract = []
+var strippedRemovalTract = []
+var originLat
+var originLong
+var greenNames = []
+var redNames = []
+var activeName
+
+// take legals and turn greenTracts into an array of parcels (each of which is an array of coordinates) 
+for (var tractNumber = 0; tractNumber < legals.length; tractNumber=tractNumber+1 ){
+var nextCoord = 1
+var processing = legals[tractNumber]
+var output = [[0,0]]
+for (var i = 0; i < processing.length - 1; i=i+2 ){
+    if (processing[(i)] == "N") {
+        output.push([processing[i+1] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+    if (processing[(i)] == "S") {
+        output.push([- processing[i+1] * NSscaling + output [nextCoord-1][0], output[nextCoord-1][1]])}
+    if (processing[(i)] == "E") {
+        output.push([output[nextCoord-1][0], processing[i+1] * EWscaling + output[nextCoord-1][1]])}
+    if (processing[(i)] == "W") {
+        output.push([output[nextCoord-1][0], - processing[i+1] * EWscaling + output[nextCoord-1][1]])}
+    var nextCoord = nextCoord + 1
+    } //end of loop
+    greenTracts.push(output);
+    var numberOfNames = processing.length - 1
+    greenNames.push(legals[tractNumber][numberOfNames])
+} //end of next Tract function
+
+console.log(greenNames);
+var centerMap = mymap.getCenter();
+initialLat = centerMap['lat']
+initialLong = centerMap['lng']
+var activeTract = []
+greenDraw(initialLat, initialLong);
+
+
+
+function greenDraw(a,b) {
+        if (activeTract.length == 0) {
+            activeTract = greenTracts.shift()
+            activeName = greenNames.shift()}
+        greenLayer.clearLayers();
+        clickLat = a
+        clickLong = b
+        temparray = []
+        for (var j = 0; j < activeTract.length; j = j +1) {
+            temparray.push([activeTract[j][0] + clickLat, activeTract[j][1] + clickLong])
+        }
+        var currentPlacement = L.polygon(temparray, {color: 'green', fillColor: 'green', fillOpacity: 0.5}).addTo(greenLayer)
+        .bindTooltip(activeName).openTooltip();
+        var originMarker = L.circle([clickLat, clickLong], {color: 'red', fillColor: 'red', fillOpacity: 0.5, radius: 100}).addTo(greenLayer);
+    }
+
+function affix() {
+    redLayer.clearLayers();
+    redTracts.push(temparray);
+    redNames.push(activeName)
+    centroids = []
+    for (var k = 0; k< redTracts.length; k = k +1) {
+        var currentPlacement = L.polygon(redTracts[k], {color: 'red', fillColor: 'red', fillOpacity: 0.5}).addTo(redLayer)
+        .bindTooltip(redNames[k]);
+    for (var m=1; m < redTracts[k].length-1; m = m + 1) {
+        totalLats = totalLats + redTracts[k][m][0]
+        totalLongs = totalLongs + redTracts[k][m][1]
+    }
+        centroidLat = totalLats/(redTracts[k].length - 2) 
+        centroidLong =totalLongs/(redTracts[k].length -2)
+        centroid = [centroidLat, centroidLong]
+        var centroidCircle = L.circle(centroid, {color: 'blue', fillColor: 'blue', fillOpacity: 1.0, radius: 60}).addTo(redLayer)
+        centroids.push(centroid);
+        totalLats = 0
+        totalLongs = 0
+    }
+    activeTract = greenTracts.shift();
+    activeName = greenNames.shift();
+    nextTract()
+}
+
+function nextTract() {
+    var centerMap = mymap.getCenter();
+    initialLat = centerMap['lat']
+    initialLong = centerMap['lng']
+    greenDraw(initialLat, initialLong);
+}
+
+function onMapClick(e) {
+        var clickLat = e.latlng['lat'] 
+        var clickLong = e.latlng['lng']
+        greenDraw(clickLat, clickLong)
+}
+
+function pickUpTract(e) {
+    greenTracts.splice(0,0,activeTract); //put the activeTract back into greenTracts
+    pickupLat = e.latlng['lat']
+    pickupLong = e.latlng['lng']
+    var pickupCoords = [pickupLat, pickupLong]
+    var lowestTestDistance = 100000
+    for (s = 0; s < centroids.length; s = s + 1) {
+    var testDistance = mymap.distance(pickupCoords, centroids[s])
+    if (testDistance < lowestTestDistance) {
+        lowestTestDistance = testDistance
+        nearestCentroid = s}
+    }
+    removalTract = redTracts[nearestCentroid]
+    originLat = removalTract[0][0]
+    originLong = removalTract[0][1]
+    //strip out the origin point data from the removalTract
+    var strippedRemovalTract = [[0, 0]]
+    for (l = 1; l < removalTract.length; l = l + 1) {
+        var nextLat = removalTract[l][0] - originLat
+        var nextLong = removalTract[l][1] - originLong
+        strippedRemovalTract.push([nextLat, nextLong])
+    }
+    redTracts.splice(nearestCentroid,1); //remove removalTract from the middle of the redTracts array
+    greenTracts.splice(0,0,strippedRemovalTract); //put strippedRemovalTract in front of the greenTracts array
+    redrawRed()
+}
+
+function redrawRed() {
+    redLayer.clearLayers();
+    centroids = []
+    for (var k = 0; k< redTracts.length; k = k +1) {
+        var currentPlacement = L.polygon(redTracts[k], {color: 'red', fillColor: 'red', fillOpacity: 0.5}).addTo(redLayer)
+        .bindPopup('');
+    for (var m=1; m < redTracts[k].length-1; m = m + 1) {
+        totalLats = totalLats + redTracts[k][m][0]
+        totalLongs = totalLongs + redTracts[k][m][1]
+    }
+        centroidLat = totalLats/(redTracts[k].length - 2) 
+        centroidLong =totalLongs/(redTracts[k].length -2)
+        centroid = [centroidLat, centroidLong]
+        var centroidCircle = L.circle(centroid, {color: 'blue', fillColor: 'blue', fillOpacity: 1.0, radius: 60}).addTo(redLayer)
+        centroids.push(centroid);
+        totalLats = 0
+        totalLongs = 0
+    }
+    activeTract = greenTracts.shift();
+    console.log(pickupLat);
+    greenDraw(originLat, originLong)
+}
+
+</script>
+</html>
