@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grant Mapping Utility</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+#myfirstmap { height: 550px; width: 80pct}
+</style>
+
+<body>
+<button onclick="exportTracts()">Console log the tracts in current locations</button>
+<div id="myfirstmap"></div>
+
+</body>
+
+<script>
+var tempPlace
+var mymap = L.map('myfirstmap').setView([35.90295606777789, -79.0610467531703], 13);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+var greenLayer = L.layerGroup().addTo(mymap);
+var redLayer = L.layerGroup().addTo(mymap);
+mymap.on('mousemove', onMouseMove);
+mymap.on('click', affix);
+mymap.on('dblclick', affix);
+mymap.on('contextmenu', pickUpTract);
+
+var NSscaling = 0.000180923
+var EWscaling = 0.000223644
+
+var legals = [['begin at WO John Kings corner', 'W', 12, ' ch crossing creek with Kings line to RO', 'S', 51, ' ch to PO', 'E', 70, ' ch to RO', 'N', 100, ' ch crossing creek to WO', 'W', 58, ' ch to BO on King line', 'Gv to Joshua Eason']] // [['Begin at RO on S side of creek','S',41.5,' po to RO on Hightower line','E',37.5,' po along his line to WO','N',30,' po crossing creek to H','E',18.25,' po to st on Wm Partin line','N',35,' po to BJ','E',48,' po to WO','N',18.5,' o to RO','W',104.25,' po to WO on creek','Ofile1181 to Charles King'], ['begin at stake corner of William Partin on Pipers own line','N',32.5,' po with Partin line to BO corner of King','W',21.5,' po with Kings line to H his corner','S',29.5,' po with Kings line to his corner H on Morgan Creek','E',10,' po to DW','S',3,' po to H & DW at a large rock','Ofile2250 to Alexander Piper'], ['begin at William Partin corner H','N',23.25,' po to BO Charles Kings corner','E',43.5,' po along Mosley line to PO near the new road','S',23.25,' po to persimmon on William Partins old line','Omisc43 to John Daniel'], ['begin at Benj Hagwood corner BJ','W',67.5,' ch to H','N',40.5,' ch to RO','E',67.5,' ch to WO','Ofile1783 to William Partin'], ['begin at PO Charles Kings corner','N',18.75,' po to H & persimmon','E',10.25,' po to RP Alexander Strains corner','S',42,' po with Strains line to BJ corner of Partin','W',13.25,' po to stake','Ofile2088 to William Partin'], ['begin at Charles King corner on his own line','N',12,' ch with Kings line to H','E',60.5,' ch to BJ on Bowles line','S',15.5,' with his Bowles to his corner PO','E',15,' ch with his line to BJ','S',15,' to PO','W',18,' ch to stake on his own line','N',18.5,' ch with his own line to his corner WO','Ofile1884 to William Partin'], ['begin at a corner RO','E',64,' ch to WO corner','N',44.25,' ch to corner RO','W',70,' ch to H on creek','Ofile1482 to Benjamin Hagwood'], ['begin at WO','S',20,' ch to RO','E',20,' ch to WO','N',10,' ch to RO','E',68.5,' to RO','N',63,' ch to PO','W',50,' ch to BJ','S',52.25,' ch to PO','Ofile1622 to Alexander Piper'], ['begin at Hardy Morgan corner PO','W',16.5,' ch to PO on Pipers line','N',15.5,' with Piper line to his corner PO','W',14.5,' ch with Piper line to stake','N',24.5,' ch to BJ on Bowles line','E',31,' ch with Bowles to Morgans corner RO','Ofile1902 to John Coulter']]
+//var redTracts = [[[[35.92444296735602,-79.02635057034601],[35.92444296735602,-79.04088743034602],[35.919015277356024,-79.04088743034602],[35.919015277356024,-79.04301204834601],[35.911597434356025,-79.04301204834601],[35.911597434356025,-79.02635057034601],[35.91069281935602,-79.02635057034601],[35.91069281935602,-79.01293193034601],[35.91630143235602,-79.01293193034601],[35.91630143235602,-79.02635057034601],[35.92263373735602,-79.02635057034601]],['corner data needed','corner data needed','corner data needed','Mark Morgans old corner','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1521 to Hardy Morgan'],[[[35.90800333726737,-79.06275257687021],[35.90203287826737,-79.06275257687021],[35.90203287826737,-79.04139457487021],[35.90800333726737,-79.04139457487021],[35.90800333726737,-79.06275257687021]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile2022 to M Morgan & John Daniel'],[[[35.91154527145117,-79.0301186661562],[35.91154527145117,-79.04309001815619],[35.89643820095117,-79.04309001815619],[35.89643820095117,-79.0301186661562],[35.91154527145117,-79.0301186661562]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile0849 to John Morgan'],[[[35.89641360451876,-79.04310729935976],[35.89008129951876,-79.04310729935976],[35.89008129951876,-79.03035959135975],[35.89641360451876,-79.03035959135975],[35.89641360451876,-79.04310729935976]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile2105 to M Morgan & John Daniel'],[[[35.88995751961207,-79.0426095466423],[35.88751505911207,-79.0426095466423],[35.88751505911207,-79.02807268664229],[35.884801214112066,-79.02807268664229],[35.884801214112066,-79.0250534926423],[35.89565659411207,-79.0250534926423],[35.89640891424882,-79.02942862948267],[35.89640891424882,-79.03032320548267],[35.89007660924882,-79.03032320548267],[35.89007660924882,-79.04307091348267]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile2283 to John Daniel'],[[[35.88750636404208,-79.04316504634905],[35.89559724060208,-79.04316504634905],[35.89559724060208,-79.05316640602905],[35.88750636404208,-79.05316640602905],[35.88750636404208,-79.04316504634905]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1524 to John Morgan'],[[[35.887422919125996,-79.04193058235859],[35.887422919125996,-79.0550696673586],[35.871999233375995,-79.0550696673586],[35.871999233375995,-79.04193058235859],[35.887422919125996,-79.04193058235859]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile0922 to John Daniel'],[[[35.867922210041854,-79.02829299923854],[35.867922210041854,-79.04171163923854],[35.887280971041854,-79.04171163923854],[35.887280971041854,-79.02829299923854],[35.867922210041854,-79.02829299923854]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1525 to John Morgan'],[[[35.865139977282674,-79.06375575660657],[35.877804587282675,-79.06375575660657],[35.877804587282675,-79.06151931660656],[35.88323227728267,-79.06151931660656],[35.88323227728267,-79.05525728460657],[35.865139977282674,-79.05525728460657],[35.865139977282674,-79.06375575660657]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1526 to John Morgan'],[[[35.86245503003532,-79.04201379996596],[35.87190825678532,-79.04201379996596],[35.87190825678532,-79.05498515196595],[35.86390241403532,-79.05498515196595],[35.86390241403532,-79.05811616796596],[35.86245503003532,-79.05811616796596],[35.86245503003532,-79.04201379996596]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile2042 to M Morgan & John Daniel'],[[[35.86245503003532,-79.08623491387522],[35.86390241403532,-79.08623491387522],[35.86390241403532,-79.07952559387522],[35.86390241403532,-79.05827941387521],[35.86245503003532,-79.05827941387521],[35.86245503003532,-79.08623491387522]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1796 to Joel Moody'],[[[35.90812847216953,-79.05861181695053],[35.91185367673953,-79.05861181695053],[35.91185367673953,-79.06912308495053],[35.91909059673953,-79.06912308495053],[35.91909059673953,-79.04340402495053],[35.90812847216953,-79.04340402495053],[35.90812847216953,-79.05861181695053]],['Begin at Pattersons corner WO','Pattersons corner sweetgum','along Pattersons line to WO','RO on Easons line','along Easosns line crossing Riggsbys Spring Branch to his corner RO continued to SO','WO','to begin'],'Gv784 to Mark Morgan'],[[[35.8953358887635,-79.06342032642416],[35.9080004987635,-79.06342032642416],[35.9080004987635,-79.05894744642417],[35.9116189587635,-79.05894744642417],[35.9116189587635,-79.07236608642417],[35.8953358887635,-79.07236608642417],[35.8953358887635,-79.06342032642416]],['begin at WO','BO','WO','gum & WO','WO','crossing Marks Creek to RO','cross Marks Creek to first station'],'Gv226 to John Patterson']]
+var redTracts = [[[[35.92444296735602,-79.02635057034601],[35.92444296735602,-79.04088743034602],[35.919015277356024,-79.04088743034602],[35.919015277356024,-79.04301204834601],[35.911597434356025,-79.04301204834601],[35.911597434356025,-79.02635057034601],[35.91069281935602,-79.02635057034601],[35.91069281935602,-79.01293193034601],[35.91630143235602,-79.01293193034601],[35.91630143235602,-79.02635057034601],[35.92263373735602,-79.02635057034601]],['corner data needed','corner data needed','corner data needed','Mark Morgans old corner','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1521 to Hardy Morgan'],[[[35.90800333726737,-79.06275257687021],[35.90203287826737,-79.06275257687021],[35.90203287826737,-79.04139457487021],[35.90800333726737,-79.04139457487021],[35.90800333726737,-79.06275257687021]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile2022 to M Morgan & John Daniel'],[[[35.91154527145117,-79.0301186661562],[35.91154527145117,-79.04309001815619],[35.89643820095117,-79.04309001815619],[35.89643820095117,-79.0301186661562],[35.91154527145117,-79.0301186661562]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile0849 to John Morgan'],[[[35.89641360451876,-79.04310729935976],[35.89008129951876,-79.04310729935976],[35.89008129951876,-79.03035959135975],[35.89641360451876,-79.03035959135975],[35.89641360451876,-79.04310729935976]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile2105 to M Morgan & John Daniel'],[[[35.88995751961207,-79.0426095466423],[35.88751505911207,-79.0426095466423],[35.88751505911207,-79.02807268664229],[35.884801214112066,-79.02807268664229],[35.884801214112066,-79.0250534926423],[35.89565659411207,-79.0250534926423],[35.89640891424882,-79.02942862948267],[35.89640891424882,-79.03032320548267],[35.89007660924882,-79.03032320548267],[35.89007660924882,-79.04307091348267]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile2283 to John Daniel'],[[[35.88750636404208,-79.04316504634905],[35.89559724060208,-79.04316504634905],[35.89559724060208,-79.05316640602905],[35.88750636404208,-79.05316640602905],[35.88750636404208,-79.04316504634905]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1524 to John Morgan'],[[[35.887422919125996,-79.04193058235859],[35.887422919125996,-79.0550696673586],[35.871999233375995,-79.0550696673586],[35.871999233375995,-79.04193058235859],[35.887422919125996,-79.04193058235859]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile0922 to John Daniel'],[[[35.867922210041854,-79.02829299923854],[35.867922210041854,-79.04171163923854],[35.887280971041854,-79.04171163923854],[35.887280971041854,-79.02829299923854],[35.867922210041854,-79.02829299923854]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1525 to John Morgan'],[[[35.865139977282674,-79.06375575660657],[35.877804587282675,-79.06375575660657],[35.877804587282675,-79.06151931660656],[35.88323227728267,-79.06151931660656],[35.88323227728267,-79.05525728460657],[35.865139977282674,-79.05525728460657],[35.865139977282674,-79.06375575660657]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1526 to John Morgan'],[[[35.86245503003532,-79.04201379996596],[35.87190825678532,-79.04201379996596],[35.87190825678532,-79.05498515196595],[35.86390241403532,-79.05498515196595],[35.86390241403532,-79.05811616796596],[35.86245503003532,-79.05811616796596],[35.86245503003532,-79.04201379996596]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile2042 to M Morgan & John Daniel'],[[[35.86245503003532,-79.08623491387522],[35.86390241403532,-79.08623491387522],[35.86390241403532,-79.07952559387522],[35.86390241403532,-79.05827941387521],[35.86245503003532,-79.05827941387521],[35.86245503003532,-79.08623491387522]],['corner data needed','corner data needed','corner data needed','corner data needed','corner data needed','corner data needed'],'Ofile1796 to Joel Moody'],[[[35.90812847216953,-79.05861181695053],[35.91185367673953,-79.05861181695053],[35.91185367673953,-79.06912308495053],[35.91909059673953,-79.06912308495053],[35.91909059673953,-79.04340402495053],[35.90812847216953,-79.04340402495053],[35.90812847216953,-79.05861181695053]],['Begin at Pattersons corner WO','Pattersons corner sweetgum','along Pattersons line to WO','RO on Easons line','along Easosns line crossing Riggsbys Spring Branch to his corner RO continued to SO','WO','to begin'],'Gv784 to Mark Morgan'],[[[35.8953358887635,-79.06342032642416],[35.9080004987635,-79.06342032642416],[35.9080004987635,-79.05894744642417],[35.9116189587635,-79.05894744642417],[35.9116189587635,-79.07236608642417],[35.8953358887635,-79.07236608642417],[35.8953358887635,-79.06342032642416]],['begin at WO','BO','WO','gum & WO','WO','crossing Marks Creek to RO','cross Marks Creek to first station'],'Gv226 to John Patterson'],[[[35.92201025652783,-79.11521249474194],[35.91450195202783,-79.11521249474194],[35.91450195202783,-79.10682584474193],[35.919929642027824,-79.10682584474193],[35.919929642027824,-79.10274434174194],[35.926261947027825,-79.10274434174194],[35.926261947027825,-79.09200942974194],[35.92960902252783,-79.09200942974194],[35.92960902252783,-79.11532431674193],[35.92201025652783,-79.11521249474194]],['Begin at RO on S side of creek',' po to RO on Hightower line',' po along his line to WO',' po crossing creek to H',' po to st on Wm Partin line',' po to BJ',' po to WO',' o to RO',' po to WO on creek','undefined'],'Ofile1181 to Charles King'],[[[35.926284827203055,-79.0919025301564],[35.929677133453055,-79.0919025301564],[35.929677133453055,-79.08961017915641],[35.922078367453054,-79.08961017915641],[35.922078367453054,-79.09257346215641]],['begin at PO Charles Kings corner',' po to H & persimmon',' po to RP Alexander Strains corner',' po with Strains line to BJ corner of Partin',' po to stake'],'Ofile2088 to William Partin'],[[[35.9118268119335,-79.06923306049113],[35.9118268119335,-79.07292318649112],[35.914631118433505,-79.07292318649112],[35.914631118433505,-79.07616602449113],[35.9190637319335,-79.07616602449113],[35.9190637319335,-79.06923306049113],[35.9118268119335,-79.06923306049113]],['begin at Hardy Morgan corner PO',' ch to PO on Pipers line',' with Piper line to his corner PO',' ch with Piper line to stake',' ch to BJ on Bowles line',' ch with Bowles to Morgans corner RO','undefined'],'Ofile1902 to John Coulter'],[[[35.921808685728635,-79.10248292430659],[35.92601514547864,-79.10248292430659],[35.92601514547864,-79.09275441030658],[35.921808685728635,-79.09275441030658],[35.921808685728635,-79.10248292430659]],['begin at William Partin corner H',' po to BO Charles Kings corner',' po along Mosley line to PO near the new road',' po to persimmon on William Partins old line','undefined'],'Omisc43 to John Daniel'],[[[35.91388446003051,-79.10265465678778],[35.91976445753051,-79.10265465678778],[35.91976445753051,-79.10746300278778],[35.91442722903051,-79.10746300278778],[35.91442722903051,-79.10522656278778],[35.91388446003051,-79.10522656278778]],['begin at stake corner of William Partin on Pipers own line',' po with Partin line to BO corner of King',' po with Kings line to H his corner',' po with Kings line to his corner H on Morgan Creek',' po to DW',' po to H & DW at a large rock'],'Ofile2250 to Alexander Piper'],[[[35.91193803754826,-79.08745633220151],[35.91193803754826,-79.10255230220152],[35.91926541904826,-79.10255230220152],[35.91926541904826,-79.08745633220151],[35.91193803754826,-79.08745633220151]],['begin at Benj Hagwood corner BJ',' ch to H',' ch to RO',' ch to WO','undefined'],'Ofile1783 to William Partin'],[[[35.9194454032452,-79.09999280332916],[35.9216164792452,-79.09999280332916],[35.9216164792452,-79.08646234132915],[35.9188121727452,-79.08646234132915],[35.9188121727452,-79.08310768132915],[35.916098327745196,-79.08310768132915],[35.916098327745196,-79.08713327332916],[35.9194454032452,-79.08713327332916],[35.9194454032452,-79.09999280332916]],['begin at Charles King corner on his own line',' ch with Kings line to H',' ch to BJ on Bowles line',' with his Bowles to his corner PO',' ch with his line to BJ',' to PO',' ch to stake on his own line',' ch with his own line to his corner WO','undefined'],'Ofile1884 to William Partin'],[[[35.90366520777067,-79.1029122555096],[35.90366520777067,-79.08859903950959],[35.911671050520674,-79.08859903950959],[35.911671050520674,-79.10425411950959],[35.90366520777067,-79.1029122555096]],['begin at a corner RO',' ch to WO corner',' ch to corner RO',' ch to H on creek','undefined'],'Ofile1482 to Benjamin Hagwood'],[[[35.90338711443398,-79.09578535753975],[35.899768654433984,-79.09578535753975],[35.899768654433984,-79.09131247753976],[35.90157788443398,-79.09131247753976],[35.90157788443398,-79.07599286353975],[35.912976033433985,-79.07599286353975],[35.912976033433985,-79.08717506353976],[35.90352280668398,-79.08717506353976],[35.90338711443398,-79.09578535753975]],['begin at WO',' ch to RO',' ch to WO',' ch to RO',' to RO',' ch to PO',' ch to BJ',' ch to PO','undefined'],'Ofile1622 to Alexander Piper']]
+
+var tempActiveTractCoords = []
+var centerMap = mymap.getCenter();
+var pickupLat
+var pickupLong
+var totalLats = 0
+var totalLongs = 0
+initialLat = centerMap['lat']
+initialLong = centerMap['lng']
+var centroid
+var centroids = []
+var centroidLat
+var centroidLong
+var nearestCentroid
+var removalTract = []
+var strippedRemovalTract = []
+var originLat
+var originLong
+var redNames = ["Ofile1521 to Hardy Morgan", "Ofile2022 to M Morgan & John Daniel", "Ofile0849 to John Morgan", "Ofile2105 to M Morgan & John Daniel", "Ofile2283 to John Daniel", "Ofile1524 to John Morgan", "Ofile0922 to John Daniel", "Ofile1525 to John Morgan", "Ofile1526 to John Morgan", "Ofile2042 to M Morgan & John Daniel", "Ofile1796 to Joel Moody"] 
+var greenTracts = []
+var activeName
+var newLat
+var newLong
+var clickLat
+var clickLong
+var output = []
+var redCorners = [["corner data needed", "corner data needed", "corner data needed", "Mark Morgans old corner", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"], ["corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed", "corner data needed"]]
+var tempCorners = []
+var activeCorners = []
+
+// // take legals and turn greenTracts into an array of parcels lacking origin coordinates
+for (var tractNumber = 0; tractNumber < legals.length; tractNumber=tractNumber+1 ){
+var nextCoord = 1
+var processing = legals[tractNumber]
+var output = [[0,0]] //output is the array of the coordinates for the tract we are about to load into greenTracts
+for (var i = 1; i < processing.length - 2; i = i + 3 ){ //start with i = 1 because we preloavev output with and origin 0,0
+    if (processing[i].length > 1) {//we are dealing with an angled direction!!
+            var direction = processing[i]
+            var partsArray = direction.split('');
+            direction1 = partsArray[0]
+            direction2 = partsArray[partsArray.length - 1]
+            var theta =""
+            for (var j = 1; j < partsArray.length -1; j = j + 1) {
+                theta = theta.concat(partsArray[j]);
+                }
+            var hypChains = processing[i+1]
+            theta = (90-theta)*3.14159265359/180 //convert to complimentary angle in radians
+            var oppChains = hypChains * Math.sin(theta)
+            var adjChains = hypChains * Math.cos(theta)
+            var hyp = Math.sqrt((oppChains**2) + (adjChains**2))
+            if (direction1 == "N") {newLat = output[nextCoord-1][0] + oppChains * NSscaling}
+            if (direction1 == "S") {newLat = output[nextCoord-1][0] - oppChains * NSscaling}
+            if (direction2 == "E") {newLong = output[nextCoord-1][1] + adjChains * EWscaling}
+            if (direction2 == "W") {newLong = output[nextCoord-1][1] - adjChains * EWscaling}
+            var testDistance = mymap.distance([35, -79], [35+newLat, -79+newLong])
+            output.push([newLat, newLong])
+        }//done dealing with an angled direction!!
+    if (processing[i] == "N") {
+        output.push([processing[i+1] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+    if (processing[i] == "S") {
+        output.push([- processing[i+1] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+    if (processing[i] == "E") {
+        output.push([output[nextCoord-1][0], processing[i+1] * EWscaling + output[nextCoord-1][1]])}
+    if (processing[i] == "W") {
+        output.push([output[nextCoord-1][0], - processing[i+1] * EWscaling + output[nextCoord-1][1]])}
+    var nextCoord = nextCoord + 1
+    } //end of loop //now test to make sure the description closes
+    if (output[output.length-1][0] >= 10**-14 || output[output.length-1][1] >= 10**-14) {
+        output.push([0,0])
+        }
+    greenTracts.push([output]);
+    var numberOfNames = processing.length - 1
+    for (var k = 0; k < processing.length - 1; k = k + 3) {
+        tempCorners.push(processing[k])
+        }
+    greenTracts[tractNumber].push(tempCorners)
+    greenTracts[tractNumber].push(processing[processing.length-1])
+    tempCorners = []
+} //end of legals to greenTracts loop
+var centerMap = mymap.getCenter();
+initialLat = centerMap['lat']
+initialLong = centerMap['lng']
+var activeTract = []
+var activeArray = []
+drawRedLayer();
+nextTract();
+greenDraw(initialLat, initialLong);
+
+
+
+function greenDraw(a,b) {
+    console.log('activeTract is ' + activeArray[2])
+    if (activeTract.length > 0) {
+        greenLayer.clearLayers();
+        clickLat = a
+        clickLong = b
+        tempActiveTractCoords = []
+        for (var j = 0; j < activeTract.length; j = j + 1) {
+            tempActiveTractCoords.push([activeTract[j][0] + clickLat, activeTract[j][1] + clickLong])
+        }
+        var currentPlacement = L.polygon(tempActiveTractCoords, {color: 'green', fillColor: 'green', fillOpacity: 0.5}).addTo(greenLayer)
+        .bindTooltip(activeName).openTooltip();
+        var originMarker = L.circle([clickLat, clickLong], {color: 'red', fillColor: 'red', fillOpacity: 0.5, radius: 100}).addTo(greenLayer);
+    }
+}// end of greenDraw function
+
+function affix() { //We are taking the active green tract and locking in the place where we clicked
+    console.log('firing affix function')
+    console.log('affixing ' + activeArray[2])
+    if (activeTract.length > 0) {
+        redLayer.clearLayers();
+        activeArray.shift(); //remove the floating coordinates from  activeArray 
+        activeArray.unshift(tempActiveTractCoords) //and replace it with tempActiveTractCoords
+        redTracts.push(activeArray); //now add all of activeArray into redTracts
+        //Now that we have a new item in redTracts it is time to draw the redLayer again
+        drawRedLayer();
+        //So now we will need a new greenTract if there are any left to get
+        if (greenTracts.length > 0) {
+            nextTract();
+            greenDraw(clickLat, clickLong);
+        }
+        else {
+            greenLayer.clearLayers();
+            activeTract = []
+            activeArray = []
+        }
+    }
+}
+
+function nextTract() {
+    console.log('firing nextTract function')
+    console.log('next tract is ' + greenTracts[0][2])
+    var centerMap = mymap.getCenter();
+    initialLat = centerMap['lat']
+    initialLong = centerMap['lng']
+    if (greenTracts.length > 0) {
+        activeArray = greenTracts.shift()
+        activeTract = activeArray[0]
+        console.log('greenTracts remaining is ' + greenTracts.length)
+    }
+    else {
+        activeTract = []
+        activeArray = []
+    }
+}
+
+function onMouseMove(e) {
+        clickLat = e.latlng['lat'] 
+        clickLong = e.latlng['lng']
+        if (activeTract.length !=0) {
+        greenDraw(clickLat, clickLong)}
+}
+
+function pickUpTract(e) {
+    console.log('firing pickUpTract function')
+    //first, if there is an active Tract, put it back into green tracts
+    if (activeArray.length > 0) {greenTracts.unshift(activeArray);}
+//then determine where the nearest centroid is to where we right clicked
+    pickupLat = e.latlng['lat']
+    pickupLong = e.latlng['lng']
+    var pickupCoords = [pickupLat, pickupLong]
+    var lowestTestDistance = 100000
+    for (s = 0; s < centroids.length; s = s + 1) {
+        var testDistance = mymap.distance(pickupCoords, centroids[s])
+        if (testDistance < lowestTestDistance) {
+        lowestTestDistance = testDistance
+        nearestCentroid = s}
+            }
+    if (lowestTestDistance < 1500) {
+        removalTract = redTracts[nearestCentroid]
+        originLat = removalTract[0][0][0]
+        originLong = removalTract[0][0][1]
+        //strip out the origin point data from the removalTract
+        var strippedRemovalTract = [[0, 0]]
+        for (l = 1; l < removalTract[0].length; l = l + 1) {
+            var nextLat = removalTract[0][l][0] - originLat
+            var nextLong = removalTract[0][l][1] - originLong
+            strippedRemovalTract.push([nextLat, nextLong])
+                }
+        redTracts.splice(nearestCentroid,1); //remove removalTract from the middle of the redTracts array
+        //now assemble an array made up of the stripped coordinates and the corner names etc from removalTract
+        var reinsertTract = []
+        reinsertTract.push(strippedRemovalTract)
+        for (i = 1; i < removalTract.length; i = i +1) {
+            reinsertTract.push(removalTract[i])
+        }
+        greenTracts.unshift(reinsertTract); //put strippedRemovalTract in front of the greenTracts array
+        nextTract();
+        drawRedLayer();
+        greenDraw(pickupLat, pickupLong);
+    }
+}
+
+function drawRedLayer() {
+    console.log('firing drawRedLayer function')
+    redLayer.clearLayers();
+    centroids = []
+    for (var k = 0; k < redTracts.length; k = k + 1) {
+        var currentPlacement = L.polygon(redTracts[k][0], {color: 'red', fillColor: 'red', fillOpacity: 0.5}).addTo(redLayer)
+        .bindPopup(redTracts[k][2]);
+        //first let's calculate the sum of all corners of the tract
+        for (var m=0; m < redTracts[k][0].length-1; m = m + 1) {
+            totalLats = totalLats + redTracts[k][0][m][0]
+            totalLongs = totalLongs + redTracts[k][0][m][1]
+            }
+        //now let's average those totals into a set of coords for a centroid
+        centroidLat = totalLats/(redTracts[k][0].length - 1) 
+        centroidLong = totalLongs/(redTracts[k][0].length - 1)
+        centroid = [centroidLat, centroidLong]
+        //and put a blue circle at the centroid of the tract
+        var centroidCircle = L.circle(centroid, {color: 'blue', fillColor: 'blue', fillOpacity: 1.0, radius: 60}).addTo(redLayer);
+        centroids.push(centroid);
+        totalLats = 0
+        totalLongs = 0
+        //Now mark the corners of this tract
+        for (var n = 0; n < redTracts[k][1].length; n = n + 1) {
+            var popuptext = redTracts[k][1][n] + "<br>" + redTracts[k][0][n]
+            var eachcorner = L.circle(redTracts[k][0][n], {color: 'black', fillColor: 'black', fillOpacity: 1.0, radius: 20}).addTo(redLayer)
+            .bindTooltip("" + popuptext);
+            }
+    }
+}
+
+var exportCoords = []
+var exportCorners = []
+var exportNames = []
+var exportText = "var redTracts = [["
+
+function exportTracts() {
+for (i = 0; i < redTracts.length; i = i + 1) {
+    exportCoords.push(redTracts[i][0])
+    exportCorners.push(redTracts[i][1])
+    exportNames.push(redTracts[i][2])
+}
+
+var formattedExportCoords = "var redTracts = [[["
+for (i = 0; i < redTracts.length; i = i + 1) {
+    for (var j = 0; j < redTracts[i][0].length; j = j + 1){
+        formattedExportCoords = formattedExportCoords + "[" + exportCoords[i][j][0] + "," + exportCoords[i][j][1] + "],"
+    }
+formattedExportCoords = formattedExportCoords.substr(0, formattedExportCoords.length -1) 
+formattedExportCoords = formattedExportCoords + "],["
+
+for (var j = 0; j < redTracts[i][0].length; j = j + 1){
+        formattedExportCoords = formattedExportCoords + "'" + exportCorners[i][j] + "',"
+    }
+formattedExportCoords = formattedExportCoords.substr(0, formattedExportCoords.length -1) 
+formattedExportCoords = formattedExportCoords + "],"
+
+formattedExportCoords = formattedExportCoords + "'" + exportNames[i] + "',"
+
+formattedExportCoords = formattedExportCoords.substr(0, formattedExportCoords.length -1) 
+formattedExportCoords = formattedExportCoords + "],[["
+
+
+}
+
+formattedExportCoords = formattedExportCoords.substr(0, formattedExportCoords.length -3)
+formattedExportCoords = formattedExportCoords + "]"
+
+// exportText = exportText + exportCoords[i] + "],[" + exportCorners[i]+ "],'" + exportNames[i] + "'],["
+// exportText = exportText.substr(0, exportText.length -1)
+console.log(formattedExportCoords)
+}
+
+
+</script>
+</html>
