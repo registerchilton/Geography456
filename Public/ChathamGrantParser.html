@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatham Grant Parser</title>
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+ 
+        label {
+            font: 18px;
+        }
+ 
+        input {
+            margin: 10px;
+            padding: 2px
+        }
+    </style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap {height: 300px; width: 100pct}
+</style>
+        
+
+<body>
+    <h1>Select the Cfiles CSV</h1>
+    <input type="file" id="csv-file" names="files" onchange="handleFileSelect(this)"/>
+    <button onclick="begin()">Show first image</button>
+
+    <div id='caption'>Cfile 1 NC to Benjamin Watts, 31 Mar 1780, 225 acres on branch of Varnell Creek, adj Timothy Terrell, William George, Joseph Hadley, Edward Teague. 
+    </div>
+    <input type="text" placeholder = "first corner, first call (like N 200 po or N70E 20 ch), 
+    second call..., final call" id="legal" style="width: 1000px" onchange="parsepreview(this)"> 
+
+    
+    <button onclick="parsepreview()">Parse it!</button>
+    <button onclick="parseapprove()">Approve it!</button>
+    <button onclick="download()">download a CSV of the revised JSON</button>
+    <div id="imageDiv"><img src="" id ="currentImage" width=800px></div>
+    <div id="myfirstmap"></div>
+    <div id="previewDiv"><img src="" id ="previewImage" width=800px></div>
+    
+
+
+</body>
+
+<script>
+var imageNumber = 0
+let cfileslist = 0
+const papaConfig = {header: true, complete: function(result){cfileslist = result.data}}
+
+var mymap = L.map('myfirstmap', {scrollWheelZoom: false}).setView([35.735020, -79.320940], 13);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+mymap.on('mousemove', begin);
+var greenLayer = L.layerGroup().addTo(mymap);
+var units = ''
+var myCsv = ''
+var newLat
+var newLong
+var tempCorners
+var legals = []
+var corners = []
+var directions = []
+var distances = []
+var typedinput
+var convertedDistances = []
+var nextImage
+var loaded = "no"
+
+function parse(){
+output = [] 
+typedinput = document.getElementById("legal").value
+var splitbycomma = []
+splitbycomma = typedinput.split(',');
+//var itemName = splitbycomma.shift()
+var firstCorner = splitbycomma.shift()
+legals = [[firstCorner]]
+var lengthTotal = splitbycomma.length
+var divy
+for (i = 0; i < lengthTotal; i = i + 1){
+    var reassembly = ''
+    var splitbyspace = splitbycomma[i].split(' ');
+    console.log("splitbyspace = " + splitbyspace)
+    directions.push(splitbyspace[1])
+    distances.push(splitbyspace[2])
+    for (k = 4; k < splitbyspace.length; k = k + 1) {
+        reassembly = reassembly + splitbyspace[k] + ' '
+    }
+    console.log('reassembly = ' + reassembly)
+    corners.push(reassembly)
+}
+console.log(directions)
+console.log(distances)
+console.log(corners)
+
+var divisor
+if (splitbycomma[1].includes('ch')) {
+    divisor = 1
+    units = "ch"}
+if (splitbycomma[1].includes('po')) {
+    divisor = 4
+    units = "po"
+}
+if (splitbycomma[1].includes('feet')) {
+    divisor = 66
+    units="feet"
+}
+console.log ("divisor = " + divisor)
+for (var i = 0; i < lengthTotal; i = i + 1) {
+    var nextDirection = directions[i]
+    var nextDistance = distances[i]
+    console.log("next distance = " + nextDistance)
+    var convertedDistance = nextDistance/divisor
+    convertedDistances.push(convertedDistance)
+    console.log("converted distance = " + convertedDistance)
+    var nextCorner = corners[i]
+    nextDirection = "'"+ nextDirection + "'"
+    legals[0].push(nextDirection)
+    legals[0].push(convertedDistance)
+    nextCorner = "'" + nextCorner + "'"
+    legals[0].push(nextCorner)
+}
+console.log(legals)
+}
+
+var output
+var NSscaling = 0.000180923
+var EWscaling = 0.000223644
+var tempCorners = []
+
+function preview() {
+output = [[0,0]] //output is going to be the array of the coordinates for the tract we just typed
+var nextCoord = 1
+for (i = 0; i < directions.length; i = i + 1){
+    console.log('output is now  ' + output)
+    if (directions[i].length > 1) { //ANGLES
+        console.log('Angles!')
+        var partsArray = directions[i].split('');
+            console.log(partsArray)
+            direction1 = partsArray[0]
+            direction2 = partsArray[partsArray.length - 1]
+            console.log(direction2)
+            var theta =""
+            for (var j = 1; j < partsArray.length -1; j = j + 1) {
+                theta = theta.concat(partsArray[j]);
+                }
+            var hypChains = convertedDistances[i]
+            theta = (90-theta)*3.14159265359/180 //convert to complimentary angle in radians
+            console.log('theta is ' + theta)
+            var oppChains = hypChains * Math.sin(theta)
+            var adjChains = hypChains * Math.cos(theta)
+            if (direction1 == "N") {newLat = output[nextCoord-1][0] + oppChains * NSscaling}
+            if (direction1 == "S") {newLat = output[nextCoord-1][0] - oppChains * NSscaling}
+            if (direction2 == "E") {newLong = output[nextCoord-1][1] + adjChains * EWscaling}
+            if (direction2 == "W") {newLong = output[nextCoord-1][1] - adjChains * EWscaling}
+            if (newLat != NaN && newLong !=NaN) {output.push([newLat, newLong])}
+    }
+    if (directions[i] == "N") {
+        output.push([convertedDistances[i] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+    if (directions[i] == "S") {
+        output.push([- convertedDistances[i] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+    if (directions[i] == "E") {
+        output.push([output[nextCoord-1][0], convertedDistances[i] * EWscaling + output[nextCoord-1][1]])}
+    if (directions[i] == "W") {
+        output.push([output[nextCoord-1][0], - convertedDistances[i] * EWscaling + output[nextCoord-1][1]])}
+    var nextCoord = nextCoord + 1
+    console.log('next coord = ' + nextCoord)
+    } //end of loop //now test whether the description closes, and if not send the origin coordinates
+    if (output[output.length-1][0] >= 10**-14 || output[output.length-1][1] >= 10**-14) {output.push([0,0])}
+    console.log('output is ' + output)
+    var activeTract = output
+    greenLayer.clearLayers();
+    clickLat = 35.735020
+    clickLong = -79.320940
+    var tempActiveTractCoords = []
+        for (var j = 0; j < activeTract.length; j = j + 1) {
+            tempActiveTractCoords.push([activeTract[j][0] + clickLat, activeTract[j][1] + clickLong])
+        }
+        var currentPlacement = L.polygon(tempActiveTractCoords, {color: 'green', fillColor: 'green', fillOpacity: 0.5}).addTo(greenLayer)
+        .bindTooltip().openTooltip();
+        var originMarker = L.circle([clickLat, clickLong], {color: 'red', fillColor: 'red', fillOpacity: 0.5, radius: 100}).addTo(greenLayer);
+}// end of preview function
+
+function approve(){
+    //store the item legals in the JSON cfileslist
+    cfileslist[imageNumber].legals = legals
+    cfileslist[imageNumber].output = output
+    cfileslist[imageNumber].units = units
+    console.log(cfileslist[imageNumber].legals)
+    console.log('output is cleaered: ' + output)
+    //clear greenLayers
+    greenLayer.clearLayers();
+    //clear the input bar
+    let clearForm = document.getElementById("legal");
+    clearForm.value = "";
+    //show the next slide
+    imageNumber = imageNumber + 1
+    nextImage = cfileslist[imageNumber].pathway
+    document.getElementById("currentImage").src = nextImage
+    document.getElementById("previewImage").src = nextImage
+    document.getElementById("caption").innerText = cfileslist[imageNumber].item
+}
+
+function handleFileSelect(evt) {
+    console.log(evt)
+    loaded="yes"
+    var file = evt.files[0]
+    Papa.parse(file, papaConfig)
+}
+
+function download() {
+    var cfiles = Papa.unparse (cfileslist)   
+    window.open('data:text/csv;charset=utf-8,' + escape(cfiles));
+}
+
+function begin(){
+    if (loaded =="yes") {
+        for (i = 0; i <cfileslist.length; i= i + 1) {
+            if (cfileslist[i].legals.length == 0) {
+            imageNumber = i
+            i = 100000
+            }
+        }
+
+        var nextImage = cfileslist[imageNumber].pathway
+        document.getElementById("currentImage").src = nextImage
+        document.getElementById("previewImage").src = nextImage
+        document.getElementById("caption").innerText = cfileslist[imageNumber].item
+    }
+    loaded = "no"
+}
+
+function parsepreview(){
+    parse()
+    preview()
+document.getElementById("currentImage").src = ""
+legals = []
+corners = []
+directions = []
+distances = []
+convertedDistances = []
+}
+
+function parseapprove(){
+    parse()
+    approve()
+    legals = []
+corners = []
+directions = []
+distances = []
+convertedDistances = []
+}
+</script>
+</html>
