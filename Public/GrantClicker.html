@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grant Clicker</title>
+</head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap { height: 850px; width: 100pct}
+</style>
+
+<body>
+    <h1>Click on each of the corners of a tract and give it a name in the input field. The hit enter or click the button.</h1>
+    <button onclick="makePolygon()">Make the markers into a polygon!</button>
+    <input type="text" id="tractname" names="files" onchange="makePolygon(this)"/>
+    <button onclick="hidePolygons()">Hide/reveal polygons!</button>
+    <div id="myfirstmap"></div>
+    <img src="./OCLandGrantMapSmall.png" id="subject" width="250">
+<script>
+    var mymap = L.map('myfirstmap').setView([35.91587645213845, -79.06359860746367], 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mymap);
+    var layerGroup = L.layerGroup().addTo(mymap);
+
+var SWcornerLat = 35.86176660829789
+var SWcornerLong = -79.278373469283
+var NEcornerLat = 36.24536540445832
+var NEcornerLong = -78.93114167089037
+var subjectimageBounds = [[SWcornerLat, SWcornerLong], [NEcornerLat, NEcornerLong]];
+var landgrantmap = document.getElementById('subject').src
+var clickLat
+var clickLong
+var polygonArray = []
+L.imageOverlay(landgrantmap, subjectimageBounds, {opacity: 50}).addTo(mymap);
+var greenLayer = L.layerGroup().addTo(mymap);
+var redLayer = L.layerGroup().addTo(mymap);
+var arrayofArrays = []
+var nameArray = []
+var tract = 0
+var toggle = 0
+var cornerMoving = 1
+var tempArray =[]
+
+mymap.on('mousemove', onMouseMove)
+
+mymap.on('click', affix);
+
+
+function affix(e) {
+    if (cornerMoving/2 != Math.floor(cornerMoving/2)) {
+        clickLat = e.latlng['lat']
+        clickLong = e.latlng['lng']
+        var clickCoords = [clickLat, clickLong]
+        var marker = L.marker(clickCoords, {}).addTo(greenLayer);
+        polygonArray.push(clickCoords)
+    }
+    else {
+        arrayofArrays[pickupTract] = tempArray
+        cornerMoving = cornerMoving + 1
+        greenLayer.clearLayers();
+        redLayer.clearLayers();
+        toggle = 1
+        hidePolygons()
+        }
+}
+
+function makePolygon(e) {
+    var name = document.getElementById('tractname').value
+    console.log(name)
+    nameArray.push(name)
+    greenLayer.clearLayers();
+    var marker = L.polygon(polygonArray, {}).addTo(redLayer)
+    .bindPopup(nameArray[tract]);
+    console.log(polygonArray)
+    for (var corners = 0; corners < polygonArray.length; corners = corners + 1) {
+        var cornerMarkerText = "<button onclick='pickupcornerfunction(" + corners + "," + tract + ")'>pick up this corner</button>"
+        var markCorner = L.marker(polygonArray[corners]).addTo(redLayer)
+        .bindPopup(cornerMarkerText)
+    }
+    arrayofArrays.push(polygonArray)
+    polygonArray = []
+    tract = tract + 1
+}
+
+function hidePolygons(){
+    if (toggle/2 == Math.floor(toggle/2)) {
+        redLayer.clearLayers()
+        toggle = toggle + 1
+    }
+    else {
+        for (var i = 0; i < arrayofArrays.length; i = i +1) {
+            var marker = L.polygon(arrayofArrays[i], {}).addTo(redLayer)
+            .bindPopup(nameArray[i]);
+            for (var corners = 0; corners < arrayofArrays[i].length; corners = corners + 1) {
+                var cornerMarkerText = "<button onclick='pickupcornerfunction(" + corners + "," + i + ")'>pick up this corner</button>"
+                var markCorner = L.marker(arrayofArrays[i][corners]).addTo(redLayer)
+                .bindPopup(cornerMarkerText)
+            }
+
+        }
+
+        var marker = L.polygon(polygonArray, {}).addTo(redLayer)
+    .bindPopup(nameArray[tract]);
+
+
+
+    console.log(toggle)
+    toggle = toggle + 1
+    }
+}
+
+function pickupcornerfunction(a,b) {
+    console.log("pick up corner " + a + " of tract " + b)
+    pickupTract = b
+    pickupCorner = a
+    cornerMoving = cornerMoving + 1
+}
+
+function onMouseMove(e) {
+    console.log("cornerMoving is " + cornerMoving)
+    tempArray = []
+    if (cornerMoving/2 == Math.floor(cornerMoving/2)) {
+        greenLayer.clearLayers()
+        clickLat = e.latlng['lat'] 
+        clickLong = e.latlng['lng']
+        var mouseCoords = [clickLat, clickLong]
+        console.log("pick up corner is " + pickupCorner)    
+        for (var k = 0; k < arrayofArrays[pickupTract].length; k = k +1) {
+            if (k != pickupCorner) {
+                tempArray.push(arrayofArrays[pickupTract][k])
+            }
+            else(tempArray.push(mouseCoords))
+        }
+        console.log(tempArray)
+        var marker = L.polygon(tempArray, {}).addTo(greenLayer);
+    }
+}
+        
+
+</script>
+</html>
