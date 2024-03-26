@@ -138,33 +138,6 @@ var erroneousLong
 var firstCorrectedLocation = []
 var imageUrl = './PlanoftheVillageattheUniversity.jpg'
 
-var CH1934 = "./ChapelHill1934t.png"
-var SWcornerLat1934 = 35.899641452968
-var SWcornerLong1934 = -79.07113335102133
-var NEcornerLat1934 = 35.92400083771455
-var NEcornerLong1934 = -79.02772937622225
-var Bounds1934 = [[SWcornerLat1934, SWcornerLong1934], [NEcornerLat1934, NEcornerLong1934]];
-L.imageOverlay(CH1934, Bounds1934, {opacity: 1}).addTo(maplayer);
-
-
-var CH1852 = "./ChapelHill1852t.png"
-var SWcornerLat1852 = 35.90308112095983
-var SWcornerLong1852 = -79.06728051040209
-var NEcornerLat1852 = 35.92006031287958
-var NEcornerLong1852 = -79.0405571009995
-var Bounds1852 = [[SWcornerLat1852, SWcornerLong1852], [NEcornerLat1852, NEcornerLong1852]];
-L.imageOverlay(CH1852, Bounds1852, {opacity: 1}).addTo(maplayer);
-
-var CH1817 = "./ChapelHill1817t.png"
-var SWcornerLat1817 = 35.90846577223227
-var SWcornerLong1817 = -79.05746225499364
-var NEcornerLat1817 = 35.918232764601186
-var NEcornerLong1817 = -79.04435889140487
-var Bounds1817 = [[SWcornerLat1817, SWcornerLong1817], [NEcornerLat1817, NEcornerLong1817]];
-L.imageOverlay(CH1817, Bounds1817, {opacity: 1}).addTo(maplayer);
-
-
-
 function display() {
     var opacityslider = document.getElementById('opacitySlider');
     var Opacity = opacityslider.value/100
