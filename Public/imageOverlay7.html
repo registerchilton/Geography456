@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map Overlay Utility</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+<style>
+#myfirstmap { height: 550px; width: 100pct}
+.slider-container {
+    margin-right: 20px;
+    display: flex;
+    align-items: left;
+    flex-direction: column;
+}
+
+.slider {
+    width: 545px; 
+}
+.tick-container {
+    display: flex;
+    justify-content: space-between;
+    width: 550px;
+    margin-top: 5px;
+}
+
+.tick {
+    font-size: 12px; 
+    color: #888; 
+}
+</style>
+
+<body>
+<!-- <button onclick="display()">Display the map</button> -->
+<input type="file" id="csv-file" names="files" onchange="handleFileSelect(this)"/>
+<button onclick="corners()">Console Log the corners</button><br>
+<button onclick="switchDimensions()">switch width and height</button>
+<button onclick="getExif()">GEt the Exif data</button><br>
+
+
+<div id="instruction">Right click to set the image down or pick it back up. Adjust opacity with this slider.</div>
+<div class="slider-container">
+    <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider" oninput='display()'>
+      <div class="tick-container">
+          <span class="tick">25</span>
+          <span class="tick">50</span>
+          <span class="tick">100</span>
+      </div>
+    </div>
+
+    <!-- <div id="instruction">Adjust the N-S scale with this slider.</div>
+    <div class="slider-container">
+        <input type="range" min="1" max="2000" value="100" class="slider" id="NSscaleSlider" oninput='display()'>
+          <div class="tick-container">
+            <span class="tick">1</span>
+            <span class="tick">250</span>
+            <span class="tick">500</span>
+            <span class="tick">750</span>
+            <span class="tick">1000</span>
+            <span class="tick">1250</span>
+            <span class="tick">1500</span>
+            <span class="tick">1750</span>
+            <span class="tick">2000</span>
+    </div> -->
+
+          <div id="instruction">Adjust scale with this slider.</div>
+          <div class="slider-container">
+              <input type="range" min="1" max="2000" value="100" class="slider" id="EWscaleSlider" oninput='scaleChange()'>
+                <div class="tick-container">
+                  <span class="tick">1</span>
+                  <span class="tick">250</span>
+                  <span class="tick">500</span>
+                  <span class="tick">750</span>
+                  <span class="tick">1000</span>
+                  <span class="tick">1250</span>
+                  <span class="tick">1500</span>
+                  <span class="tick">1750</span>
+                  <span class="tick">2000</span>
+                </div>
+              </div>
+    
+
+
+
+
+
+<div id="scaleDisplay">Scale is 25 meters = 1 pixel.</div>
+    <div id="myfirstmap"></div>
+<img src="./AChorusSilenced.png" id="theMap" width="250" alt="Cloudy Sky">
+</body>
+
+<script>
+var mymap = L.map('myfirstmap').setView([35.90295606777789, -79.0610467531703], 13);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+
+var SWchangelat
+var SWchangeLong
+var NEchangelat
+var NEchangeLong
+var maplayer = L.layerGroup().addTo(mymap);
+var imageWidth
+var imageHeight
+var imageScale
+var EWScale = 100
+var EWscaleSlider = 100
+var NSScale = 100
+var NSscaleSlider = 100
+var NEcornerLat = 35.919869995668265
+var NEcornerLong = -79.03320932572984
+var SWcornerLat = 35.89850543644488
+var SWcornerLong = -79.06230138377042
+var imageBounds
+let NSlength = mymap.distance([36,-79], [36.1,-79]); // this gives us the distance of 0.1 degrees NS in meters
+let EWlength = mymap.distance([36,-79], [36,-79.1]); // this gives us the distance of 0.1 degrees EW in meters
+var NSscaling = 0.1/NSlength 
+var EWscaling = 0.1/EWlength
+console.log("NS scale is " + NSscaling + " & EW is " + EWscaling)
+var allMetaDataSpan
+var adjustmode = 0
+var erroneousLat
+var erroneousLong
+var firstCorrectedLocation = []
+var imageUrl = './PlanoftheVillageattheUniversity.jpg'
+
+var CH1934 = "./ChapelHill1934t.png"
+var SWcornerLat1934 = 35.899641452968
+var SWcornerLong1934 = -79.07113335102133
+var NEcornerLat1934 = 35.92400083771455
+var NEcornerLong1934 = -79.02772937622225
+var Bounds1934 = [[SWcornerLat1934, SWcornerLong1934], [NEcornerLat1934, NEcornerLong1934]];
+L.imageOverlay(CH1934, Bounds1934, {opacity: 1}).addTo(maplayer);
+
+
+var CH1852 = "./ChapelHill1852t.png"
+var SWcornerLat1852 = 35.90308112095983
+var SWcornerLong1852 = -79.06728051040209
+var NEcornerLat1852 = 35.92006031287958
+var NEcornerLong1852 = -79.0405571009995
+var Bounds1852 = [[SWcornerLat1852, SWcornerLong1852], [NEcornerLat1852, NEcornerLong1852]];
+L.imageOverlay(CH1852, Bounds1852, {opacity: 1}).addTo(maplayer);
+
+var CH1817 = "./ChapelHill1817t.png"
+var SWcornerLat1817 = 35.90846577223227
+var SWcornerLong1817 = -79.05746225499364
+var NEcornerLat1817 = 35.918232764601186
+var NEcornerLong1817 = -79.04435889140487
+var Bounds1817 = [[SWcornerLat1817, SWcornerLong1817], [NEcornerLat1817, NEcornerLong1817]];
+L.imageOverlay(CH1817, Bounds1817, {opacity: 1}).addTo(maplayer);
+
+
+
+function display() {
+    var opacityslider = document.getElementById('opacitySlider');
+    var Opacity = opacityslider.value/100
+    EWscaleslider = document.getElementById('EWscaleSlider');
+    EWScale = EWscaleslider.value/100
+    // NSscaleslider = document.getElementById('NSscaleSlider');
+    // NSScale = NSscaleslider.value/100
+    
+    maplayer.clearLayers();
+    NEcornerLat = SWcornerLat + (imageHeight * EWScale * NSscaling)
+    NEcornerLong = SWcornerLong + (imageWidth * EWScale * EWscaling)
+    imageBounds = [[SWcornerLat, SWcornerLong], [NEcornerLat, NEcornerLong]];
+    L.imageOverlay(imageUrl, imageBounds, {opacity: Opacity}).addTo(maplayer);
+}
+
+var layerClick = L.layerGroup().addTo(mymap);
+var popup = L.popup();
+var upordown = 0
+var image
+var correctedLat
+var correctedLong
+var EWputdownscale = 10
+var NSputdownscale = 10
+
+mymap.on('mousemove', onMouseMove);
+mymap.on('click', Pickup);
+//mymap.on('contextmenu', rightClickSpotonMap);
+
+
+function Pickup(e) {
+    if (upordown/2 != Math.floor(upordown/2)) { //Put Down
+//        console.log("Put it down!")
+        popup.setLatLng(e.latlng)
+        correctedLat = e.latlng['lat']
+        correctedLong = e.latlng['lng']
+        SWcornerLat = correctedLat + SWchangelat
+        SWcornerLong = correctedLong + SWchangeLong
+        NEcornerLat = correctedLat + NEchangelat
+        NEcornerLong = correctedLong + NEchangeLong
+        console.log("the corrected location is " + correctedLat + "," + correctedLong);
+        console.log("the SW corner is now " + SWcornerLat + "," + SWcornerLong)
+        console.log("the difference is " + SWchangelat + "," + SWchangeLong)
+        upordown = upordown + 1
+        EWputdownscale = EWScale
+        NSputdownscale = NSScale
+        display();
+    }
+    else { //Pick up
+        console.log("Pick it up!")
+        popup.setLatLng(e.latlng)
+        erroneousLat = e.latlng['lat'] 
+        erroneousLong = e.latlng['lng']
+        SWchangelat = SWcornerLat - erroneousLat
+        SWchangeLong = SWcornerLong - erroneousLong
+        NEchangelat = NEcornerLat - erroneousLat
+        NEchangeLong = NEcornerLong - erroneousLong
+        upordown = upordown + 1
+    }
+}
+
+function onMouseMove(e) {
+        clickLat = e.latlng['lat'] 
+        clickLong = e.latlng['lng']
+        if (upordown/2 != Math.floor(upordown/2)) {
+        NEcornerLat = NEchangelat + clickLat
+        NEcornerLong = NEchangeLong + clickLong
+        SWcornerLat = SWchangelat + clickLat
+        SWcornerLong = SWchangeLong + clickLong
+        display()
+    }
+}
+
+function corners() {
+    console.log("scale slider is = " + EWScale)
+    console.log("var SWcornerLat = " + SWcornerLat)
+    console.log("var SWcornerLong = " + SWcornerLong)
+    console.log("var NEcornerLat = " + NEcornerLat)
+    console.log("var NEcornerLong = " + NEcornerLong)
+}
+
+function handleFileSelect (evt) {
+    imageUrl = evt.files[0].name
+    imageUrl = "./" + imageUrl
+    image = document.getElementById('theMap') 
+    image.src = imageUrl
+    console.log("New image!")
+    console.log(image)
+    imageWidth = image.naturalWidth;
+    imageHeight = image.naturalHeight;
+    console.log("width & height = " + imageWidth + " " + imageHeight)
+    if (imageUrl == "./Obnoxious to the Crown recolored.jpg") {
+        console.log("./Obnoxious to the Crown recolored.jpg")
+        EWScale = 5.5
+        var SWcornerLat = 35.95140846364692
+        var SWcornerLong = -79.60837541352926
+    }
+    display()
+}
+
+function switchDimensions() {
+    var newHeight = imageWidth
+    var newWidth = imageHeight
+    imageWidth = newWidth
+    imageHeight = newHeight
+    display()
+}
+
+function scaleChange(){
+    EWscaleslider = document.getElementById('EWscaleSlider');
+    EWScale = EWscaleslider.value/100
+    // NSscaleslider = document.getElementById('NSscaleSlider');
+    // NSScale = NSscaleslider.value/100
+    var EWscalechangeratio = EWScale/EWputdownscale
+//    var NSscalechangeratio = NSScale/NSputdownscale
+    console.log("changing scale by a factor of " + EWscalechangeratio)
+    console.log (correctedLat + "," + correctedLong + " is the corrected Point - where you set it down.")
+    SWcornerLat = correctedLat + (SWchangelat * EWscalechangeratio)
+    SWcornerLong = correctedLong + (SWchangeLong * EWscalechangeratio)
+    console.log (SWcornerLat + "," + SWcornerLong + " is the adjusted SW Corner.")
+    console.log(EWScale)
+    display()
+}
+
+
+function getExif() {
+//    EXIF.getData(imageUrl, function() {
+        var make = EXIF.getTag(imageUrl, "Make");
+        var model = EXIF.getTag(imageUrl, "Model");
+        console.log(make);        
+    };
+
+//     EXIF.getData(imageUrl, function() {
+//         var allMetaData = EXIF.getAllTags(this);
+//         allMetaDataSpan = document.getElementById("allMetaDataSpan");
+//         allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
+//     });
+// }
+
+
+</script>
+</html>
