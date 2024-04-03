@@ -1,0 +1,209 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep River Map</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+     <script src="DeepRiverHydro.js"></script>
+<style>
+    #myfirstmap { height: 550px; width: 100pct}
+</style>
+
+<body>
+    <h2>Markers represent dam locations. Click on a marker and see what happens when you remove that dam.</h2>
+    <!-- <input type="file" id="csv-file" names="files" onchange="handleFileSelect(this)"/>
+    <button onclick='updateHydro(" + i + ")'>Show the model</button> -->
+    <h3>The longest free flowing stretch of each stream (in kilometers) is:</h3>
+    <table id="mytable">
+        <tr>
+            <th>Deep River</th>
+            <th>Rocky River</th>
+            <th>Bear Creek</th>
+            <th>Fork Creek</th>
+        </tr>
+    </table>    <div id="myfirstmap"></div>
+
+<script>
+    const papaConfig = {header: true, complete: function(result){hydro = result.data}}
+    var mymap = L.map('myfirstmap').setView([35.708761, -79.447618], 10);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mymap);
+    var layerGroup = L.layerGroup().addTo(mymap);
+    var greenLayer = L.layerGroup().addTo(mymap);
+    var theTable = document.getElementById('mytable')
+    updateHydro()
+
+    function updateHydro(){
+        greenLayer.clearLayers();
+        for (var i = 0; i < 1140; i = i + 1){
+            // var marker = L.circle([hydro[i].lat,hydro[i].long], {color: 'red', fillColor: 'red', fillOpacity: 0.5, radius: 10}).addTo(greenLayer)
+            // .bindTooltip(""+ hydro[i].order)
+            if (hydro[i].stream == hydro[i+1].stream) {
+                console.log("status of segment " + i + " is " + hydro[i].status)
+                if (hydro[i].status=='dam') {
+                    var blurb = "<button onclick='removeDam(" + i + ")'>Remove this dam?</button>"
+                    var marker = L.marker([hydro[i].lat,hydro[i].long]).addTo(greenLayer)
+                    .bindPopup(blurb)
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                }
+
+                if (hydro[i].status=='pond') {
+                    console.log("Found a  pond.")
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'red'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+
+                if (hydro[i].status=='removed dam') {
+                    var blurb = "<button onclick='replaceDam(" + i + ")'>Put this dam back?</button>"
+                    var marker = L.marker([hydro[i].lat,hydro[i].long]).addTo(greenLayer)
+                    .bindPopup(blurb)
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                }
+
+                if (hydro[i].status=='former pond'){
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+
+                if (hydro[i].status=='free'){
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+            }
+        }
+        updateTable()
+    }
+
+    function removeDam(a) {
+        console.log("Removing dam at position " + a)
+        hydro[a].status ='removed dam'
+        for (var i = a-1; i > 0; i = i -1) {
+            if (hydro[i].status != 'pond') {i = 0}
+            if (hydro[i].status == 'pond') {hydro[i].status = 'former pond'}
+        }
+        updateHydro()
+    }
+
+    function replaceDam(a) {
+        hydro[a].status ='dam'
+        for (var i = a-1; i > 0; i = i -1) {
+            if (hydro[i].status != 'former pond') {i = 0}
+            if (hydro[i].status == 'former pond') {hydro[i].status = 'pond'}
+        }
+        updateHydro()
+    }
+    
+    function handleFileSelect(evt) {
+        console.log(evt)
+        loaded="yes"
+        var file = evt.files[0]
+        Papa.parse(file, papaConfig)
+    }
+
+    function updateTable(){
+        var stretchlengths = []
+        var lengthofthissegment
+        var lengthofthisstretch = 0
+        for (var i = 0; i < 1140; i = i + 1) {
+            console.log("testing " + hydro[i].stream)
+            if (hydro[i].stream == hydro[i+1].stream) {
+                lengthofthissegment = mymap.distance([hydro[i].lat, hydro[i].long], [hydro[i+1].lat, hydro[i+1].long])
+                if (hydro[i+1].status != 'dam' && hydro[i+1].status != 'pond') {
+                    lengthofthisstretch = lengthofthisstretch +lengthofthissegment
+                }
+                else{
+                    console.log("encountered a dam/pond")
+                    if (lengthofthisstretch != 0) {
+                        stretchlengths.push(lengthofthisstretch)
+                        stretchlengths.push(hydro[i].stream)
+                    }
+                    lengthofthisstretch = 0
+                }
+            }
+            else{
+                console.log("end of " + hydro[i].stream)
+                    if (lengthofthisstretch != 0) {
+                        stretchlengths.push(lengthofthisstretch)
+                        stretchlengths.push(hydro[i].stream)
+                    }
+                    lengthofthisstretch = 0
+            }
+        }
+        console.log(stretchlengths)
+        var longestStretch = 0
+        var streamName
+        try {document.getElementById('mytable').deleteRow(1);}
+        catch {}
+        
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Deep River") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var DeepLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Rocky River") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var RockyLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Fork Creek") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var ForkLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Bear Creek") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var BearLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 =document.createElement('td');
+        var myNewCell2 =document.createElement('td');
+        var myNewCell3 =document.createElement('td');
+        var myNewCell4 =document.createElement('td');
+        myNewCell1.innerText = DeepLength
+        myNewCell2.innerText = RockyLength
+        myNewCell3.innerText = BearLength
+        myNewCell4.innerText = ForkLength
+        myNewRow.append(myNewCell1)
+        myNewRow.append(myNewCell2)
+        myNewRow.append(myNewCell3)
+        myNewRow.append(myNewCell4)
+        theTable.append(myNewRow);
+    }
+</script>
+</html>
