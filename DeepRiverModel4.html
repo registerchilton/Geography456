@@ -53,7 +53,7 @@
             if (hydro[i].stream == hydro[i+1].stream) {
                 console.log("status of segment " + i + " is " + hydro[i].status)
                 if (hydro[i].status=='dam') {
-                    var blurb = "<button onclick='removeDam(" + i + ")'>Remove this dam?</button>"
+                    var blurb =  hydro[i].name + "<button onclick='removeDam(" + i + ")'>Remove this dam?</button>"
                     var marker = L.marker([hydro[i].lat,hydro[i].long]).addTo(greenLayer)
                     .bindPopup(blurb)
                     var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
