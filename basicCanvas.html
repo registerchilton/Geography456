@@ -38,16 +38,16 @@
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
         myImageData = ctx.getImageData(100, 100, 1, 1);
-        for (var x = 0; x < 100; x = x + 1) {
-          for (var y = 0; y <100; y = y + 1) {
+        for (var x = 0; x < imageWidth; x = x + 1) {
+          for (var y = 0; y < imageHeight; y = y + 1) {
             myImageData = ctx.getImageData(x, y, 1, 1);
-          if (myImageData[1] < 150) {
+          if (myImageData.data[1] < 150) {
                 console.log("value at " + x + ","+ y + "red = " + myImageData.data[0])
                 console.log("value at " + x + ","+ y + "blue = " + myImageData.data[1])
                 console.log("value at " + x + ","+ y + "green = " + myImageData.data[2])
                 console.log("value at " + x + ","+ y + "alpha = " + myImageData.data[3])
             }
-            else{console.log("Not " + x + "," + y)}
+            //else{console.log("Not " + x + "," + y)}
           }
         }
       }    
