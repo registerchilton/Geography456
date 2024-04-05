@@ -39,19 +39,35 @@
     function getPixel(){
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
-        myImageData = ctx.getImageData(100, 100, 1, 1);
-        for (var x = 0; x < imageWidth; x = x + 1) {
-          for (var y = 0; y < imageHeight; y = y + 1) {
-            myImageData = ctx.getImageData(x, y, 1, 1);
-          if (myImageData.data[1] < 150) {
-                console.log("value at " + x + ","+ y + "red = " + myImageData.data[0])
-                console.log("value at " + x + ","+ y + "blue = " + myImageData.data[1])
-                console.log("value at " + x + ","+ y + "green = " + myImageData.data[2])
-                console.log("value at " + x + ","+ y + "alpha = " + myImageData.data[3])
+        var x = 150
+        var y = 150
+        myImageData = ctx.getImageData(x, y, 1, 1);
+        if (myImageData.data[0] > 0) {
+            var neighbor1 = ctx.getImageData(x-1, y-1, 1, 1);
+            var neighbor2 = ctx.getImageData(x, y-1, 1, 1);
+            var neighbor3 = ctx.getImageData(x+1, y-1, 1, 1);
+            var neighbor4 = ctx.getImageData(x-1, y, 1, 1);
+            var neighbor5 = ctx.getImageData(x+1, y, 1, 1);
+            var neighbor6 = ctx.getImageData(x-1, y+1, 1, 1);
+            var neighbor7 = ctx.getImageData(x, y+1, 1, 1);
+            var neighbor8 = ctx.getImageData(x+1, y+1, 1, 1);
+            var neighborvalues = []
+            neigborvalues.push(neighbor1.data[0])
+            neigborvalues.push(neighbor2.data[0])
+            neigborvalues.push(neighbor3.data[0])
+            neigborvalues.push(neighbor4.data[0])
+            neigborvalues.push(neighbor5.data[0])
+            neigborvalues.push(neighbor6.data[0])
+            neigborvalues.push(neighbor7.data[0])
+            neigborvalues.push(neighbor8.data[0])
+            for (var j = 0; j < 8; j = j + 1){
+                if (neighborvalues[j] < myImageData.data[0]) {
+                    console.log("The point " + x + "," + y + "has a lower neighbor at " + j + " and its value is" + neighborvalues[j])
+                }
             }
-            //else{console.log("Not " + x + "," + y)}
-          }
         }
-      }    
+    }
+
+  
 </script>
-  </html>
+</html>
