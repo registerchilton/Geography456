@@ -115,6 +115,8 @@
 	let x = event.clientX - rect.left;
 	let y = event.clientY - rect.top;
 	console.log("Coordinates " + x + "," + y);
+	const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
 	ctx.beginPath();
     	ctx.moveTo(x, y);
 	getPixel(x,y);
