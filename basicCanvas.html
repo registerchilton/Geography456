@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Canvas experiment</title>
+  </head>
+  <body>
+    <button onclick="dimensions()">Find the natural dimensions</button><br>
+    <button onclick="draw()">Show the map on the canvas</button><br>
+    <button onclick="getPixel()">Console log the pixel 0,0</button><br>
+    <canvas id="canvas" width="160" height="160"></canvas>
+    <br>
+    <img id="theMap" src="file:///C:/Users/mchilton/Documents/GitHub/Geography456/Canvas/PlanoftheVillageattheUniversity.jpg" alt="Plan of the Village">
+  </body>
+
+<script type="application/javascript">
+    var img = document.getElementById("theMap")
+    console.log(img)
+    function draw() {
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);    
+    }
+
+    function dimensions() {
+        var imageWidth = document.getElementById("theMap").naturalWidth;
+        var imageHeight = document.getElementById("theMap").naturalHeight;
+        document.getElementById("canvas").width = imageWidth
+        document.getElementById("canvas").height = imageHeight
+        const canvas = document.getElementById("canvas");
+        if (canvas.getContext) {
+            const ctx = canvas.getContext("2d");
+            img.onload = () => {ctx.drawImage(img, 0, 0);}
+        }
+    }
+
+    function getPixel(){
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        myImageData = ctx.getImageData(0, 0, 1, 1);
+        console.log(myImageData)
+    }
+    </script>
+  </html>
