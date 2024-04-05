@@ -52,14 +52,14 @@
             var neighbor7 = ctx.getImageData(x, y+1, 1, 1);
             var neighbor8 = ctx.getImageData(x+1, y+1, 1, 1);
             var neighborvalues = []
-            neigborvalues.push(neighbor1.data[0])
-            neigborvalues.push(neighbor2.data[0])
-            neigborvalues.push(neighbor3.data[0])
-            neigborvalues.push(neighbor4.data[0])
-            neigborvalues.push(neighbor5.data[0])
-            neigborvalues.push(neighbor6.data[0])
-            neigborvalues.push(neighbor7.data[0])
-            neigborvalues.push(neighbor8.data[0])
+            neighborvalues.push(neighbor1.data[0])
+            neighborvalues.push(neighbor2.data[0])
+            neighborvalues.push(neighbor3.data[0])
+            neighborvalues.push(neighbor4.data[0])
+            neighborvalues.push(neighbor5.data[0])
+            neighborvalues.push(neighbor6.data[0])
+            neighborvalues.push(neighbor7.data[0])
+            neighborvalues.push(neighbor8.data[0])
             for (var j = 0; j < 8; j = j + 1){
                 if (neighborvalues[j] < myImageData.data[0]) {
                     console.log("The point " + x + "," + y + "has a lower neighbor at " + j + " and its value is" + neighborvalues[j])
