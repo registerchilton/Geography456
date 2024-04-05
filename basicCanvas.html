@@ -15,7 +15,9 @@
 
 <script type="application/javascript">
     var img = document.getElementById("theMap")
-    console.log(img)
+    var imageWidth
+    var imageHeight
+
     function draw() {
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
@@ -23,8 +25,8 @@
     }
 
     function dimensions() {
-        var imageWidth = document.getElementById("theMap").naturalWidth;
-        var imageHeight = document.getElementById("theMap").naturalHeight;
+        imageWidth = document.getElementById("theMap").naturalWidth;
+        imageHeight = document.getElementById("theMap").naturalHeight;
         document.getElementById("canvas").width = imageWidth
         document.getElementById("canvas").height = imageHeight
         const canvas = document.getElementById("canvas");
