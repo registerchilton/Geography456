@@ -36,11 +36,9 @@
         }
     }
 
-    function getPixel(){
+    function getPixel(x,y){
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
-        var x = 150
-        var y = 150
         myImageData = ctx.getImageData(x, y, 1, 1);
         if (myImageData.data[0] > 0) {
             var neighbor1 = ctx.getImageData(x-1, y-1, 1, 1);
@@ -70,14 +68,15 @@
     }
 
   function getMousePosition(canvas, event) {
-			let rect = canvas.getBoundingClientRect();
-			let x = event.clientX - rect.left;
-			let y = event.clientY - rect.top;
-			console.log("Coordinate x: " + x,
-				"Coordinate y: " + y);
-	}
+	let rect = canvas.getBoundingClientRect();
+	let x = event.clientX - rect.left;
+	let y = event.clientY - rect.top;
+	console.log("Coordinates " + x + "," + y);
+	getPixel(x,y);
+  }
+
 	let canvasElem = document.getElementById("canvas");
-    canvasElem.addEventListener("mousedown", function (e) {
+canvasElem.addEventListener("mousedown", function (e) {
 		getMousePosition(canvasElem, e);
 	});
   
