@@ -36,9 +36,11 @@
         }
     }
 
-    function getPixel(x,y){
+    function getPixel(){
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        var x = 150
+        var y = 150
         myImageData = ctx.getImageData(x, y, 1, 1);
         if (myImageData.data[0] > 0) {
             var neighbor1 = ctx.getImageData(x-1, y-1, 1, 1);
@@ -50,33 +52,75 @@
             var neighbor7 = ctx.getImageData(x, y+1, 1, 1);
             var neighbor8 = ctx.getImageData(x+1, y+1, 1, 1);
             var neighborvalues = []
-            neighborvalues.push(neighbor1.data[0])
-            neighborvalues.push(neighbor2.data[0])
-            neighborvalues.push(neighbor3.data[0])
-            neighborvalues.push(neighbor4.data[0])
-            neighborvalues.push(neighbor5.data[0])
-            neighborvalues.push(neighbor6.data[0])
-            neighborvalues.push(neighbor7.data[0])
-            neighborvalues.push(neighbor8.data[0])
-            console.log(neighborvalues)
+            neigborvalues.push(neighbor1.data[0])
+            neigborvalues.push(neighbor2.data[0])
+            neigborvalues.push(neighbor3.data[0])
+            neigborvalues.push(neighbor4.data[0])
+            neigborvalues.push(neighbor5.data[0])
+            neigborvalues.push(neighbor6.data[0])
+            neigborvalues.push(neighbor7.data[0])
+            neigborvalues.push(neighbor8.data[0])
+            var lowestNeighborValue = 255
+            var lowestNeighbor
             for (var j = 0; j < 8; j = j + 1){
                 if (neighborvalues[j] < myImageData.data[0]) {
-        		console.log("The point " + x + "," + y + " is " + myImageData.data[0] + " which has a lower neighbor at " + j + " and its value is " + neighborvalues[j])
+                    console.log("The point " + x + "," + y + " is " + myImageData.data[0] + " which has a lower neighbor at " + j + " and its value is " + neighborvalues[j])
+                    if (neighborvalues[j] < lowestNeighborValue){
+                        lowestNeighborValues = neighborvalues
+                        lowestNeighbor = j
+                    }
                 }
             }
+            var newX
+            var newY
+            if (lowestNeighbor == 0) {
+                newX = x - 1
+                newY = y - 1
+            }
+            if (lowestNeighbor == 1) {
+                newX = x
+                newY = y - 1
+            }
+            if (lowestNeighbor == 2) {
+                newX = x + 1
+                newY = y - 1
+            }
+            if (lowestNeighbor == 3) {
+                newX = x - 1
+                newY = y
+            }
+            if (lowestNeighbor == 4) {
+                newX = x + 1
+                newY = y
+            }
+            if (lowestNeighbor == 5) {
+                newX = x - 1
+                newY = y + 1
+            }
+            if (lowestNeighbor == 6) {
+                newX = x
+                newY = y + 1
+            }
+            if (lowestNeighbor == 7) {
+                newX = x + 1
+                newY = y + 1
+            }
+            ctx.lineTo(newX,newY);
+            getPixel(newX,newY)
         }
     }
 
-  function getMousePosition(canvas, event) {
+    function getMousePosition(canvas, event) {
 	let rect = canvas.getBoundingClientRect();
 	let x = event.clientX - rect.left;
 	let y = event.clientY - rect.top;
 	console.log("Coordinates " + x + "," + y);
+	ctx.beginPath();
+    	ctx.moveTo(x, y);
 	getPixel(x,y);
   }
-
 	let canvasElem = document.getElementById("canvas");
-canvasElem.addEventListener("mousedown", function (e) {
+	canvasElem.addEventListener("mousedown", function (e) {
 		getMousePosition(canvasElem, e);
 	});
   
