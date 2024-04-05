@@ -60,6 +60,7 @@
             neighborvalues.push(neighbor6.data[0])
             neighborvalues.push(neighbor7.data[0])
             neighborvalues.push(neighbor8.data[0])
+            console.log(neighborvalues)
             for (var j = 0; j < 8; j = j + 1){
                 if (neighborvalues[j] < myImageData.data[0]) {
                     console.log("The point " + x + "," + y + "has a lower neighbor at " + j + " and its value is" + neighborvalues[j])
