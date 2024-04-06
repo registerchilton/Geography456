@@ -44,6 +44,7 @@
 	const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d", {willReadFrequently: true});
         myImageData = ctx.getImageData(x, y, 1, 1);
+	console.log("lookin for neighbors below " + myImageData.data[0])
         if (myImageData.data[0] > 0) {
             var neighbor1 = ctx.getImageData(x-1, y-1, 1, 1);
             var neighbor2 = ctx.getImageData(x, y-1, 1, 1);
