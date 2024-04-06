@@ -54,6 +54,12 @@
                     newImageData.data[2] = 255
                     newImageData.data[3] = 255
                 }
+                if (myImageData.data[2] >= 150) {
+		    newImageData.data[0] = 0
+                    newImageData.data[1] = 0
+                    newImageData.data[2] = 255
+                    newImageData.data[3] = 255
+                }
             }
         }
 	ctx.putImageData(newImageData, 0, 0);
