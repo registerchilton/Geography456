@@ -40,7 +40,8 @@
     }
 
     function getPixel(x,y){
-        const canvas = document.getElementById("canvas");
+        console.log("testing " + x + "," + y)
+	const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d", {willReadFrequently: true});
         myImageData = ctx.getImageData(x, y, 1, 1);
         if (myImageData.data[0] > 0) {
@@ -65,7 +66,7 @@
             lowestNeighbor = 9
             for (var j = 0; j < 8; j = j + 1){
                 if (neighborvalues[j] < myImageData.data[0]) {
-                    console.log("The point " + x + "," + y + " is " + myImageData.data[0] + " which has a lower neighbor at " + j + " and its value is " + neighborvalues[j])
+                    //console.log("The point " + x + "," + y + " is " + myImageData.data[0] + " which has a lower neighbor at " + j + " and its value is " + neighborvalues[j])
                     if (neighborvalues[j] < lowestNeighborValue){
                         lowestNeighborValues = neighborvalues
                         lowestNeighbor = j
@@ -95,7 +96,7 @@
                 newY = y
             }
             if (lowestNeighbor == 5) {
-                newX = x - 1
+	                newX = x - 1
                 newY = y + 1
             }
             if (lowestNeighbor == 6) {
@@ -108,7 +109,10 @@
             }
             ctx.lineTo(newX,newY);
         }
-        if (lowestNeighbor != 9) {getPixel(newX,newY)}
+	if (lowestNeighbor != 9) {
+		console.log("The point " + x + "," + y + " has its lowest neighbor at " + j + " which is " newX + "," + newY)
+		getPixel(newX,newY)
+	}
         if (lowestNeighbor == 9) {
             document.getElementById("instructions").innerText = "There is no adjacent pixel with lower elevation. Try clicking another spot on the DEM."
         }
