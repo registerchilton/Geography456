@@ -2,26 +2,28 @@
 <html lang="en-US">
   <head>
     <meta charset="UTF-8" />
-    <title>Canvas experiment</title>
+    <title>Canvas Digital Elevation Model Handler</title>
   </head>
   <body>
-    <button onclick="dimensions()">Find the natural dimensions</button><br>
-    <button onclick="draw()">Show the map on the canvas</button><br>
-    <button onclick="getPixel()">Console log the pixel 0,0</button><br>
-    <canvas id="canvas" width="160" height="160"></canvas>
+    <h3 id="instructions">Click the Button below to load the Digital Elevation Model.</h3>
     <br>
-    <img id="theMap" src="https://registerchilton.github.io/Geography456/UpperCapeFearDEM.jpg" alt="Plan of the Village">
+    <button onclick="dimensions()">Load the DEM</button><br>
+    <canvas id="canvas" width="1600" height="1600"></canvas>
+    <br>
+    <img id="theMap" src="file:///C:/Users/mchilton/Documents/GitHub/Geography456/Canvas/PlanoftheVillageattheUniversity.jpg" alt="Plan of the Village">
   </body>
 
 <script type="application/javascript">
     var img = document.getElementById("theMap")
     var imageWidth
     var imageHeight
-
+    var lowestNeighbor = 9
+    console.log(img)
     function draw() {
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);    
+        ctx.drawImage(img, 0, 0);
+        document.getElementById("instructions").innerText = "Click on the Digital Elevation Model to search for down hill paths."
     }
 
     function dimensions() {
@@ -34,13 +36,12 @@
             const ctx = canvas.getContext("2d");
             img.onload = () => {ctx.drawImage(img, 0, 0);}
         }
+        draw();
     }
 
     function getPixel(){
         const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d", { willReadFrequently: true });
-        var x = 150
-        var y = 150
+        const ctx = canvas.getContext("2d", {willReadFrequently: true});
         myImageData = ctx.getImageData(x, y, 1, 1);
         if (myImageData.data[0] > 0) {
             var neighbor1 = ctx.getImageData(x-1, y-1, 1, 1);
@@ -61,7 +62,7 @@
             neighborvalues.push(neighbor7.data[0])
             neighborvalues.push(neighbor8.data[0])
             var lowestNeighborValue = 255
-            var lowestNeighbor
+            lowestNeighbor = 9
             for (var j = 0; j < 8; j = j + 1){
                 if (neighborvalues[j] < myImageData.data[0]) {
                     console.log("The point " + x + "," + y + " is " + myImageData.data[0] + " which has a lower neighbor at " + j + " and its value is " + neighborvalues[j])
@@ -106,7 +107,10 @@
                 newY = y + 1
             }
             ctx.lineTo(newX,newY);
-            getPixel(newX,newY)
+        }
+        if (lowestNeighbor != 9) {getPixel(newX,newY)}
+        if (lowestNeighbor == 9) {
+            document.getElementById("instructions").innerText = "There is no adjacent pixel with lower elevation. Try clicking another spot on the DEM."
         }
     }
 
@@ -115,15 +119,17 @@
 	let x = event.clientX - rect.left;
 	let y = event.clientY - rect.top;
 	console.log("Coordinates " + x + "," + y);
-        const ctx = canvas.getContext("2d");
-	ctx.beginPath();
-    	ctx.moveTo(x, y);
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(x, y);
 	getPixel(x,y);
   }
+
 	let canvasElem = document.getElementById("canvas");
-	canvasElem.addEventListener("mousedown", function (e) {
+    canvasElem.addEventListener("mousedown", function (e) {
 		getMousePosition(canvasElem, e);
 	});
-  
+
 </script>
 </html>
