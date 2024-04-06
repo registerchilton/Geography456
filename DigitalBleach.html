@@ -46,7 +46,6 @@
     const newImageData = ctx.createImageData(imageWidth, imageHeight);    
             for (var i = 0; i < imageHeight; i = i + 1) {
             for (var j = 0; j < imageWidth; j = j + 1) {
-                console.log("testing " + i + "," + j)
                 myImageData = ctx.getImageData(i, j, 1, 1);
                 if (myImageData.data[2] < 150) {
 		    newImageData.data[0] = 255
