@@ -43,19 +43,20 @@
     function bleachIt(x,y){
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d", {willReadFrequently: true});
-    
+    const newImageData = ctx.createImageData(imageWidth, imageHeight);    
             for (var i = 0; i < imageHeight; i = i + 1) {
             for (var j = 0; j < imageWidth; j = j + 1) {
                 console.log("testing " + i + "," + j)
                 myImageData = ctx.getImageData(i, j, 1, 1);
                 if (myImageData.data[2] < 150) {
-                    myImageData.data[0] = 0
-                    myImageData.data[1] = 0
-                    myImageData.data[2] = 0
+		    newImageData.data[0] = 255
+                    newImageData.data[1] = 255
+                    newImageData.data[2] = 255
+                    newImageData.data[3] = 255
                 }
             }
         }
-	ctx.drawImage(img, 0, 0);
+	ctx.putImageData(newImageData, 0, 0);
     }
 
     function getMousePosition(canvas, event) {
