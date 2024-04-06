@@ -39,7 +39,7 @@
         draw();
     }
 
-    function getPixel(){
+    function getPixel(x,y){
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d", {willReadFrequently: true});
         myImageData = ctx.getImageData(x, y, 1, 1);
