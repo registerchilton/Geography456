@@ -10,7 +10,7 @@
     <button onclick="dimensions()">Load the DEM</button><br>
     <canvas id="canvas" width="1600" height="1600"></canvas>
     <br>
-    <img id="theMap" src="file:///C:/Users/mchilton/Documents/GitHub/Geography456/Canvas/PlanoftheVillageattheUniversity.jpg" alt="Plan of the Village">
+    <img id="theMap" src="file:///C:/Users/mchilton/Documents/GitHub/Geography456/Canvas/UpperCapeFearDEM.jpg" alt="Plan of the Village">
   </body>
 
 <script type="application/javascript">
@@ -119,7 +119,6 @@
 	let x = event.clientX - rect.left;
 	let y = event.clientY - rect.top;
 	console.log("Coordinates " + x + "," + y);
-    const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     ctx.beginPath();
     ctx.moveTo(x, y);
