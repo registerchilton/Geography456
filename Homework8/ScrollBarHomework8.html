@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider Change</title>
+</head>
+<style>
+    body{
+        background-color: black;
+        font-size:20px;
+        color:white
+    }
+    div#image_container{
+        top: 20%;
+        
+    }
+    img{
+        height:80%;
+        position: absolute;
+    }
+
+    #before{
+        z-index: 1;
+        opacity: 1;
+    }
+    #during{
+        z-index: 1;
+        opacity: 0;
+    }
+    #after{
+        z-index: 3;
+        opacity: 0;
+    }
+
+    #beforemsg{
+        z-index: 1;
+        opacity: 1;
+    }
+    #duringmsg{
+        z-index: 1;
+        opacity: 0;
+    }
+    #aftermsg{
+        z-index: 3;
+        opacity: 0;
+    }
+
+datalist {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 400px;
+}
+
+option {
+  padding: 0;
+}
+
+input {
+  width: 400px;
+  margin: 0;
+}
+
+</style>
+
+<body>
+<h3 id="beforemsg">In 2006, the controversial Briar Chapel development was approved. By 2008 site clearing had begun.</h3>
+<h3 id="duringmsg">By 2014 much of the Briar Chapel site had been cleared, and many homes were built.</h3>
+<h3 id="aftermsg">By 2020 Briar Chapel had largely been built out; additional development was approved nearby.</h3>
+
+<input type="range" id="year" name="year" list="tickmarks" value="0" oninput="myFunction(this.value)"/>
+<datalist id="tickmarks">
+  <option value="0" label="2008"></option>
+  <option value="50" label="2014"></option>
+  <option value="100" label="2020"></option>
+</datalist>
+
+
+<div id="image_container">
+        <img id="before" src="./2008BriarChapel.png" alt="2008">
+        <img  id="during" src="./2014BriarChapel.png" alt="2014">
+        <img id="after" src="./2020BriarChapel.png" alt="2020">
+    </div>
+<script>
+    function myFunction(e){
+        console.log(e)
+        if (e <50) {
+            document.getElementById("during").style.opacity = (e/50)
+            document.getElementById("duringmsg").style.opacity = (e/50)
+        }
+        sliderValueOver50 = (e-50)/50
+        if (sliderValueOver50 > 0) {
+            document.getElementById("after").style.opacity = (e-50)/50
+            document.getElementById("aftermsg").style.opacity = (e-50)/50
+            
+        }
+        else {document.getElementById("after").style.opacity = 0
+        }
+    }
+</script>
+</body>
+</html>

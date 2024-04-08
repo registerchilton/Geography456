@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="mybutton" onclick="imageChange()">See 2014</button><br>
+    <h3 id="comment">In 2006, the controversial Briar Chapel development was approved. By 2008, site clearing had begun.</h3><br>
+    <div>
+        <img id="image" src="./2008BriarChapel.png" alt="2008">
+    </div>
+</body>
+
+<script>
+var toggle = 1
+function imageChange(){
+    toggle = toggle + 1
+    if (toggle == 4) {toggle = 1}
+    if (toggle == 1) {
+        document.getElementById('image').src="./2008BriarChapel.png"
+        document.getElementById('comment').innerText="In 2006, the controversial Briar Chapel development was approved. By 2008, site clearing had begun."
+        document.getElementById('mybutton').innerText="See 2014"
+    }
+    if (toggle == 2) {
+        document.getElementById('image').src="./2014BriarChapel.png"
+        document.getElementById('comment').innerText="By 2014 much of the Briar Chapel site had been cleared, and many homes were built."
+        document.getElementById('mybutton').innerText="See 2020"
+    }
+    if (toggle == 3) {
+        document.getElementById('image').src="./2020BriarChapel.png"
+        document.getElementById('comment').innerText="By 2020 Briar Chapel had largely been built out; additional development was approved nearby."
+        document.getElementById('mybutton').innerText="Start over"
+    }
+}
+
+</script>
+
+</html>
