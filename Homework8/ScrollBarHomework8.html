@@ -87,15 +87,29 @@ input {
 <script>
     function myFunction(e){
         console.log(e)
+        if (e < 40) {
+            document.getElementById("beforemsg").style.opacity = 1-(e/40)
+            document.getElementById("duringmsg").style.opacity = (e/40)
+            document.getElementById("aftermsg").style.opacity = 0
+        }
+
+        if (e >= 40 && e <= 60) {
+            document.getElementById("beforemsg").style.opacity = 0
+            document.getElementById("duringmsg").style.opacity = 1
+            document.getElementById("aftermsg").style.opacity = 0
+        }
+        if (e >= 60) {
+            document.getElementById("beforemsg").style.opacity = 0
+            document.getElementById("duringmsg").style.opacity = 1 - ((e-40)/60)
+            document.getElementById("aftermsg").style.opacity = (e-40)/60
+        }
+
         if (e <50) {
             document.getElementById("during").style.opacity = (e/50)
-            document.getElementById("duringmsg").style.opacity = (e/50)
         }
         sliderValueOver50 = (e-50)/50
         if (sliderValueOver50 > 0) {
             document.getElementById("after").style.opacity = (e-50)/50
-            document.getElementById("aftermsg").style.opacity = (e-50)/50
-            
         }
         else {document.getElementById("after").style.opacity = 0
         }
