@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse</title>
+</head>
+
+<style>
+    body{
+        background-color: black;
+        font-size:20px;
+        color:white
+    }
+    div#image_container{
+        top: 20%;
+        
+    }
+    img{
+        height:80%;
+        position: absolute;
+    }
+
+    #before{
+        z-index: 1;
+        opacity: 1;
+    }
+    #during{
+        z-index: 1;
+        opacity: 0;
+    }
+    #after{
+        z-index: 3;
+        opacity: 0;
+    }
+
+    #beforemsg{
+        z-index: 1;
+        opacity: 1;
+    }
+    #duringmsg{
+        z-index: 1;
+        opacity: 0;
+    }
+    #aftermsg{
+        z-index: 3;
+        opacity: 0;
+    }
+
+datalist {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 400px;
+}
+
+option {
+  padding: 0;
+}
+
+input {
+  width: 400px;
+  margin: 0;
+}
+
+</style>
+
+
+<body>
+    <h3 id="beforemsg">By 2008, clearing for the controversial Briar Chapel development had begun.</h3>
+
+    <div id="image_container">
+        <img id="before" src="./2008BriarChapel.png" alt="2008">
+        <img  id="during" src="./2014BriarChapel.png" alt="2014">
+        <img id="after" src="./2020BriarChapel.png" alt="2020">
+    </div>
+        
+    
+</body>
+<script>
+
+document.onmousemove = myFunction
+
+    function myFunction(event) {
+        var h = window.innerHeight
+        e = Math.floor((event.pageY)*100/h)
+        console.log("vertical position is " + e + "% down the page.")
+        if (e < 25) {
+            document.getElementById("beforemsg").innerText= "By 2008, clearing for the controversial Briar Chapel development had begun."
+            document.getElementById("beforemsg").style.opacity = 1-(e/25)
+            document.getElementById("before").style.opacity = 1
+            document.getElementById("during").style.opacity = 0
+            document.getElementById("after").style.opacity = 0
+        }
+        if (e >= 25 && e < 50) {
+            document.getElementById("beforemsg").innerText= "By 2014, much of the Briar Chapel site had been cleared, and many homes were built."
+            document.getElementById("beforemsg").style.opacity = (e-25)/25
+            document.getElementById("before").style.opacity = 1-((e-25)/25)
+            document.getElementById("during").style.opacity = (e-25)/25
+            document.getElementById("after").style.opacity = 0
+        }
+        if (e >= 50 && e < 75) {
+            document.getElementById("beforemsg").innerText= "By 2020, Briar Chapel had largely been built out; additional development was approved nearby."
+            document.getElementById("beforemsg").style.opacity = ((e-50)/25)
+            document.getElementById("before").style.opacity = 0
+            document.getElementById("during").style.opacity = 1-((e-50)/25)
+            document.getElementById("after").style.opacity = ((e-50)/25)
+        }
+        if (e >= 75) {
+            document.getElementById("beforemsg").innerText= "By 2020, Briar Chapel had largely been built out; additional development was approved nearby."
+            document.getElementById("beforemsg").style.opacity = 1
+            document.getElementById("before").style.opacity = 0
+            document.getElementById("during").style.opacity = 0
+            document.getElementById("after").style.opacity = 1
+        }
+    }
+
+</script>
+</html>
