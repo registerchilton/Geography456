@@ -1,0 +1,616 @@
+number,page,household,person,coords,age,gender,status,Revalue,occupation
+,,,Vicky Mitchell,"35.91495670976275,-79.05541241168977",adult,,FPOC,,
+,,,Gus Mitchell,"35.915039256753104,-79.05523002147676",adult,,FPOC,,
+,,,Eliza Mitchell,"35.914800304702666,-79.05530512332918",adult,,FPOC,,
+,,,William Mitchell,"35.91488719644087,-79.05512273311616",child,,FPOC,,
+,,,George Mitchell,"35.91465693312593,-79.05520856380464",child,,FPOC,,
+,,,James Mitchell,"35.91474382502162,-79.05502617359163",child,,FPOC,,
+,,,Jehu Bowles,"35.91621445587872,-79.05291259288788",adult,,FPOC,,
+,,,Jane Mitchell,"35.916075431384364,-79.05281603336336",adult,,FPOC,,
+,,,Enoch Manuel,"35.91617318300747,-79.05149370431901",adult,,FPOC,,
+,,,Young Evans,"35.916094981718665,-79.05166268348694",adult,,FPOC,,
+,,,Jane Compton,"35.91771112597652,-79.05030012130737",adult,,FPOC,,
+,,,Wake Compton,"35.91778063681684,-79.05011773109437",child,,FPOC,,
+,,,Polly Mitchell,"35.91596464606551,-79.04982268810274",adult,,FPOC,,
+,,,Josephine Mitchell,"35.9160406752226,-79.04964834451677",child,,FPOC,,
+,,,Cicero Mitchell,"35.91582127659899,-79.04973149299623",child,,FPOC,,
+,,,Mary-Emma Mitchell,"35.915895133629355,-79.04954373836519",child,,FPOC,,
+,,,Patsy Huckabee,"35.915786520325575,-79.05023574829103",adult,,FPOC,,
+,,,Mary-Ann Huckabee,"35.91561273872933,-79.05021965503694",child,,FPOC,,
+,,,William Huckabee,"35.91569962957517,-79.0500319004059",child,,FPOC,,
+,,,Lily Evans,"35.91559970509422,-79.05075073242189",adult,,FPOC,,
+,,,Jackson Evans,"35.91567573460208,-79.05056297779085",child,,FPOC,,
+,,,Salina Evans,"35.91544330130542,-79.05065417289734",child,,FPOC,,
+,,,infant Evans,"35.91552150323849,-79.05045837163927",child,,FPOC,,
+,,,William Morgan,"35.915419406254905,-79.05113697052003",adult,,FPOC,,
+,,,Betsy Morgan,"35.915334687381275,-79.05096262693407",child,,FPOC,,
+,,,Johnston Morgan,"35.91526082982767,-79.05113160610199",child,,FPOC,,
+,,,Cornelius J Burnett,"35.91525648526354,-79.05154198408128",adult,,FPOC,,
+,,,Caroline Burnett,"35.91508270250293,-79.05153930187227",child,,FPOC,,
+,,,Ellen Burnett,"35.91516524936182,-79.05135691165925",child,,FPOC,,
+,,,David Moore,"35.91492195310944,-79.05203819274902",adult,,FPOC,,
+,,,Adeline Mitchell,"35.915173938499834,-79.05318081378938",adult,,FPOC,,
+,,,Mary Mitchell,"35.91503056760028,-79.0530788898468",child,,FPOC,,
+,,,Samuel [Morphis],"35.9146743115127,-79.04756963253023",adult,,FPOC,,
+,,,Thomas [Kirby],"35.914113856615465,-79.04723167419435",adult,,FPOC,,
+,,,David [Barham],"35.91251501772472,-79.05128717422487",adult,,enslaved,,
+,,,Robert Lewis [Battle],"35.91445708140362,-79.0461963415146",,,enslaved,,
+,,,Washington [Battle],"35.91453093970763,-79.04600322246553",,,enslaved,,
+,,,Lizzie [Battle],"35.91500232784701,-79.0461963415146",,,enslaved,,
+,,,Cora [Battle],"35.914613487142304,-79.04581010341646",,,enslaved,,
+,,,Henry [Battle],"35.914854612050235,-79.04655307531357",,,enslaved,,
+,,,Ben [Battle],"35.91492195310944,-79.04637873172761",,,enslaved,,
+,,,Judy [Battle],"35.9149306422742,-79.04592275619508",,,enslaved,,
+,,,Billy [Battle],"35.91507184106769,-79.04600858688356",,,enslaved,,
+,,,John [Battle],"35.91470689597761,-79.04646992683412",,,enslaved,,
+,,,Chaney [Battle],"35.914782926343555,-79.04628217220306",,,enslaved,,
+,,,Jane [Battle],"35.91486547351526,-79.04609441757202",adult,,enslaved,,
+,,,Sarah [Battle],"35.91477858175319,-79.04581546783449",child,,enslaved,,
+,,,Patsy-Alice [Battle],"35.91455700732788,-79.04637336730958",child,,enslaved,,
+,,,Ann-Eliza [Battle],"35.91463086553861,-79.0461963415146",child,,enslaved,,
+,,,Margaret [Battle],"35.91470472368039,-79.04600858688356",child,,enslaved,,
+,,,Phyllis [Fetter],"35.91603850296199,-79.04668450355531",adult,,enslaved,,
+,,,Disey [Fetter],"35.91611670430665,-79.04649674892427",adult,,enslaved,,
+,,,Elizabeth [Fetter],"35.916181872034784,-79.04628753662111",child,,enslaved,,
+,,,unknown [Fetter],"35.91619056106115,-79.04678106307983",,,enslaved,,
+,,,unknown [Fetter],"35.916281795780336,-79.04658794403078",,,enslaved,,
+,,,unknown [Fetter],"35.9163382743633,-79.04637336730958",,,enslaved,,
+,,,Lewis [Phillips],"35.91728971519927,-79.04769301414491",adult,,enslaved,,
+,,,Israel [Phillips],"35.917354881961046,-79.04750525951387",adult,,enslaved,,
+,,,Seimore [Phillips],"35.9174374264489,-79.04731750488283",adult,,enslaved,,
+,,,Mahala [Phillips],"35.91713765921297,-79.04758036136629",adult,,enslaved,,
+,,,unknown [Phillips],"35.917211515014266,-79.04739797115327",child,,enslaved,,
+,,,unknown [Phillips],"35.91728971519927,-79.04721558094026",child,,enslaved,,
+,,,unknown [Phillips],"35.91698994740356,-79.0474784374237",child,,enslaved,,
+,,,unknown [Phillips],"35.91751562641058,-79.04748916625977",child,,enslaved,,
+,,,unknown [Phillips],"35.91647512614709,-79.04884904623033",,,enslaved,,
+,,,unknown [Phillips],"35.91656418829189,-79.04865860939027",,,enslaved,,
+,,,unknown [Mallett],"35.91839319845624,-79.04822945594789",,,enslaved,,
+,,,Anderson [Mickle],"35.917222376155664,-79.04998362064363",,,enslaved,,
+,,,Emma [Mickle],"35.91730057632996,-79.04982268810274",,,enslaved,,
+,,,Peggy [Mickle],"35.917218031699285,-79.04965639114381",,,enslaved,,
+,,,Amy [Mickle],"35.91737443197912,-79.04965639114381",,,enslaved,,
+,,,Silvy [Mickle],"35.917456976446566,-79.0498173236847",,,enslaved,,
+,,,Susan [Mickle],"35.91738094865074,-79.0499782562256",,,enslaved,,
+,,,unknown [Jennings],"35.915543225983946,-79.05342757701875",,,enslaved,,
+,,,unknown [Jennings],"35.91561273872933,-79.05324518680573",,,enslaved,,
+,,,unknown [Kirkland],"35.91627745127228,-79.05241370201112",,,enslaved,,
+,,,unknown [Kirkland],"35.916355652380716,-79.05225142836571",,,enslaved,,
+,,,unknown [Kirkland],"35.916433853411846,-79.05242443084718",,,enslaved,,
+,,,unknown [Utley],"35.91673449221487,-79.05136078288807",,,enslaved,,
+,,,unknown [Utley],"35.91680400391344,-79.0511514839266",,,enslaved,,
+,,,Joe [Atwater],"35.91712549472476,-79.05082430331096",,,enslaved,,
+,,,Jack [Atwater],"35.91720803945199,-79.05061500434951",,,enslaved,,
+,,,Aaron [Atwater],"35.917290584093095,-79.050400338748",,,enslaved,,
+,,,Milly [Atwater],"35.9169560605411,-79.05070623723014",,,enslaved,,
+,,,Anne [Atwater],"35.91703860544514,-79.05050767154876",,,enslaved,,
+,,,John [Atwater],"35.917116805801086,-79.05028763930721",,,enslaved,,
+,,,Stephen [Atwater],"35.91732099525494,-79.05080820339084",,,enslaved,,
+,,,15 others names not known likely enslaved on Atwater's plantation SW of Chapel Hill,"35.917403539778135,-79.05059890442938",,,enslaved,,
+,,,unknown [Wheat],"35.914646071632255,-79.05020356178285",,,enslaved,,
+,,,Emmaline [Swain],"35.91476989257174,-79.04936134815217",,,enslaved,,
+,,,Frances [Swain],"35.91470037908572,-79.04953300952913",,,enslaved,,
+,,,George [Swain],"35.91514787108289,-79.04973149299623",,,enslaved,,
+,,,Hendon [Swain],"35.91484809517048,-79.04917895793916",,,enslaved,,
+,,,Jackson [Swain],"35.91529124176985,-79.04937744140626",,,enslaved,,
+,,,John [Swain],"35.915065324205855,-79.04990851879121",,,enslaved,,
+,,,Jordan [Swain],"35.915000155557884,-79.04964029788972",,,enslaved,,
+,,,Olive [Swain],"35.91507835792902,-79.04900193214418",,,enslaved,,
+,,,Peggy [Swain],"35.91507835792902,-79.04946327209474",,,enslaved,,
+,,,Simon [Swain],"35.91522172874196,-79.04955983161928",,,enslaved,,
+,,,Caroline [Swain],"35.91492629769195,-79.04981195926668",,,enslaved,,
+,,,Catherine [Swain],"35.915004500136064,-79.04917895793916",,,enslaved,,
+,,,Dicey [Swain],"35.915143526512544,-79.04928088188173",,,enslaved,,
+,,,Laura [Swain],"35.91536509929508,-79.04920578002931",,,enslaved,,
+,,,Louisa [Swain],"35.91491760852671,-79.04900729656221",,,enslaved,,
+,,,Sam [Swain],"35.91477858175319,-79.04971003532411",,,enslaved,,
+,,,Sarah [Swain],"35.914861128929424,-79.04953837394716",,,enslaved,,
+,,,Rose [Swain],"35.91521738417568,-79.04910922050477",,,enslaved,,
+,,,Wilson [Swain Caldwell],"35.91493498685622,-79.04936134815217",,,enslaved,,
+,,,42 people most of whom probably lived at Utley's plantation S of Chapel Hill,"35.914392781180226,-79.05182197618612",,,enslaved,,
+,,,42 people most of whom probably lived at Utley's plantation S of Chapel Hill,"35.91447185307657,-79.05161563076429",,,enslaved,,
+,,,42 people most of whom probably lived at Utley's plantation S of Chapel Hill,"35.91422334114333,-79.05171464338537",,,enslaved,,
+,,,42 people most of whom probably lived at Utley's plantation S of Chapel Hill,"35.91431023351528,-79.05149997778388",,,enslaved,,
+,,,unknown [Williams],"35.914628258786045,-79.056122515168",,,enslaved,,
+,,,Lucinda [Lucas],"35.915651839621766,-79.05420005321504",,,enslaved,,
+,,,Margaret [Lucas],"35.915569293270615,-79.05391037464143",,,enslaved,,
+,,,Phyllis [Lucas],"35.91556060417601,-79.05439853668214",,,enslaved,,
+,,,Fred [Lucas],"35.91549630484958,-79.05410718938072",,,enslaved,,
+,,,Sarah [Lucas],"35.91572569681032,-79.054012298584",,,enslaved,,
+,,,Caesar [Moore],"35.91460479794269,-79.05406862497331",,,enslaved,,
+,,,Sue [Moore],"35.91475903109355,-79.05374675989152",,,enslaved,,
+,,,Alfred [Moore],"35.91495236518192,-79.05366361141206",,,enslaved,,
+,,,Betsy [Moore],"35.91432457074418,-79.0543019771576",,,enslaved,,
+,,,Caesar Jr [Moore],"35.914683000704656,-79.05391037464143",,,enslaved,,
+,,,Caroline [Moore],"35.91489588560945,-79.05341684818269",,,enslaved,,
+,,,Nancy [Moore],"35.91482637223414,-79.0535804629326",,,enslaved,,
+,,,Andrew [Moore],"35.914194232174076,-79.05421614646913",,,enslaved,,
+,,,Jane [Moore],"35.914813338469465,-79.05399620532991",,,enslaved,,
+,,,Mary Ann [Moore],"35.9148893687331,-79.05383259058",,,enslaved,,
+,,,Martha [Moore],"35.91459176414151,-79.05447900295259",,,enslaved,,
+,,,unknown [Moore],"35.9150197061579,-79.05351072549821",,,enslaved,,
+,,,unknown [Moore],"35.914526595103425,-79.05423223972322",,,enslaved,,
+,,,unknown [Moore],"35.91473730813276,-79.05415982007982",,,enslaved,,
+,,,unknown [Moore],"35.91445708140362,-79.05439049005508",,,enslaved,,
+,,,unknown [Moore],"35.91466127772299,-79.05431270599367",,,enslaved,,
+,,,Maria [Hutchins],"35.91427026303273,-79.05492424964906",adult,,enslaved,,
+,,,Sam [Hutchins],"35.914413635310225,-79.05501544475555",child,,enslaved,,
+,,,Martha-Ann [Hutchins],"35.91435281073938,-79.05475795269014",child,,enslaved,,
+,,,old Maria [Hutchins],"35.91405737644436,-79.05499935150148",adult,,enslaved,,
+,,,Jim [Hutchins],"35.914196404485345,-79.05509591102602",adult,,enslaved,,
+,,,unknown [Hutchins],"35.914131235121545,-79.05482769012451",,,enslaved,,
+,,,unknown [Hutchins],"35.914196404485345,-79.05465602874757",,,enslaved,,
+,,,unknown [Hutchins],"35.9143397768967,-79.05519247055055",,,enslaved,,
+,,,unknown [Hutchins],"35.91405303181415,-79.05455946922304",,,enslaved,,
+,,,Nelson [Hargraves],"35.91382711071404,-79.05603468418121",adult,,enslaved,,
+,,,Tempe [Hargraves],"35.91389662496741,-79.05585765838623",adult,,enslaved,,
+,,,Hillman [Hargraves],"35.91397917306394,-79.05568599700929",child,,enslaved,,
+,,,Jack [Hargraves],"35.913683737373574,-79.05593276023866",adult,,enslaved,,
+,,,Fereby [Hargraves],"35.9137575963996,-79.05575573444368",adult,,enslaved,,
+,,,London [Hargraves],"35.91383145535667,-79.05558407306673",adult,,enslaved,,
+,,,Joe [Hargraves],"35.91405737644436,-79.05551433563232",adult,,enslaved,,
+,,,James [Hargraves],"35.914126890495396,-79.05576646327974",adult,,enslaved,,
+,,,unknown [Hargraves],"35.91420509372979,-79.05560016632081",,,enslaved,,
+,,,unknown [Hargraves],"35.913770630338206,-79.05532121658327",,,enslaved,,
+,,,unknown [Hargraves],"35.913914003521214,-79.05542314052583",,,enslaved,,
+,,,unknown [Hargraves],"35.91397482842943,-79.05612587928773",,,enslaved,,
+,,,unknown [Hargraves],"35.91404868718368,-79.05594885349275",,,enslaved,,
+,,,unknown [Hargraves],"35.91369677132435,-79.05548751354219",,,enslaved,,
+,,,unknown [Hargraves],"35.91363594620235,-79.05521392822267",,,enslaved,,
+,,,unknown [Hargraves],"35.91420509372979,-79.05539631843568",,,enslaved,,
+,,,Abram [Carr],"35.91330140719533,-79.05687153339387",,,enslaved,,
+,,,Patsy [Carr],"35.91347084920687,-79.05650138854982",,,enslaved,,
+,,,Ben [Carr],"35.91344478122869,-79.05697345733644",,,enslaved,,
+,,,Sarah [Carr],"35.913522985137384,-79.05679106712343",,,enslaved,,
+,,,Isaac [Carr],"35.91338395591296,-79.0566784143448",,,enslaved,,
+,,,Charity [Carr],"35.91362291224153,-79.05660867691041",,,enslaved,,
+,,,Mary [Nunn],"35.91267577200904,-79.05634582042696",,,enslaved,,
+,,,Beck [Nunn],"35.91275397667789,-79.05616343021394",,,enslaved,,
+,,,Alex [Nunn],"35.912836525966725,-79.0559756755829",,,enslaved,,
+,,,Dilsey [Nunn],"35.91253239658203,-79.05623853206636",,,enslaved,,
+,,,Sukey [Nunn],"35.91260625668293,-79.05605614185333",,,enslaved,,
+,,,John [Nunn],"35.912680116714895,-79.05587911605835",,,enslaved,,
+,,,Anderson [Nunn],"35.912462881129926,-79.05595421791078",,,enslaved,,
+,,,unknown [Bullock],"35.91103780090154,-79.05552506446838",,,enslaved,,
+,,,unknown [Bullock],"35.91095959453626,-79.05571818351747",,,enslaved,,
+,,,Samuel [Yancey],"35.90910868799404,-79.05431807041168",,,enslaved,,
+,,,unknown [Yancey],"35.90903482462799,-79.0544816851616",,,enslaved,,
+,,,unknown [Lewis],"35.909845145431554,-79.0550020337105",,,enslaved,,
+,,,unknown [Lewis],"35.90992118046984,-79.05483305454256",,,enslaved,,
+,,,unknown [Lewis],"35.909990698155156,-79.05465871095659",,,enslaved,,
+,,,unknown [Lewis],"35.90992769775543,-79.05441194772722",,,enslaved,,
+,,,unknown [Lewis],"35.909856007584374,-79.05457556247713",,,enslaved,,
+,,,unknown [Lewis],"35.910064560628875,-79.0544977784157",,,enslaved,,
+,,,unknown [Lewis],"35.909712627047384,-79.05491083860397",,,enslaved,,
+,,,unknown [Lewis],"35.909786489780686,-79.05474722385408",,,enslaved,,
+,,,unknown [Lewis],"35.90971697191596,-79.05448973178865",,,enslaved,,
+,,,unknown [Lewis],"35.90958010844124,-79.05481964349748",,,enslaved,,
+,,,unknown [Lewis],"35.909653971298276,-79.05465602874757",,,enslaved,,
+,,,Minerva [Mitchell],"35.91143534872973,-79.05446827411653",adult,,enslaved,,
+,,,Summer [Mitchell],"35.91149183077279,-79.0543033182621",adult,,enslaved,,
+,,,Edy [Mitchell],"35.91157220899528,-79.05414640903474",adult,,enslaved,,
+,,,Mahale [Mitchell],"35.91130283300896,-79.05437707901002",child,,enslaved,,
+,,,Harriet [Mitchell],"35.91144403827746,-79.0540498495102",child,,enslaved,,
+,,,Mark [Mitchell],"35.9116438976113,-79.05398279428483",child,,enslaved,,
+,,,unknown [Mitchell],"35.91136800470266,-79.0542107820511",,,enslaved,,
+,,,unknown [Mitchell],"35.9117058104547,-79.05423492193223",,,enslaved,,
+,,,unknown [Mitchell],"35.91151138223982,-79.05389159917833",,,enslaved,,
+,,,unknown [Mitchell],"35.91170146569533,-79.05381917953493",,,enslaved,,
+,,,unknown [Mitchell],"35.911570036611955,-79.054554104805",,,enslaved,,
+,,,unknown [Mitchell],"35.911633035703964,-79.05439049005508",,,enslaved,,
+,,,unknown [Mitchell],"35.91137560806343,-79.05379772186281",,,enslaved,,
+,,,unknown [Mitchell],"35.91157438137853,-79.05372664332391",,,enslaved,,
+,,,unknown [Mitchell],"35.911839411688504,-79.05391439795496",,,enslaved,,
+,,,unknown [Mitchell],"35.91132021213252,-79.05354425311089",,,enslaved,,
+,,,unknown [Mitchell],"35.91130283300896,-79.05395597219469",,,enslaved,,
+,,,unknown [Mitchell],"35.91144512447085,-79.0536381304264",,,enslaved,,
+,,,unknown [Mitchell],"35.91177424038312,-79.05407533049583",,,enslaved,,
+,,,unknown [Mitchell],"35.91124960941927,-79.05370384454727",,,enslaved,,
+,,,John [Cave],"35.912849560057076,-79.05468821525575",adult,,enslaved,,
+,,,Melinda [Cave],"35.91293645393794,-79.05450582504274",adult,,enslaved,,
+,,,James [Cave],"35.91271052964918,-79.05458092689516",child,,enslaved,,
+,,,Louisa [Cave],"35.912797423682754,-79.0544092655182",child,,enslaved,,
+,,,Henry [Cave],"35.91256715428515,-79.05448973178865",child,,enslaved,,
+,,,Lucinda [Cave],"35.91264970376891,-79.05431270599367",adult,,enslaved,,
+,,,Joe [Cave],"35.912419433941345,-79.05439853668214",child,,enslaved,,
+,,,Mary [Cave],"35.912501983579254,-79.05422151088716",child,,enslaved,,
+,,,Jerry [Mason],"35.91325361579314,-79.05442535877229",,,enslaved,,
+,,,Penny [Mason],"35.91318844565272,-79.05415177345277",,,enslaved,,
+,,,Sam [Mason],"35.9131058967311,-79.05433416366579",,,enslaved,,
+,,,Lyddy [Mason],"35.913040726468985,-79.0540498495102",,,enslaved,,
+,,,Rose [Mason],"35.91296252208358,-79.05422687530519",,,enslaved,,
+,,,Judy [Barbee],"35.913318785879895,-79.05337393283845",,,enslaved,,
+,,,unknown [Barbee],"35.91339698991312,-79.05319690704347",,,enslaved,,
+,,,unknown [Barbee],"35.91346650454444,-79.05347585678102",,,enslaved,,
+,,,unknown [Barbee],"35.913236237094274,-79.0532022714615",,,enslaved,,
+405,22,186,James B McDade,"0,0",47,M,white,0,merchant
+397,22,183,Charles R Yancy,"35.90930312211327,-79.05466273427011",49,M,white,750,doctor
+398,22,183,Frances Yancy,"35.909171689045884,-79.05457556247713",36,F,white,,
+399,22,183,Lemuel Yancy,"35.90937155411979,-79.05450046062471",34,M,white,,none
+400,22,183,Martha Yancy,"35.90923686249502,-79.05441462993623",36,F,white,,
+391,22,182,Catherine A Lewis,"35.90998635330161,-79.05508518218996",40,F,white,500,
+392,22,182,Richard Lewis,"35.910062388204175,-79.05491620302202",17,M,white,,farmer
+393,22,182,William G Lewis,"35.91012538849665,-79.05517101287842",14,M,white,,
+394,22,182,Ecum? Lewis,"35.910131905765425,-79.05473917722703",12,M,white,,
+396,22,182,Anna H Lewis,"35.91026659586655,-79.05483305454256",8,F,white,,
+395,22,182,Charles C Lewis,"35.91019707842364,-79.0550020337105",10,M,white,,
+385,22,180,Martha Snipes,"35.91086400887374,-79.05475258827211",39,F,white,0,
+389,22,181,Elizabeth Lewis,"35.91070759572229,-79.05555725097658",54,F,white,,
+386,22,181,John Bullock,"35.91087269848418,-79.05552506446838",24,M,white,600,merchant
+390,22,181,James Bullock,"35.91055987190647,-79.05546605587007",16,M,white,,none
+387,22,181,Cornelia Bullock,"35.91063373384886,-79.05526220798494",18,F,white,,
+388,22,181,Edward Bullock,"35.910777112716666,-79.05535876750946",10 mos,M,white,,
+338,21,174,Elisha Mitchell,"35.91123548886907,-79.05412226915361",56,M,white,11000,professor
+339,21,174,Maria Mitchell,"35.91117248946053,-79.05385941267014",50,F,white,,
+340,21,174,Margaret Mitchell,"35.911105145209696,-79.05402839183809",24,F,white,,
+341,21,174,Eliza North Mitchell,"35.911035628503534,-79.05419468879701",16,F,white,,
+342,21,174,Charles Mitchell,"35.91116597227746,-79.0542858839035",11,M,white,,
+382,22,179,Hudson M Cave,"35.913001624285954,-79.05478477478029",54,M,white,0,doctor
+383,22,179,Delia Cave,"35.91317106693953,-79.05479013919832",45,F,white,,
+384,22,179,Emily M Cave,"35.9130798286327,-79.0546077489853",17,F,white,,
+38,13,112,John Carr,"35.913127620139875,-79.05685544013978",1,M,white,,
+402,22,185,Turner Mason,"35.91340567924537,-79.05452191829683",53,M,white,1000,farmer
+403,22,185,Sally Mason,"35.91348388319272,-79.05434489250185",54,F,white,,
+404,22,185,Elizabeth Mason,"35.91333616456062,-79.05424833297731",17,F,white,,
+32,13,112,John W Carr,"35.91304507115479,-79.05667304992677",36,M,white,2500,merchant
+380,22,178,Frances Barbee,"35.91362291224153,-79.05358314514162",6,F,white,,
+33,13,112,Eliza Carr,"35.913127620139875,-79.05649602413179",35,F,white,,
+381,22,178,Seaton Barbee,"35.91369242667434,-79.05339002609254",1.5,M,white,,
+377,21,178,Sidney Barbee,"35.91354470843164,-79.05328810214998",44,M,white,100,farmer
+34,13,112,William Carr,"35.91321016903883,-79.0566784143448",9,M,white,,
+378,21,178,Frances Barbee,"35.91376628569224,-79.05367434024812",28,F,white,,
+35,13,112,Mary Ellen Carr,"35.91328837317942,-79.05650138854982",7,F,white,,
+379,21,178,Algernon Barbee,"35.91384014464119,-79.05348658561708",10,M,white,,
+36,13,112,Julian Carr,"35.91319713500788,-79.05629217624666",5,M,white,,
+37,13,112,Albert Carr,"35.91336657724272,-79.05632436275484",3,M,white,,
+27,13,111,Jesse Hargrave,"35.91347953853101,-79.05557334423067",48,M,white,4800,merchant
+28,13,111,Margaret Hargrave,"35.91354470843164,-79.05584156513216",34,F,white,,
+29,13,111,Mary Hargrave,"35.91361422293314,-79.05566453933717",7,F,white,,
+30,13,111,Frederick Hargrave,"35.913557742405324,-79.05539095401765",4,M,white,,
+31,13,111,Williamson Hargrave,"35.91340133457938,-79.05574500560762",3 mos,M,white,,
+47,14,114,John Hutchins,"35.913774974983944,-79.05481696128845",58,M,white,1250,constable
+48,14,114,Elizabeth Hutchins,"35.913914003521214,-79.054913520813",56,F,white,,
+49,14,114,Sarah Hutchins,"35.913983517698206,-79.05473649501802",22,F,white,,
+50,14,114,John Hutchins,"35.913909658883114,-79.05445754528047",21,M,white,,laborer
+51,14,114,Eliza Orebella Hutchins,"35.913844489283115,-79.05463993549347",18,F,white,,
+315,20,169,Leonidas P Wheat,"35.914730791243365,-79.05036717653276",9,M,white,,
+311,20,169,John T Wheat,"35.91506619312413,-79.05038040981721",49,M,white,,clergyman
+316,20,169,George Baxter,"35.914997983268705,-79.05054956674576",17,M,white,,student
+312,20,169,Selina Wheat,"35.91486547351526,-79.05045837163927",44,F,white,,
+313,20,169,John T Wheat,"35.91493281456523,-79.05029207468034",19,M,white,,student at law
+314,20,169,Josephine M Wheat,"35.914800304702666,-79.05019819736482",17,F,white,,
+317,20,170,David L Swain,"35.915213039609185,-79.04999971389772",49,M,white,,President of College
+420,22,187,William Battle,"35.91499363869011,-79.04664427042009",16,M,white,,student
+318,20,170,Eleanor Swain,"35.91529124176985,-79.04982805252077",49,F,white,,
+421,22,187,Richard Battle,"35.91506097963101,-79.0464672446251",14,M,white,,
+319,20,170,Anne C Swain,"35.91536944385324,-79.04965639114381",20,F,white,,
+415,22,187,William H Battle,"35.91513049280014,-79.04673814773561",47,M,white,2500,judge
+320,20,170,Richard C Swain,"35.91544330130542,-79.04947936534883",12,M,white,,
+416,22,187,Lucy Battle,"35.915200005908204,-79.0465557575226",45,F,white,,
+422,23,187,Mary Battle,"35.91514569879775,-79.04628217220306",11,F,white,,
+321,20,170,Eleanor Swain,"35.91551281413864,-79.04929697513582",6,F,white,,
+417,22,187,Joel Battle,"35.915286897207395,-79.04637336730958",22,M,white,,doctor
+423,23,187,Junius Battle,"35.91521086732583,-79.04609709978105",9,M,white,,
+418,22,187,Susan Battle,"35.915347721060044,-79.04619097709657",20,F,white,,
+424,23,187,Wesley Battle,"35.91527820808177,-79.04592007398607",7,M,white,,
+419,22,187,Kemp Battle,"35.91541723397722,-79.04601931571962",18,M,white,,student at law
+326,20,171,Henry Fetter,"35.91629917381017,-79.0469527244568",7,M,white,,
+327,20,171,Charles Fetter,"35.91646426490308,-79.04657185077669",4,M,white,,
+322,20,171,Manuel Fetter,"35.916538121333076,-79.04638409614564",41,M,white,2000,professor
+328,20,171,Susan Fetter,"35.91638171939969,-79.04677033424377",2,F,white,,
+323,20,171,Sarah Fetter,"35.916451231408246,-79.0470600128174",35,F,white,,
+138,16,130,Joseph Lucas,"35.9152521406992,-79.05419468879701",21,M,white,,school teacher
+137,16,130,Samuel Lucas,"35.9151131145136,-79.05409812927246",26,M,white,,druggist
+324,20,171,Frederick Fetter,"35.916538121333076,-79.04686689376832",11,M,white,,
+329,20,171,Catherine Fetter,"35.91670755641192,-79.04647529125215",8 mos,F,white,,
+132,16,130,Rebecca W Lucas,"35.915343376500694,-79.05399620532991",52,F,white,0,
+325,20,171,William Fetter,"35.916629355651416,-79.04666841030122",9,M,white,,
+136,16,130,Rebecca Ryan,"35.91519131677304,-79.0539050102234",5,F,white,,
+139,16,131,Mrs Sidney Jennings,"35.91546502407236,-79.05312716960908",50,F,white,0,
+133,16,130,Hannah Ryan,"35.91540941378041,-79.05380129089856",32,F,white,,
+140,16,131,James Jennings,"35.91538682208347,-79.05331492424013",22,M,white,,boot maker
+134,16,130,Davis S Ryan,"35.91539985575366,-79.05429661273956",10,M,white,,
+135,16,130,Garland Ryan,"35.91526517439155,-79.05371189117433",7,M,white,,
+162,16,136,Elizabeth Kirkland,"35.915925545327674,-79.05205965042116",9 mos,F,white,,
+163,16,136,John Hogan,"35.91600591904556,-79.05189603567125",18,M,white,,clerk
+330,20,172,James Phillips,"35.916396925156775,-79.04866933822633",58,M,white,1000,professor
+161,16,136,Lititia Kirkland,"35.91585603285717,-79.0522286295891",5,F,white,,
+160,16,136,Cornelia Kirkland,"35.91606131169551,-79.0521562099457",8,F,white,,
+331,20,172,Julia Phillips,"35.91624269519929,-79.04868543148042",53,F,white,,
+159,16,136,Alexander Kirkland,"35.91598854095133,-79.05232116580011",10,M,white,,
+156,16,136,Joseph Kirkland,"35.91613842688866,-79.05231446027757",33,M,white,0,merchant
+332,20,172,Cornelia Ann Phillips,"35.91632524084773,-79.04849767684938",22,F,white,,
+157,16,136,Martha Kirkland,"35.91621119749495,-79.05214950442314",31,F,white,,
+199,17,143,Ann Eliza Utley,"35.91621054581983,-79.05106643649587",8,F,white,,
+158,16,136,Thomas Kirkland,"35.91612865172747,-79.05199393630028",12,M,white,,
+200,17,143,Elizabeth Toler,"35.91628657474058,-79.05086250417445",35,F,white,,
+198,17,143,Susan Utley,"35.91645601035827,-79.05096178701513",11,F,white,,
+197,17,143,Sarah Utley,"35.916375637097666,-79.05116571933655",12,F,white,,
+195,17,143,Grey Utley,"35.91663456904116,-79.05105488440594",37,M,white,500,carpenter
+247,18,158,Robina Mickle,"35.91699211963803,-79.04983878135683",1,F,white,,
+196,17,143,Eliza Utley,"35.916547679222276,-79.05126955000743",32,F,white,,
+336,20,173,Samuel F Phillips,"35.91684223531831,-79.0473657846451",25,M,white,,lawyer
+333,20,173,Charles Phillips,"35.91705076994674,-79.04728531837465",27,M,white,1250,teacher
+246,18,158,Anne Mickle,"35.917146348134345,-79.0498173236847",3,F,white,,
+337,20,173,Frances Phillips,"35.9169160913954,-79.04718875885011",20,F,white,,
+334,20,173,Laura Phillips,"35.91712897029064,-79.0471136569977",23,F,white,,
+302,20,168,Peter Willis,"35.916656291480955,-79.0505291381089",70,M,white,,none
+245,18,158,Joseph Mickle,"35.91706380334274,-79.04965370893478",5,M,white,,
+301,20,168,Amey Atwater,"35.91648251179551,-79.0504164386681",72,F,white,,
+335,20,173,Julia Phillips,"35.91698994740356,-79.04701173305513",1.5,F,white,,
+241,18,158,Andrew Mickle,"35.91685744098688,-79.04973953962327",36,M,white,1700,merchant
+244,18,158,William Mickle,"35.916933469285894,-79.04955714941026",7,M,white,,
+242,18,158,Helen Mickle,"35.917011669745776,-79.04939085245134",33,F,white,,
+300,20,168,Mary C Atwater,"35.91657374617797,-79.05019640642658",2 mos,F,white,,
+295,19,168,Jehiel Atwater,"35.91693868265559,-79.05030910586736",33,M,white,2000,farmer
+243,18,158,Elizabeth Mickle,"35.91714852036455,-79.04948204755785",9,F,white,,
+299,20,168,Rufus H Atwater,"35.916656291480955,-79.04998710746511",5,M,white,,
+296,19,168,Martha Atwater,"35.916847448694035,-79.0505023049087",26,F,white,,
+297,19,168,Edmund W Atwater,"35.91674318118053,-79.0503144725074",8,M,white,,
+298,20,168,Sophronia J Atwater,"35.916830070784656,-79.05010517354593",7,F,white,,
+259,19,159,Frederick Shepperd,"35.91778932566759,-79.04781103134157",16,M,white,,student
+260,19,159,Thomas F Davis,"35.917706781546954,-79.04800415039064",22,M,white,,Episcopal preacher
+256,19,159,Mr Kelly,"35.91795006923425,-79.04791831970216",21,M,white,,student
+257,19,159,Mr Allison,"35.917863180860415,-79.0481060743332",20,M,white,,student
+258,19,159,Richard Hines,"35.91787621412258,-79.0476179122925",21,M,white,,student
+252,18,159,George Haigh,"35.9181499121319,-79.0483206510544",17,M,white,,student
+253,18,159,William McIntyre,"35.918093434842454,-79.04802560806276",17,M,white,,student
+254,18,159,Robert Sanford,"35.91800654662609,-79.0482133626938",20,M,white,,student
+248,18,159,Sally Mallett,"35.91830631056915,-79.04842793941499",45,F,white,3000,
+255,18,159,Douglas Beattie,"35.918032613101005,-79.04773056507112",16,M,white,,student
+249,18,159,Samuel Holmes,"35.91824114459122,-79.0481221675873",18,M,white,,student
+250,18,159,William Watters,"35.91832803254988,-79.04793441295625",18,M,white,,student
+251,18,159,Benjamin Huske,"35.918175978559596,-79.04783248901367",20,M,white,,student
+39,13,113,Madison R Suggs,"0,0",36,M,white,200,saddler
+40,13,113,Rebecca Suggs,"0,0",35,F,white,,
+41,13,113,Elizabeth Suggs,"0,0",8,F,white,,
+42,13,113,Mary Suggs,"0,0",7,F,white,,
+43,13,113,William Suggs,"0,0",4,M,white,,
+44,13,113,Charles Suggs,"0,0",5,M,white,,
+45,13,113,Julia Suggs,"0,0",4,F,white,,
+46,13,113,Edward Suggs,"0,0",2,M,white,,
+52,14,115,John Winfree,"0,0",26,M,white,0,brick mason
+53,14,115,Frances Winfree,"0,0",22,F,white,,
+54,14,115,James Winfree,"0,0",1,M,white,,
+55,14,115,Jane Batchelor,"0,0",13,F,white,,
+56,14,116,Paton Clemens,"0,0",63,M,white,100,carpenter
+57,14,116,Patsy Clemens,"0,0",23,F,white,,
+58,14,116,Becca Clemens,"0,0",20,F,white,,
+59,14,116,Betsy Clemens,"0,0",32,F,white,,
+60,14,116,Lucy Clemens,"0,0",27,F,white,,
+61,14,116,John Clemens,"0,0",13,M,white,,
+62,14,116,Jenning Clemens,"0,0",9,M,white,,
+63,14,116,William Clemens,"0,0",6,M,white,,
+64,14,116,George Clemens,"0,0",3,M,white,,
+65,14,116,Mrs Davis,"0,0",40,F,white,,
+66,14,117,Joseph Harrord,"0,0",30,M,white,,shoe maker
+67,14,117,Mary Harrord,"0,0",36,F,white,,
+68,14,117,Wesley Harrord,"0,0",8,M,white,,
+69,14,117,Polly Harrord,"0,0",6,F,white,,
+70,14,117,Anne Harrord,"0,0",4,F,white,,
+71,14,117,Lewis Harrord,"0,0",1,M,white,,
+72,14,118,Edward Ivey,"0,0",33,M,white,,laborer
+73,14,118,Sophia Ivey,"0,0",28,F,white,,
+74,14,118,Mary Ivey,"0,0",3,F,white,,
+75,14,118,Susab Ivey,"0,0",2,F,white,,
+76,14,118,Mary Perry,"0,0",11,F,white,,
+77,14,119,Henry Boyd,"0,0",30,M,white,,brick maker
+78,14,119,Naomi Boyd,"0,0",24,F,white,,
+79,14,119,AGnes Boyd,"0,0",1,F,white,,
+80,14,119,Martha Boyd,"0,0",3,F,white,,
+81,14,120,Samuel Williams,"0,0",44,M,white,,blacksmith
+82,14,120,Nancy Williams,"0,0",43,F,white,,
+83,14,120,Wesley Williams,"0,0",11,M,white,,
+84,14,120,Mary Williams,"0,0",7,F,white,,
+85,14,120,Elizabeth Williams,"0,0",65,F,white,,
+88,15,122,Wilson M Davis,"0,0",22,M,white,100,merchant
+90,15,124,Anderson Brockwell,"0,0",37,M,white,,farmer
+91,15,124,Mary Brockwell,"0,0",40,F,white,,
+92,15,124,Nancy Brockwell,"0,0",14,F,white,,
+93,15,124,Thomas Brockwell,"0,0",12,M,white,,
+94,15,124,Hudson Brockwell,"0,0",11,M,white,,
+95,15,124,John Brockwell,"0,0",9,M,white,,
+96,15,124,Mary Ann Brockwell,"0,0",8,F,white,,
+97,15,124,Cornelia Brockwell,"0,0",7,F,white,,
+98,15,124,Delany Brockwell,"0,0",6,F,white,,
+99,15,125,Rebecca Flintoff,"0,0",32,F,white,,
+100,15,125,Marian Flintoff,"0,0",7,F,white,,
+101,15,125,William Flintoff,"0,0",5,M,white,,
+102,15,126,Willis Cheek,"0,0",45,M,white,,farmer
+103,15,126,Martha Cheek,"0,0",38,F,white,,
+104,15,126,Emily Cheek,"0,0",21,F,white,,
+105,15,126,Catharine Cheek,"0,0",18,F,white,,
+106,15,126,Nathaniel Cheek,"0,0",16,M,white,,laborer
+107,15,126,Caroline Cheek,"0,0",11,F,white,,
+108,15,126,Willis Cheek,"0,0",8,M,white,,
+109,15,126,John S Cheek,"0,0",4,M,white,,
+110,15,127,William Gattis Sr,"0,0",60,M,white,648,farmer
+111,15,127,Elizabeth Gattis,"0,0",55,F,white,,
+112,15,127,Frances Gattis,"0,0",23,F,white,,
+113,15,127,Martha Gattis,"0,0",21,F,white,,
+114,15,127,Jane Gattis,"0,0",17,F,white,,
+115,15,127,James Gattis,"0,0",29,M,white,,farmer
+116,15,127,Thomas Gattis,"0,0",12,M,white,,
+117,15,128,William Watson,"0,0",68,M,white,1350,farmer
+118,15,128,Mary Watson,"0,0",64,F,white,,
+119,15,128,Ann Watson,"0,0",30,F,white,,
+120,15,128,James Watson,"0,0",25,M,white,,saddler
+121,15,128,William Watson,"0,0",3,M,white,,
+122,15,128,Mary Johnston,"0,0",13,F,white,,
+123,15,128,Robert Loder,"0,0",24,M,white,,tailor
+124,15,128,Fanny Loder,"0,0",30,F,white,,
+144,16,133,Esley Hunt,"0,0",30,M,white,600,tailor
+145,16,133,Emily Hunt,"0,0",28,F,white,,
+146,16,133,Belvidora Hunt,"0,0",7,F,white,,
+147,16,133,Dolphus T Hunt,"0,0",2,M,white,,
+148,16,134,John Ward,"0,0",32,M,white,0,tailor
+149,16,134,Amanda Ward,"0,0",19,F,white,,
+150,16,134,Mary Parton,"0,0",36,F,white,,
+151,16,134,Thomas Parton,"0,0",14,M,white,,
+152,16,135,Gabriel Utley,"0,0",32,M,white,0,carriage maker
+153,16,135,Lutetia Utley,"0,0",30,F,white,,
+164,16,137,Richard Lee,"0,0",39,M,white,0,boot maker
+165,16,137,Harriet Lee,"0,0",39,F,white,,
+166,16,137,Madison Lee,"0,0",10,M,white,,
+167,16,137,Mary Lee,"0,0",43,F,white,,
+168,16,138,Kendall Waitt,"0,0",28,M,white,0,carpenter
+169,16,138,Emily Waitt,"0,0",36,F,white,,
+170,16,138,Mary Waitt,"0,0",12,F,white,,
+171,16,138,Martha Waitt,"0,0",11,F,white,,
+172,17,138,George Waitt,"0,0",7,M,white,,
+173,17,138,Frances V Waitt,"0,0",3,F,white,,
+174,17,138,Darius Waitt,"0,0",1,M,white,,
+175,17,138,Julia Henderson,"0,0",20,F,white,,
+176,17,139,P M Ellis,"0,0",32,M,white,0,trader
+177,17,139,Palmelia Ellis,"0,0",36,F,white,,
+178,17,140,William H Hoosier,"0,0",28,M,white,0,stage driver
+179,17,140,Mary Hoosier,"0,0",23,F,white,,
+180,17,140,John H Hoosier,"0,0",3,M,white,,
+181,17,140,Mary Ann Hoosier,"0,0",1,F,white,,
+182,17,140,Rachael Nowell,"0,0",54,F,white,,
+183,17,140,Ephraim Hoosier,"0,0",34,M,white,,stage driver
+184,17,140,Delilah Hoosier,"0,0",32,F,white,,
+185,17,140,John T Hoosier,"0,0",9,M,white,,
+186,17,140,Julina Hoosier,"0,0",7,F,white,,
+187,17,140,William Hoosier,"0,0",3,M,white,,
+190,17,142,Nash Cheek,"0,0",26,M,white,0,carpenter
+191,17,142,Margaret Cheek,"0,0",24,F,white,,
+192,17,142,Thomas F Cheek,"0,0",5,M,white,,
+193,17,142,James Wilson Cheek,"0,0",3,M,white,,
+194,17,142,Attelia F Cheek,"0,0",2,F,white,,
+201,17,144,Foster Utley,"0,0",30,M,white,500,carpenter
+202,17,144,Sarah Utley,"0,0",26,F,white,,
+203,17,144,Jasper Utley,"0,0",3,M,white,,
+204,17,144,Mary Utley,"0,0",8 mos,F,white,,
+205,17,145,James Hutchins,"0,0",28,M,white,,carpenter
+206,17,145,Julia Hutchins,"0,0",22,F,white,,
+207,17,146,Nathaniel King,"0,0",35,M,white,,laborer
+208,17,146,Emily King,"0,0",32,F,white,,
+209,17,146,Alphonzo King,"0,0",4,M,white,,
+210,17,146,George King,"0,0",2,M,white,,
+216,18,148,James H Gattis,"0,0",39,M,white,100,carpenter
+217,18,148,Nancy Gattis,"0,0",39,F,white,,
+218,18,149,John Farthing,"0,0",30,M,white,,blacksmith
+219,18,149,Louisa Farthing,"0,0",24,F,white,,
+229,18,153,Stanford Cheek,"0,0",53,M,white,,carpenter
+230,18,153,Mary Cheek,"0,0",53,F,white,,
+231,18,153,Archy Cheek,"0,0",18,M,white,,laborer
+232,18,153,Walter Cheek,"0,0",15,M,white,,laborer
+233,18,153,Mallory Cheek,"0,0",10,M,white,,
+235,18,155,Henderson M Marcum,"0,0",23,M,white,,laborer
+236,18,155,Caroline Marcum,"0,0",24,F,white,,
+237,18,155,John Marcum,"0,0",2,M,white,,
+240,18,157,Elmore Woods,"0,0",30,M,white,,painter
+261,19,160,Franklin A Davis,"0,0",37,M,white,100,farmer
+262,19,160,Camella Davis,"0,0",30,F,white,,
+263,19,160,Laura Davis,"0,0",2,F,white,,
+264,19,161,Daniel De Grot,"0,0",45,M,white,,stone cutter
+265,19,161,Elizabeth De Grot,"0,0",27,F,white,,
+266,19,161,Sarah Ann De Grot,"0,0",2,F,white,,
+267,19,162,Haywood Andrews,"0,0",21,M,white,,farmer
+268,19,162,Esperan Andrews,"0,0",19,F,white,,
+269,19,163,William B Gattis,"0,0",36,M,white,,farmer
+270,19,163,Margaret Gattis,"0,0",35,F,white,,
+271,19,163,Mary J Gattis,"0,0",16,F,white,,
+272,19,163,Emaline Gattis,"0,0",12,F,white,,
+273,19,163,John T Gattis,"0,0",6,M,white,,
+274,19,164,William H Caudle,"0,0",32,M,white,100,carriage maker
+275,19,164,Mary Ann Caudle,"0,0",12,F,white,,
+276,19,164,John D Caudle,"0,0",10,M,white,,
+277,19,164,Keziah M Caudle,"0,0",9,F,white,,
+278,19,164,Wesley H Caudle,"0,0",8,M,white,,
+279,19,164,Susanna W Caudle,"0,0",6,F,white,,
+280,19,164,Becca E Caudle,"0,0",5,F,white,,
+281,19,164,William H Caudle,"0,0",3,M,white,,
+282,19,164,P Melissa Caudle,"0,0",2,F,white,,
+283,19,164,Elizabeth Benjamin,"0,0",65,F,white,,
+286,19,166,Milly Walker,"0,0",30,F,white,300,
+287,19,166,Adeline Bowls,"0,0",24,F,white,,
+288,19,167,John White,"0,0",43,M,white,800,farmer
+289,19,167,Temperance A White,"0,0",39,F,white,,
+290,19,167,Sarah F White,"0,0",8,F,white,,
+291,19,167,Foa A White,"0,0",7,F,white,,
+292,19,167,Delia White,"0,0",4,F,white,,
+293,19,167,Laura N White,"0,0",2,F,white,,
+294,19,167,Martha T White,"0,0",14,F,white,,
+303,20,168,Dr W Closs,"0,0",42,M,white,,school teacher
+304,20,168,Margaret Closs,"0,0",29,F,white,,
+305,20,168,Oliver T Closs,"0,0",17,M,white,,school teacher
+306,20,168,Clifford C Closs,"0,0",17,M,white,,student
+307,20,168,Thomas K Closs,"0,0",11,M,white,,
+308,20,168,Alexander K Closs,"0,0",10,M,white,,
+309,20,168,Andrew J Wilson,"0,0",19,M,white,,student
+310,20,168,Anne L Strowd,"0,0",14,F,white,,
+343,21,175,John Loder,"0,0",28,M,white,0,gardener
+344,21,175,Jane A Loder,"0,0",29,F,white,,
+345,21,175,Charles Loder,"0,0",1.5,M,white,,
+346,21,175,Mary Ann Loder,"0,0",2 mos,F,white,,
+347,21,176,Woodard Ellington,"0,0",40,M,white,0,carpenter
+348,21,176,Jane Ellington,"0,0",23,F,white,,
+349,21,176,Martha Ellington,"0,0",15,F,white,,
+350,21,176,Dicey Ellington,"0,0",12,F,white,,
+351,21,176,Julia Ellington,"0,0",9,F,white,,
+352,21,176,Caty Ellington,"0,0",6,F,white,,
+353,21,176,Columbus Ellington,"0,0",1,M,white,,
+354,21,176,Melinda Woodard,"0,0",25,F,white,,
+355,21,177,George Moore,"35.91405954875937,-79.05413299798967",44,M,white,400,doctor
+356,21,177,Mary Moore,"35.914626520939876,-79.05365824699403",42,F,white,,
+357,21,177,William Moore,"35.91455700732788,-79.05382186174394",21,M,white,,doctor
+358,21,177,George Moore,"35.91427026303273,-79.05404716730118",19,M,white,,student
+359,21,177,John Moore,"35.914133407434534,-79.05396401882172",17,M,white,,student
+360,21,177,Julia Moore,"35.9146960344908,-79.05349195003511",15,F,white,,
+361,21,177,Loyd Moore,"35.914498789632496,-79.05356647749853",49,M,white,,none
+362,21,177,William Strowd,"35.91463955473533,-79.05323177576066",22,M,white,,clerk
+363,21,177,Richard Waddell,"35.914765547980636,-79.05333101749422",19,M,white,,student
+364,21,177,James Everett,"35.91456569653274,-79.05340075492859",16,M,white,,student
+365,21,177,John Smith,"35.91420509372979,-79.05349731445314",20,M,white,,student
+366,21,177,John Hill,"35.91420943835166,-79.05379235744478",20,M,white,,student
+367,21,177,William S Strudwick,"35.914398429171904,-79.0541383624077",20,M,white,,student
+368,21,177,William Lane?,"35.914476632137884,-79.05397474765779",20,M,white,,student
+369,21,177,Leonidas Siler,"35.91428981381315,-79.0536341071129",21,M,white,,student
+370,21,177,Henry Torrence,"35.914344121511164,-79.0538862347603",19,M,white,,student
+371,21,177,Basil Thompson,"35.914424496835814,-79.05372798442842",20,M,white,,student
+372,21,177,Thomas Hill,"35.91436801688648,-79.053473174572",20,M,white,,student
+373,21,177,Joseph Small,"35.91450704438152,-79.05314326286317",21,M,white,,student
+374,21,177,Empie Wright,"35.91428764150443,-79.05332028865816",19,M,white,,student
+375,21,177,Richard Whitfield,"35.91433543228198,-79.05315399169923",19,M,white,,student
+376,21,177,Asbel Brown,"35.91443970296912,-79.0533095598221",27,M,white,,student
+401,22,184,Betsy Oakey,"40,40",50,F,white,0,
+406,22,186,Lucinda McDade,"40,40",35,F,white,,
+407,22,186,Amanda McDade,"40,40",21,F,white,,
+408,22,186,John McDade,"40,40",19,M,white,,none
+409,22,186,Daniel McDade,"40,40",17,M,white,,none
+410,22,186,Joseph McDade,"40,40",10,M,white,,
+411,22,186,Ann McDade,"40,40",3,F,white,,
+412,22,186,Eva McDade,"40,40",1,F,white,,
+413,22,186,Fletcher Freeland,"40,40",11,M,white,,
+414,22,186,William H Atkins,"40,40",19,M,white,,clerk
+415,1955,240,Benton Utley,"40,40",40,M,white,,taven keeper
+416,1955,240,Martha Utley,"40,40",35,F,white,,
+417,1955,240,Nancy Hilliard,"40,40",43,F,white,,student
+418,1955,240,Joel C Blake,"40,40",20,M,white,,student
+419,1955,240,A J Caldwell,"40,40",20,M,white,,student
+420,1955,240,A H Carrigan,"40,40",19,M,white,,student
+421,1955,240,R A Hairston,"40,40",18,M,white,,student
+422,1955,240,Madison Hawkins,"40,40",18,M,white,,student
+423,1955,240,John Hill,"40,40",19,M,white,,student
+424,1955,240,John Manning,"40,40",18,M,white,,student
+425,1955,240,Thomas Settle,"40,40",18,M,white,,student
+426,1955,240,Richard H Whitfield,"40,40",17,M,white,,student
+427,1955,240,J F Bell,"40,40",17,M,white,,student
+428,1955,240,Benj W S Claiborn,"40,40",18,M,white,,student
+429,1955,240,Thomas A E Evans,"40,40",16,M,white,,student
+430,1955,240,David W Fisher,"40,40",16,M,white,,student
+431,1955,240,Bartholomew Fuller,"40,40",17,M,white,,student
+432,1955,240,Thomas M Garrett,"40,40",16,M,white,,student
+433,1955,240,Richard S Grant,"40,40",16,M,white,,student
+434,1955,240,Giles Leith,"40,40",17,M,white,,student
+435,1955,240,Jesse Lindsey,"40,40",17,M,white,,student
+436,1955,240,Malcom J McDuffy,"40,40",19,M,white,,student
+437,1955,240,Neill McKay,"40,40",19,M,white,,student
+438,1955,240,G W Neal,"40,40",19,M,white,,student
+439,1955,240,Thomas J Norcum,"40,40",16,M,white,,student
+440,1955,240,R Hatherson,"40,40",17,M,white,,student
+441,1955,240,E Ruffin,"40,40",18,M,white,,student
+442,1955,240,C B Saunders,"40,40",18,M,white,,student
+443,1955,240,J B Sewell,"40,40",19,M,white,,student

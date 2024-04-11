@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Chorus Silenced</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+#myfirstmap { height: 700px; width: 80pct}
+</style>
+
+<body>
+<input type="file" id="csv-file" names="files" onchange="handleFileSelect(this)"/>
+<button onclick="show()">show</button>
+<button onclick="download()">download corrected names as CSV</button>
+<button onclick="Map1850()">Show the 1850 Map</button>
+<div id="myfirstmap"></div>
+
+
+</body>
+
+<script>
+let chorus;
+const papaConfig = {header: true, complete: function(result){chorus = result.data}}
+
+var mymap = L.map('myfirstmap').setView([35.913123, -79.051775], 16);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 22,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+
+var fixedLayer = L.layerGroup().addTo(mymap);
+var baseMap = L.layerGroup().addTo(mymap);
+var moveLayer = L.layerGroup().addTo(mymap);
+var inMotion = -1
+var toggle = 0
+
+mymap.on('mousemove', onMouseMove);
+mymap.on('click', affix);
+
+// var SWcornerLat = 35.89830646289726
+// var SWcornerLong = -79.06255723824876
+// var NEcornerLat = 35.91992086289726
+// var NEcornerLong = -79.03258283824876
+var SWcornerLat = 35.89168040667976
+var SWcornerLong = -79.07330979026091
+var NEcornerLat = 35.928918506679764
+var NEcornerLong = -79.01788779026091
+var imageBounds = [[SWcornerLat, SWcornerLong],[NEcornerLat, NEcornerLong]]
+var imageUrl = "./ChapelHill1850.png"
+
+var counter = 1
+
+var file = "./AChorusSilenced.csv"
+Papa.parse('./AChorusSilenced.csv', papaConfig)
+
+
+
+function Map1850() {
+    counter = counter + 1
+    if (counter/2 == Math.floor(counter/2)) {
+        L.imageOverlay(imageUrl, imageBounds, {opacity: 1}).addTo(baseMap);
+    }
+    else{baseMap.clearLayers()}
+}
+
+//the chorus JSON has four fields:
+//pathway of the JSON is C:\Users\mchilton\Desktop\Chatham\Cfiles\0Cfiles
+var coords = []
+
+function show() {
+    fixedLayer.clearLayers();
+    for (i=0; i < chorus.length-1; i = i + 1) {
+        coords = chorus[i].coords.split(",")
+//        toolTip = "<br><button onclick='move(" + i + ")'>move" +chorus[i].person + "</button>"
+        toolTip = chorus[i].person
+        if (inMotion > -1 &&  i != inMotion) {
+            if (chorus[i].status == "FPOC") {
+                var green = L.circle(coords, {color: 'green', fillColor: 'green', fillOpacity: 1.0, radius: 8}).addTo(fixedLayer)
+                .bindTooltip(toolTip);
+            }
+            if (chorus[i].status == "enslaved") {
+                var red = L.circle(coords, {color: 'red', fillColor: 'red', fillOpacity: 1.0, radius: 8}).addTo(fixedLayer)
+                .bindTooltip(toolTip);
+            }
+            if (chorus[i].status == "white") {
+                var red = L.circle(coords, {color: 'yellow', fillColor: 'yellow', fillOpacity: 1.0, radius: 8}).addTo(fixedLayer)
+                .bindTooltip(toolTip);
+            }
+
+        }
+        if (inMotion == -1) {
+            if (chorus[i].status == "FPOC") {
+                var green = L.circle(coords, {color: 'green', fillColor: 'green', fillOpacity: 1.0, radius: 8}).addTo(fixedLayer)
+                .bindTooltip(toolTip);
+            }
+            if (chorus[i].status == "enslaved") {
+                var red = L.circle(coords, {color: 'red', fillColor: 'red', fillOpacity: 1.0, radius: 8}).addTo(fixedLayer)
+                .bindTooltip(toolTip);
+            }
+            if (chorus[i].status == "white") {
+                var red = L.circle(coords, {color: 'yellow', fillColor: 'yellow', fillOpacity: 1.0, radius: 8}).addTo(fixedLayer)
+                .bindTooltip(toolTip);
+            }
+
+        }
+    }
+}
+
+function handleFileSelect(evt) {
+    console.log(evt.files[0])
+    file = evt.files[0]
+    Papa.parse(file, papaConfig)
+}
+
+function move(a) {
+    console.log("moving " + chorus[a].person + " " + a)
+    inMotion = a
+    show()
+}
+
+function onMouseMove(e) {
+        moveLayer.clearLayers();
+        mouseLat = e.latlng['lat'] 
+        mouseLong = e.latlng['lng']
+        coords = [mouseLat,mouseLong]
+        if (inMotion > -1) {
+            toolTip = chorus[inMotion].person
+            if (chorus[inMotion].status == "FPOC") {
+                var green = L.circle(coords, {color: 'green', fillColor: 'green', fillOpacity: 1.0, radius: 8}).addTo(moveLayer)
+                //.bindTooltip(toolTip);
+            }
+            if (chorus[inMotion].status == "enslaved") {
+                var red = L.circle(coords, {color: 'red', fillColor: 'red', fillOpacity: 1.0, radius: 8}).addTo(moveLayer)
+                //.bindTooltip(toolTip);
+            }
+            if (chorus[inMotion].status == "white") {
+                var red = L.circle(coords, {color: 'yellow', fillColor: 'yellow', fillOpacity: 1.0, radius: 8}).addTo(moveLayer)
+                //.bindTooltip(toolTip);
+            }
+        show()
+        }
+}
+
+function affix(e){
+    mouseLat = e.latlng['lat'] 
+    mouseLong = e.latlng['lng']
+    console.log(mouseLat,mouseLong)
+    toggle = toggle + 1
+    if (toggle/2 == Math.floor(toggle/2)) {
+        chorus[inMotion].coords = mouseLat + "," + mouseLong
+        inMotion = -1
+        show()
+        }
+    else {
+        var lowestTestDistance = 1501
+        for (i=0; i <chorus.length - 1; i = i + 1) {
+            coords = chorus[i].coords.split(",")
+            var mouse = [mouseLat,mouseLong]
+            console.log(mouse)
+            console.log(coords)
+            console.log(i)
+            var searchDistance = mymap.distance(mouse,coords)
+            var newPickUp
+            if (searchDistance < lowestTestDistance) {
+                lowestTestDistance = searchDistance
+                newPickUp = i
+            }
+        }
+    inMotion = newPickUp
+    //mymap.flyTo(new L.LatLng(35.915751, -79.061508));
+        show()
+    }
+}
+
+function download() {
+    var cfiles = Papa.unparse(chorus)   
+    window.open('data:text/csv;charset=utf-8,' + escape(cfiles));
+}
+
+</script>
+</html>
