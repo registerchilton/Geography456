@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>copy</title>
+</head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap { height: 750px; width: 100pct}
+</style>
+
+<body>
+    <h1 id="comment">The Richland Creek Area in 1780.</h1>
+    <h3 id="subhead">The area that became Blackwood Farm Park was originally granted by the State of North Carolina during the American Revolution.</h3>
+    <h3>Move the slider to see more.</h3>
+
+        <div class="slider-container">
+            <input type="range" min="1" max="7" value="1" class="slider" id="year" oninput='yearChange()'>
+            <div class="tick-container">
+                <!-- <span class="tick">1850</span>
+                <span class="tick">1860</span>
+                <span class="tick">1870</span>
+                <span class="tick">1880</span>
+                <span class="tick">1890</span>
+                <span class="tick">1900</span>
+                <span class="tick">1910</span> -->
+            </div>
+        </div>
+
+
+        <div id="myfirstmap"></div>
+</body>
+
+<script>
+    var mymap = L.map('myfirstmap').setView([36.01990851909298,-79.0805768966675], 15);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(mymap);
+    var Layer1850 = L.layerGroup().addTo(mymap);
+    var baseMap = L.layerGroup().addTo(mymap);
+    var moveLayer = L.layerGroup().addTo(mymap);
+    var hydroLayer = L.layerGroup().addTo(mymap);
+    var counter = 1
+    var year = 1
+    var comment1780 = "The Richland Creek Area circa 1780."
+    var subhead1780 = "The area that became Blackwood Farm Park was originally granted by the State of North Carolina in the middle of the American Revolution."
+    var comment1800 = "The Richland Creek Area circa 1800."
+    var subhead1800 = "Parts of both these land grants became the property of Samuel Strayhorn in 1801."
+    var comment1850 = "The Richland Creek Area circa 1850."
+    var subhead1850 = "In 1847, Samuel Strayhorn died and his land and the people he enslaved were divided among his heirs. The property which became the park passed to his son William F Strayhorn, along with four of the 14 people Samuel had enslaved."
+    var comment1900 = "The Richland Creek Area circa 1900."
+    var subhead1900 = "The area that became Blackwood Farm Park was originally granted by the State of North Carolina in the middle of the American Revolution."
+    var comment2001 = "Blackwood Farm Park in 2001"
+    var subhead2001 = "Orange County bought this site from the heirs of Herbert Blackwood in 2001, but it took some years to develop the park, which is now open to the public."
+    var comment2024 = "Cemetery of Enslaved People at Blackwood Farm Park"
+    var subhead2024 = "The park includes the unmarked graves of many people who were enslaved by the Strayhorns."
+    var imageBounds1850 = [[35.89168040667976,-79.07330979026091],[35.928918506679764,-79.01788779026091]]
+    var imageBounds2001 = [[36.00812015693598,-79.08924351382949],[36.02665695693598,-79.07337471382948]]
+    var opacity1850 = 0
+    var opacity1860 = 0
+    var imageUrl1850 = "./ChapelHill1850.png"
+    var imageUrl2001 = "./BFPtransparent.png"
+    var tanyardCoords = []
+
+    var tanyardProjection = []
+    var toggle = 0
+    var ODB33289 = [[36.02296298176395, -79.07701492309572],[36.02296298176395, -79.08551339509572],[36.02182872465989, -79.08645023971263],[36.019365243450125, -79.08687821161126],[36.01750766155599, -79.08658609691395],[36.017567536183556, -79.08545688119914],[36.017567536183556, -79.08310861919914],[36.01213984618356, -79.08310861919914],[36.01213984618356, -79.07841209519914],[36.017567536183556, -79.07841209519914],[36.017567536183556, -79.07710377779914]]
+    var ODB33289Text = "ODB 33/289 Samuel Strayhorn estate by Clerk to William F Strayhorn, [circa 1848], 177.7 acres on waters of New Hope Creek, adj David Craig, J N Craig - being part of land of Samuel Strayhorn deceased. "
+    var NCtoWmKennedy = [[36.01757745922664,-79.0771007537842],[36.01757745922664,-79.0855992257842],[36.031870376226635,-79.0855992257842],[36.031870376226635,-79.0771007537842],[36.01757745922664,-79.0771007537842]]
+    var WmKennedyText = "Orange Deed Book 2, pg 326 NC to William Kennedy, 13 Mar 1780, 300 acres on waters of New Hope Creek, adj James Craig. Ofile0915. This was sold to Samuel Thompson about 1781, but the deed was destroyed in the Revolution."
+    var Omisc07 = [[36.00884703283904,-79.08624172210693],[36.00884703283904,-79.07841418210694],[36.01753133683904,-79.07841418210694],[36.01753133683904,-79.08624172210693],[36.00884703283904,-79.08624172210693]]
+    var Omisc07Text = "Orange Deed Book 2, pg 356 NC to James Craig, 25 Oct 1782, 168 acres on waters of Richland Fork of New Hope Creek. Omisc07."
+    var ODB6389 = [[36.01757745922664,-79.0771007537842],[36.022339352586634,-79.0771007537842],[36.022339352586634,-79.0855992257842],[36.01757745922664,-79.0855992257842],[36.01757745922664,-79.0771007537842]]
+    var ODB6389Text = "ODB 6/389 Samuel Thompson to James Bailey, 28 Feb 1798, 100 acres. ODB 9/252 James Bailey to William Strayhorn, 15 Jun 1801, 100 acres."
+    var ODB9253 = [[36.017560103473464,-79.07835602760316],[36.012132413473466,-79.07835602760316],[36.012132413473466,-79.08307491600317],[36.017560103473464,-79.08307491600317],[36.017560103473464,-79.07835602760316]]
+    var ODB9253Text = "ODB 9/253 James Craig Sr to William Strayhorn, 27 Aug 1801, 63.33 acres on waters of New Hope Creek, adj the Meeting House Road - part of NC to James Craig Sr [Omisc 07, ODB 2/356]."
+
+    var ODB55467north = [[36.02171561251881,-79.07682180404663],[36.03255109098881,-79.07682180404663],[36.032923325951124,-79.07669851256114],[36.032923325951124,-79.08542062856114],[36.02304673938112,-79.08542062856114],[36.02186180285968,-79.08640860364899],[36.02181891593065,-79.08641700020007],[36.02171561251881,-79.07682180404663]]
+    var ODB55467south = [[36.017548171390956,-79.08310890197755],[36.01218380444096,-79.08310890197755],[36.01218380444096,-79.07841237797756],[36.017611494440956,-79.07841237797756],[36.017611494440956,-79.07699223857756],[36.02159180044096,-79.07699223857756],[36.02159180044096,-79.08649710857755],[36.01917941068274,-79.08696941457579],[36.01731711567428,-79.08672746093214],[36.017380975659805,-79.08559857890698],[36.017380975659805,-79.08325031690698]]
+    var ODB55467southText = "Orange Deed Book 55, page 467 William F Strayhorn estate by commissioners to Dr John Berry & wife Mary Berry"
+    var ODB55467northText = "Orange Deed Book 55, page 467 William F Strayhorn estate by commissioners to Charles Strayhorn et al."
+    var cemetery = "This cemetery is said to have 2 to 3 dozen graves, many of them marked only with nameless fieldstones. <a href='https://cemeterycensus.com/nc/orng/cem272.htm'>See more at CemeteryCensus.com</a><br>Because the farmhouse was built by Samuel Strayhorn in 1826, it is assumed that those buried here included the kith & kin of the people he enslaved, which included:<br><br>Rose b. 1828<br>Anthony b. 1847<br>Charles b. 1844<br>Anderson<br>Charles b. 1835<br>Sandy b. 1806<br>Betsy b. 1814<br>Phillis b. 1846<br>Tamesia b. 1832<br>George b. 1838<br>Jim b. 1840<br>Joe b. 1833<br>Sophia b 1831<br>Ellen b. 1841<br>Green b. 1828<br>Jane b. 1834<br>Nancy b. 1809<br>Amey b. 1843<br><a href='https://cemeterycensus.com/nc/orng/cem272.htm'>- all of whom were divided among Samuel Strayhorn's heirs in September 1847</a>"
+    var farmhouse = "The farmhouse here has the year 1826 mortared into its chimney, suggesting that it was built while the property belonged Samuel Strayhorn."
+
+initiate()
+
+// mymap.on('click', affix);
+// mymap.on('mousemove', moveTract);
+
+
+// function moveTract(e) {
+//     tanyardProjection = []
+//     if (toggle/2 == Math.floor(toggle/2)) {
+//     var mouseLat = e.latlng['lat'] 
+//     var mouseLong = e.latlng['lng']
+//     moveLayer.clearLayers()
+//     for (var i = 0; i < tanyardCoords.length; i = i +2) {
+//         var nextLat = tanyardCoords[i]+mouseLat
+//         var nextLong = tanyardCoords[i+1]+mouseLong
+//         var nextCoord = [nextLat,nextLong]
+//         tanyardProjection.push(nextCoord)
+//     }
+//     var polyg = L.polygon(tanyardProjection, {color: 'red', fillColor: 'red', fillOpacity: 1.0}).addTo(moveLayer);
+//     }
+// }
+
+// function affix(e){
+//     toggle = toggle + 1
+//     console.log("toggle = " + toggle)
+//     var mouseLat = e.latlng['lat'] 
+//     var mouseLong = e.latlng['lng']
+//     console.log(mouseLat,mouseLong)
+//     var consoleIt ="["
+//     for (var i = 0; i < tanyardCoords.length; i = i +2) {
+//         var nextLat = tanyardCoords[i]+mouseLat
+//         var nextLong = tanyardCoords[i+1]+mouseLong
+//         consoleIt = consoleIt + "[" + nextLat
+//         consoleIt = consoleIt + ","
+//         consoleIt = consoleIt + nextLong + "]"
+//         if (i < tanyardCoords.length-1) {consoleIt = consoleIt + ","}
+//         if (i == tanyardCoords.length-1) {consoleIt = consoleIt + "]"}
+//     }
+//     console.log(consoleIt)
+// }
+
+function initiate(){
+    setTimeout(function(){mymap.flyTo([36.01990851909298,-79.0805768966675], 15);}, 250);
+    document.getElementById('comment').innerText = comment1780
+    document.getElementById('subhead').innerText = subhead1780
+    baseMap.clearLayers().openPopup();
+    var park = L.polygon(NCtoWmKennedy, {color: 'blue', opacity: .5}).addTo(baseMap)
+    .bindPopup(WmKennedyText, {autoClose: false}).openPopup();
+    var park = L.polygon(Omisc07, {color: 'blue', opacity: .5}).addTo(baseMap)
+    .bindPopup(Omisc07Text, {autoClose: false}).openPopup();
+}
+
+function yearChange(){
+    year = document.getElementById('year').value
+    if (year == 1) {
+        setTimeout(function(){mymap.flyTo([36.01990851909298,-79.0805768966675], 15);}, 250);
+        document.getElementById('comment').innerText = comment1780
+        document.getElementById('subhead').innerText = subhead1780
+        baseMap.clearLayers().openPopup();
+        var park = L.polygon(NCtoWmKennedy, {color: 'blue', opacity: .5}).addTo(baseMap)
+        .bindPopup(WmKennedyText, {autoClose: false}).openPopup();
+        var park = L.polygon(Omisc07, {color: 'blue', opacity: .5}).addTo(baseMap)
+        .bindPopup(Omisc07Text, {autoClose: false}).openPopup();
+    }
+
+    if (year == 2) {
+        setTimeout(function(){mymap.flyTo([36.01737678309715,-79.08087730407716], 16);}, 250);
+        baseMap.clearLayers();
+        document.getElementById('comment').innerText = comment1800
+        document.getElementById('subhead').innerText = subhead1800
+        var park = L.polygon(ODB6389, {color: 'red', opacity: .5}).addTo(baseMap)
+        .bindPopup(ODB6389Text, {autoClose: false}).openPopup()
+        var park = L.polygon(ODB9253, {color: 'red', opacity: .5}).addTo(baseMap)
+        .bindPopup(ODB9253Text, {autoClose: false}).openPopup()
+
+    }
+
+    if (year == 3) {
+        setTimeout(function(){mymap.flyTo([36.01737678309715,-79.08087730407716], 16);}, 250);
+        baseMap.clearLayers();
+        document.getElementById('comment').innerText = comment1850
+        document.getElementById('subhead').innerText = subhead1850
+        var park = L.polygon(ODB33289, {color: 'yellow', opacity: .5}).addTo(baseMap)
+        .bindPopup(ODB33289Text, {autoClose: false}).openPopup()
+    }
+    if (year == 4) {
+        setTimeout(function(){mymap.flyTo([36.01990851909298,-79.0805768966675], 15);}, 250);
+        console.log("year = " + year)
+        baseMap.clearLayers();
+        document.getElementById('comment').innerText = comment1900
+        document.getElementById('subhead').innerText = subhead1900
+        var park = L.polygon(ODB55467north, {color: 'green', opacity: .5}).addTo(baseMap)
+        .bindPopup(ODB55467northText, {autoClose: false}).openPopup()
+        var park = L.polygon(ODB55467south, {color: 'green', opacity: .5}).addTo(baseMap)
+        .bindPopup(ODB55467southText, {autoClose: false}).openPopup()
+    }
+    if (year == 5) {
+        setTimeout(function(){mymap.flyTo([36.01737678309715,-79.08087730407716], 16);}, 250);
+        baseMap.clearLayers();
+        document.getElementById('comment').innerText = comment2001
+        document.getElementById('subhead').innerText = subhead2001
+        var park = L.polygon(ODB55467south, {color: 'green', opacity: .5}).addTo(baseMap)
+        .bindPopup("ODB 59/71 Mary E Berry to Herbert N Blackwood, 2 Apr 1906. ODB 2469/72 Herbert N Blackwood heirs to Orange County, 28 Dec 2001.", {autoClose: false}).openPopup()
+    }
+    if (year == 6) {
+        baseMap.clearLayers();
+        document.getElementById('comment').innerText = comment2001
+        document.getElementById('subhead').innerText = subhead2001
+        L.imageOverlay(imageUrl2001, imageBounds2001, {opacity: 1}).addTo(baseMap);
+        L.marker([36.01845473333367,-79.08031940460206]).addTo(baseMap)
+        .bindPopup(farmhouse, {autoClose: false}).openPopup()
+    }
+
+    if (year == 7) {
+        setTimeout(function(){mymap.flyTo([36.02169825767698,-79.0834951400757], 16);}, 250);
+        baseMap.clearLayers();
+        document.getElementById('comment').innerText = comment2024
+        document.getElementById('subhead').innerText = subhead2024
+        L.imageOverlay(imageUrl2001, imageBounds2001, {opacity: 1}).addTo(baseMap);
+        L.marker([36.01845473333367,-79.08031940460206]).addTo(baseMap)
+        .bindPopup(farmhouse, {autoClose: false})
+        L.marker([36.01762572989509,-79.0833503007889]).addTo(baseMap)
+        .bindPopup(cemetery, {autoClose: false}).openPopup();
+    }
+}
+
+function hydrology() {
+    hydroLayer.clearLayers();
+    for (var i = 0; i < TanyardBranch.length-2; i = i + 2){
+            var thisLat = TanyardBranch[i]
+            var thisLong = TanyardBranch[i+1]
+            var nextLat = TanyardBranch[i+2]
+            var nextLong = TanyardBranch[i+3]
+            var NextSegment = [[thisLat,thisLong],[nextLat,nextLong]]
+            L.polyline(NextSegment, {color: 'blue', weight: 7}).addTo(hydroLayer);
+        }
+
+}
+</script>
+</html>
