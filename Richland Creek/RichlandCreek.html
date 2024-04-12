@@ -192,7 +192,7 @@ function yearChange(){
         document.getElementById('comment').innerText = comment2001
         document.getElementById('subhead').innerText = subhead2001
         var park = L.polygon(ODB55467south, {color: 'green', opacity: .5}).addTo(baseMap)
-        .bindPopup("<a href='https://rod.orangecountync.gov/orangencnw/application.asp?cmd=image_link&image_link_book=59&image_link_page=71&image_link_booktype=Records%20Book&tif2pdf=trueOrange Deed Book 59, page 71</a> Mary E Berry to Herbert N Blackwood, 2 Apr 1906. ODB 2469/72 Herbert N Blackwood heirs to Orange County, 28 Dec 2001.", {autoClose: false}).openPopup()
+        .bindPopup("<a href='https://rod.orangecountync.gov/orangencnw/application.asp?cmd=image_link&image_link_book=59&image_link_page=71&image_link_booktype=Records%20Book&tif2pdf=true'>Orange Deed Book 59, page 71</a> Mary E Berry to Herbert N Blackwood, 2 Apr 1906. ODB 2469/72 Herbert N Blackwood heirs to Orange County, 28 Dec 2001.", {autoClose: false}).openPopup()
     }
     if (year == 6) {
         baseMap.clearLayers();
