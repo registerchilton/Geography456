@@ -43,6 +43,12 @@
                 var longitude= long[0] + (long[1]/60) + (long[2]/3600)
                 var coords = document.getElementById("LatLong");
                 coords.innerHTML = `${latitude} ${longitude}`;
+                var coordinates = []
+                coordinates.push(latitude)
+                coordinates.push(longitude)
+                var picture = "<img src="IMG_20240311_150045.jpg"/>"
+                var marker = L.marker(coordinates).addTo(mymap)
+                .bindPopup(picture).openPopup();
             });
         }
     </script>
