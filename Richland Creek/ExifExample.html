@@ -37,8 +37,8 @@
     var long
     var image = 1
         function getExif() {
-            console.log("Exif function firing")
             var img1 = document.getElementById("img1");
+            console.log(img1)
             EXIF.getData(img1, function() {
                 lat = EXIF.getTag(this, "GPSLatitude");
                 var longref = EXIF.getTag(this, "GPSLongitudeRef");
