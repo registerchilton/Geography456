@@ -27,10 +27,10 @@
         function getExif() {
             var img1 = document.getElementById("img1");
             EXIF.getData(img1, function() {
-                var make = EXIF.getTag(this, "Make");
-                var model = EXIF.getTag(this, "Model");
+                var lat = EXIF.getTag(this, "GPSLatitude");
+                var long = EXIF.getTag(this, "GPSLongitude");
                 var makeAndModel = document.getElementById("makeAndModel");
-                makeAndModel.innerHTML = `${make} ${model}`;
+                makeAndModel.innerHTML = `${lat} ${long}`;
             });
 
             var img2 = document.getElementById("img2");
