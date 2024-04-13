@@ -19,6 +19,7 @@
 
 <body>
     <div id="myfirstmap"></div>
+    <button onclick="imageChange()">Next photo</button>
     <img src="IMG_20240311_150045.jpg" id="img1" style="width:500px"/>
     <pre>Latitude and Longitude: <span id="LatLong"></span></div>
     <br/>
@@ -33,7 +34,7 @@
 
     var lat
     var long
-        
+    var image = 1
         function getExif() {
             var img1 = document.getElementById("img1");
             EXIF.getData(img1, function() {
@@ -56,6 +57,13 @@
                 var marker = L.marker(coordinates).addTo(mymap)
                 .bindPopup(picture).openPopup();
             });
+        }
+        function imageChange(){
+            image = image + 1
+            if (image == 4) {image = 1}
+            if (image == 1) {document.getElementById('img1').src = "IMG_20240311_150045.jpg"}
+            if (image == 2) {document.getElementById('img1').src = "IMG_20240311_150525.jpg"}
+            if (image == 3) {document.getElementById('img1').src = "IMG_20240311_150754.jpg"}
         }
     </script>
 </body>
