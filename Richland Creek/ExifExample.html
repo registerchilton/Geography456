@@ -39,10 +39,13 @@
             EXIF.getData(img1, function() {
                 lat = EXIF.getTag(this, "GPSLatitude");
                 var longref = EXIF.getTag(this, "GPSLongitudeRef");
+                var latref = EXIF.getTag(this, "GPSLatitudeRef");
                 console.log("LongRef is " + longref)
                 long = EXIF.getTag(this, "GPSLongitude");
                 var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
-                var longitude= (long[0] + (long[1]/60) + (long[2]/3600))*(-1)
+                var longitude= long[0] + (long[1]/60) + (long[2]/3600)
+                if (longref == "W") {longitude = longitude * -1}
+                if (latref == "S") {latitude = latitude * -1}
                 var coords = document.getElementById("LatLong");
                 coords.innerHTML = `${latitude} ${longitude}`;
                 var coordinates = []
