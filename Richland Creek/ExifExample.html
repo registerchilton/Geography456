@@ -9,7 +9,7 @@
 <body>
 
     <img src="IMG_20240311_150045.jpg" id="img1" style="width:500px"/>
-    <pre>Lattitude and Longitude: <span id="LatLong"></span></div>
+    <pre>Latitude and Longitude: <span id="LatLong"></span></div>
     <br/>
 
     <script type="text/javascript" src="./exif.js"></script>
@@ -24,8 +24,10 @@
             EXIF.getData(img1, function() {
                 lat = EXIF.getTag(this, "GPSLatitude");
                 long = EXIF.getTag(this, "GPSLongitude");
+                var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
+                var longitude= long[0] + (long[1]/60) + (long[2]/3600)
                 var coords = document.getElementById("LatLong");
-                coords.innerHTML = `${lat} ${long}`;
+                coords.innerHTML = `${latitude} ${longitude}`;
             });
         }
     </script>
