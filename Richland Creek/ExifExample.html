@@ -27,7 +27,7 @@
     <script>
     "use strict";
     window.onload=getExif;
-    var mymap = L.map('myfirstmap').setView([36.01990851909298,-79.0805768966675], 15);
+    var mymap = L.map('myfirstmap').setView([36.01990851909298,-79.0805768966675], 13);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(mymap);
 
@@ -46,7 +46,7 @@
                 var coordinates = []
                 coordinates.push(latitude)
                 coordinates.push(longitude)
-                var picture = "<img src='IMG_20240311_150045.jpg'/>"
+                var picture = "<img src='IMG_20240311_150045.jpg' style='width:50px'/>"
                 var marker = L.marker(coordinates).addTo(mymap)
                 .bindPopup(picture).openPopup();
             });
