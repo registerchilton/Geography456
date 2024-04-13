@@ -38,7 +38,7 @@
             var img1 = document.getElementById("img1");
             EXIF.getData(img1, function() {
                 lat = EXIF.getTag(this, "GPSLatitude");
-                longref = EXIF.getTag(this, "EXIF.getTag(this, "GPSLongitude");");
+                var longref = EXIF.getTag(this, "EXIF.getTag(this, "GPSLongitude");");
                 console.log("LongRef is " + longref)
                 long = EXIF.getTag(this, "GPSLongitude");
                 var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
