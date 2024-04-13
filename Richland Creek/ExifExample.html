@@ -18,8 +18,9 @@
 </style>
 
 <body>
-    <div id="myfirstmap"></div>
     <button onclick="imageChange()">Next photo</button>
+    <button onclick="getExif()">Get the coordinates</button>
+    <div id="myfirstmap"></div>
     <img src="IMG_20240311_150045.jpg" id="img1" style="width:500px"/>
     <pre>Latitude and Longitude: <span id="LatLong"></span></div>
     <br/>
@@ -66,7 +67,6 @@
             if (image == 2) {document.getElementById('img1').src = "IMG_20240311_150525.jpg"}
             if (image == 3) {document.getElementById('img1').src = "IMG_20240311_150754.jpg"}
             getExif();
-
         }
     </script>
 </body>
