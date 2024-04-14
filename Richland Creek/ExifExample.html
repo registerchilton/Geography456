@@ -47,6 +47,7 @@
     var markerImage = "img1"
     var lat
     var long
+    var markers = ""
     var image = 1
         function getExif() {
             var img1 = document.getElementById(markerImage);
@@ -67,16 +68,20 @@
                 coordinates.push(longitude)
                 console.log(coordinates[0] + "," + coordinates[1])
                 mymap.flyTo(coordinates, 14)
-                var source = document.getElementById(markerImage).src
-                var picture = "<img src='" + source + "' style='width:50px'/>"
-                var marker = L.marker(coordinates).addTo(mymap)
-                .bindPopup(picture).openPopup();
+                if (markers != "done") {
+                    var source = document.getElementById(markerImage).src
+                    var picture = "<img src='" + source + "' style='width:50px'/>"
+                    var marker = L.marker(coordinates).addTo(mymap).bindPopup(picture).openPopup();
+                }
             });
         }
         function imageChange(){
             document.getElementById(markerImage).style="width:50px"
             image = image + 1
-            if (image == 15) {image = 1}
+            if (image == 15) {
+                image = 1
+                markers = "done"
+            }
             if (image == 1) {markerImage = "img1"}
             if (image == 2) {markerImage = "img2"}
             if (image == 3) {markerImage = "img3"}
