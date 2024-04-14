@@ -19,11 +19,21 @@
 
 <body>
     <button onclick="imageChange()">Next photo</button>
-    <button onclick="getExif()">Get the coordinates</button>
     <div id="myfirstmap"></div>
-    <img src="IMG_20240311_150045.jpg" id="img1" style="width:50px"/>
-    <img src="IMG_20240311_150525.jpg" id="img2" style="width:50px"/>
-    <img src="resized1827image.jpg" id="img3" style="width:50px"/>
+    <img src="image1.jpg" id="img1" style="width:50px"/>
+    <img src="image2.jpg" id="img2" style="width:50px"/>
+    <img src="image3.jpg" id="img3" style="width:50px"/>
+    <img src="image4.jpg" id="img4" style="width:50px"/>
+    <img src="image5.jpg" id="img5" style="width:50px"/>
+    <img src="image6.jpg" id="img6" style="width:50px"/>
+    <img src="image7.jpg" id="img7" style="width:50px"/>
+    <img src="image8.jpg" id="img8" style="width:50px"/>
+    <img src="image9.jpg" id="img9" style="width:50px"/>
+    <img src="image10.jpg" id="img10" style="width:50px"/>
+    <img src="image11.jpg" id="img11" style="width:50px"/>
+    <img src="image12.jpg" id="img12" style="width:50px"/>
+    <img src="image13.jpg" id="img13" style="width:50px"/>
+    <img src="image14.jpg" id="img14" style="width:50px"/>
     <pre>Latitude and Longitude: <span id="LatLong"></span></div>
     <br/>
 
@@ -64,11 +74,24 @@
             });
         }
         function imageChange(){
+            document.getElementById(markerImage).style="width:50px"
             image = image + 1
-            if (image == 4) {image = 1}
+            if (image == 15) {image = 1}
             if (image == 1) {markerImage = "img1"}
             if (image == 2) {markerImage = "img2"}
             if (image == 3) {markerImage = "img3"}
+            if (image == 4) {markerImage = "img4"}
+            if (image == 5) {markerImage = "img5"}
+            if (image == 6) {markerImage = "img6"}
+            if (image == 7) {markerImage = "img7"}
+            if (image == 8) {markerImage = "img8"}
+            if (image == 9) {markerImage = "img9"}
+            if (image == 10) {markerImage = "img10"}
+            if (image == 11) {markerImage = "img11"}
+            if (image == 12) {markerImage = "img12"}
+            if (image == 13) {markerImage = "img13"}
+            if (image == 14) {markerImage = "img14"}
+            document.getElementById(markerImage).style="width:500px"
             getExif();
         }
     </script>
