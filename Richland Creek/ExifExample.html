@@ -59,6 +59,7 @@
                 long = EXIF.getTag(this, "GPSLongitude");
                 var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
                 var longitude= long[0] + (long[1]/60) + (long[2]/3600)
+                var time = EXIF.getTag(this, "DateTimeOriginal");
                 if (longref == "W") {longitude = longitude * -1}
                 if (latref == "S") {latitude = latitude * -1}
                 var coords = document.getElementById("LatLong");
@@ -70,7 +71,7 @@
                 mymap.flyTo(coordinates, 14)
                 if (markers != "done") {
                     var source = document.getElementById(markerImage).src
-                    var picture = "<img src='" + source + "' style='width:50px'/>"
+                    var picture = "<img src='" + source + "' style='width:100px'/><br>" + time
                     var marker = L.marker(coordinates).addTo(mymap).bindPopup(picture).openPopup();
                 }
             });
