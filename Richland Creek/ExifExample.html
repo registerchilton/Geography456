@@ -43,7 +43,6 @@
                 lat = EXIF.getTag(this, "GPSLatitude");
                 var longref = EXIF.getTag(this, "GPSLongitudeRef");
                 var latref = EXIF.getTag(this, "GPSLatitudeRef");
-                console.log("LongRef is " + longref)
                 long = EXIF.getTag(this, "GPSLongitude");
                 var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
                 var longitude= long[0] + (long[1]/60) + (long[2]/3600)
@@ -54,8 +53,9 @@
                 var coordinates = []
                 coordinates.push(latitude)
                 coordinates.push(longitude)
+                console.log(coordinates[0] + "," + coordinates[1])
                 mymap.flyTo(coordinates, 14)
-                var picture = "<img src='IMG_20240311_150045.jpg' style='width:50px'/>"
+                var picture = "<img src='" + document.getElementById('img1').src "' style='width:50px'/>"
                 var marker = L.marker(coordinates).addTo(mymap)
                 .bindPopup(picture).openPopup();
             });
