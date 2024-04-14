@@ -55,7 +55,7 @@
                 coordinates.push(longitude)
                 console.log(coordinates[0] + "," + coordinates[1])
                 mymap.flyTo(coordinates, 14)
-                var picture = "<img src='" + document.getElementById('img1').src "' style='width:50px'/>"
+                var picture = "<img src='" + img1.src "' style='width:50px'/>"
                 var marker = L.marker(coordinates).addTo(mymap)
                 .bindPopup(picture).openPopup();
             });
