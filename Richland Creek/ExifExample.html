@@ -22,6 +22,8 @@
     <button onclick="getExif()">Get the coordinates</button>
     <div id="myfirstmap"></div>
     <img src="IMG_20240311_150045.jpg" id="img1" style="width:500px"/>
+    <img src="IMG_20240311_150525.jpg" id="img2" style="width:500px"/>
+    <img src="IMG_20240311_150754.jpg" id="img3" style="width:500px"/>
     <pre>Latitude and Longitude: <span id="LatLong"></span></div>
     <br/>
 
@@ -32,12 +34,12 @@
     var mymap = L.map('myfirstmap').setView([0,0], 5);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(mymap);
-
+    var markImage = "img1"
     var lat
     var long
     var image = 1
         function getExif() {
-            var img1 = document.getElementById("img1");
+            var img1 = document.getElementById(markImage);
             console.log(img1)
             EXIF.getData(img1, function() {
                 lat = EXIF.getTag(this, "GPSLatitude");
@@ -64,9 +66,9 @@
         function imageChange(){
             image = image + 1
             if (image == 4) {image = 1}
-            if (image == 1) {document.getElementById('img1').src = "IMG_20240311_150045.jpg"}
-            if (image == 2) {document.getElementById('img1').src = "IMG_20240311_150525.jpg"}
-            if (image == 3) {document.getElementById('img1').src = "IMG_20240311_150754.jpg"}
+            if (image == 1) {markImage = "img1"}
+            if (image == 2) {markImage = "img2"}
+            if (image == 3) {markImage = "img3"}
             getExif();
         }
     </script>
