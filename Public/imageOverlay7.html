@@ -48,6 +48,7 @@
 <input type="file" id="csv-file" names="files" onchange="handleFileSelect(this)"/>
 <button onclick="corners()">Console Log the corners</button><br>
 <button onclick="switchDimensions()">switch width and height</button>
+<button onclick="adjustHeight()">Adjust height independently</button>
 <button onclick="getExif()">GEt the Exif data</button><br>
 
 
@@ -61,7 +62,7 @@
       </div>
     </div>
 
-    <!-- <div id="instruction">Adjust the N-S scale with this slider.</div>
+    <div id="instruction">Adjust the N-S scale with this slider.</div>
     <div class="slider-container">
         <input type="range" min="1" max="3000" value="100" class="slider" id="NSscaleSlider" oninput='display()'>
           <div class="tick-container">
@@ -78,11 +79,11 @@
             <span class="tick">2500</span>
             <span class="tick">2750</span>
             <span class="tick">3000</span>
-    </div> -->
+    </div>
 
           <div id="instruction">Adjust scale with this slider.</div>
           <div class="slider-container">
-              <input type="range" min="1" max="2000" value="100" class="slider" id="EWscaleSlider" oninput='scaleChange()'>
+              <input type="range" min="1" max="3000" value="100" class="slider" id="EWscaleSlider" oninput='scaleChange()'>
                 <div class="tick-container">
                   <span class="tick">1</span>
                   <span class="tick">250</span>
@@ -93,6 +94,10 @@
                   <span class="tick">1500</span>
                   <span class="tick">1750</span>
                   <span class="tick">2000</span>
+                  <span class="tick">2250</span>
+                  <span class="tick">2500</span>
+                  <span class="tick">2750</span>
+                  <span class="tick">3000</span>
                 </div>
               </div>
     
@@ -123,7 +128,7 @@ var imageHeight
 var imageScale
 var EWScale = 100
 var EWscaleSlider = 100
-var NSScale = 100
+var NSscale = 100
 var NSscaleSlider = 100
 var NEcornerLat = 35.919869995668265
 var NEcornerLong = -79.03320932572984
@@ -132,8 +137,10 @@ var SWcornerLong = -79.06230138377042
 var imageBounds
 let NSlength = mymap.distance([36,-79], [36.1,-79]); // this gives us the distance of 0.1 degrees NS in meters
 let EWlength = mymap.distance([36,-79], [36,-79.1]); // this gives us the distance of 0.1 degrees EW in meters
-var NSscaling = 0.1/NSlength 
-var EWscaling = 0.1/EWlength
+// var NSscaling = 0.1/NSlength 
+// var EWscaling = 0.1/EWlength
+var NSscaling = .00001 
+var EWscaling = NSscaling
 console.log("NS scale is " + NSscaling + " & EW is " + EWscaling)
 var allMetaDataSpan
 var adjustmode = 0
@@ -147,11 +154,11 @@ function display() {
     var Opacity = opacityslider.value/100
     EWscaleslider = document.getElementById('EWscaleSlider');
     EWScale = EWscaleslider.value/100
-    // NSscaleslider = document.getElementById('NSscaleSlider');
-    // NSScale = NSscaleslider.value/100
+    NSscaleslider = document.getElementById('NSscaleSlider');
+    NSScale = NSscaleslider.value/100
     
     maplayer.clearLayers();
-    NEcornerLat = SWcornerLat + (imageHeight * EWScale * NSscaling)
+    NEcornerLat = SWcornerLat + (imageHeight * NSScale * EWscaling)
     NEcornerLong = SWcornerLong + (imageWidth * EWScale * EWscaling)
     imageBounds = [[SWcornerLat, SWcornerLong], [NEcornerLat, NEcornerLong]];
     L.imageOverlay(imageUrl, imageBounds, {opacity: Opacity}).addTo(maplayer);
@@ -165,6 +172,7 @@ var correctedLat
 var correctedLong
 var EWputdownscale = 10
 var NSputdownscale = 10
+var NSadjust = 0
 
 mymap.on('mousemove', onMouseMove);
 mymap.on('click', Pickup);
@@ -252,34 +260,33 @@ function switchDimensions() {
 function scaleChange(){
     EWscaleslider = document.getElementById('EWscaleSlider');
     EWScale = EWscaleslider.value/100
-    // NSscaleslider = document.getElementById('NSscaleSlider');
-    // NSScale = NSscaleslider.value/100
-    var EWscalechangeratio = EWScale/EWputdownscale
-//    var NSscalechangeratio = NSScale/NSputdownscale
-    console.log("changing scale by a factor of " + EWscalechangeratio)
+var EWscalechangeratio = EWScale/EWputdownscale
+    if (NSadjust/2 != Math.floor(NSadjust/2)) {
+        NSscaleslider = document.getElementById('NSscaleSlider');
+        NSScale = NSscaleslider.value/100
+        var NSscalechangeratio = NSScale/NSputdownscale
+    }
+    else {
+        NSscaleslider = EWscaleslider
+        NSscale = EWScale
+        var NSscalechangeratio = EWscalechangeratio
+        var MoveNS = document.getElementById('NSscaleSlider')
+        MoveNS.value = EWscaleslider.value
+    }
+
+    console.log("changing EW scale by a factor of " + EWscalechangeratio)
+    console.log("changing NS scale by a factor of " + NSscalechangeratio)
     console.log (correctedLat + "," + correctedLong + " is the corrected Point - where you set it down.")
-    SWcornerLat = correctedLat + (SWchangelat * EWscalechangeratio)
+    SWcornerLat = correctedLat + (SWchangelat * NSscalechangeratio)
     SWcornerLong = correctedLong + (SWchangeLong * EWscalechangeratio)
     console.log (SWcornerLat + "," + SWcornerLong + " is the adjusted SW Corner.")
     console.log(EWScale)
     display()
 }
 
-
-function getExif() {
-//    EXIF.getData(imageUrl, function() {
-        var make = EXIF.getTag(imageUrl, "Make");
-        var model = EXIF.getTag(imageUrl, "Model");
-        console.log(make);        
-    };
-
-//     EXIF.getData(imageUrl, function() {
-//         var allMetaData = EXIF.getAllTags(this);
-//         allMetaDataSpan = document.getElementById("allMetaDataSpan");
-//         allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
-//     });
-// }
-
+function adjustHeight(){
+    NSadjust = NSadjust + 1
+}
 
 </script>
 </html>
