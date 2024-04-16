@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cape Fear Shiner</title>
+</head>
+
+<script src="./ForAbby.js"></script>
+<script src="./DeepRiverHydro.js"></script>
+<script src="./dams.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap { height: 800px; width: 100pct}
+</style>
+
+<body>
+    <h3 id="headline">The Sub-Basins of the Upper Cape Fear River, but some of these are just the main river, so...</h3>
+    <button onclick="shinerMap()">Shiner Map</button>
+    <button onclick="updateHydro()">Show dams</button>
+    <div id="myfirstmap"></div>
+    <h3>The longest free flowing stretch of each stream (in kilometers) is:</h3>
+    <table id="mytable">
+        <tr>
+            <th>Deep River</th>
+            <th>Rocky River</th>
+            <th>Bear Creek</th>
+            <th>Fork Creek</th>
+        </tr>
+    </table>
+</body>
+<script>
+    var mymap = L.map('myfirstmap').setView([35.5514670577133,-79.40780639648439], 11);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+    var subbasins = []
+    var baseMap = L.layerGroup().addTo(mymap);
+    var markerLayer = L.layerGroup().addTo(mymap);
+//    mymap.on('mousemove', coordLog);
+    mymap.on('click', coordLog);
+    var mouseLat 
+    var mouseLong
+    var moving = "false"
+    var sites = [[35.46717134595175, -79.48239326477052],[35.47164511859225, -79.49629783630373],[35.474021709073654, -79.47921752929689],[35.477516567464775, -79.5212745666504],[35.47807573070901, -79.51475143432617],[35.478425205761624, -79.50676918029787],[35.48171019699442, -79.56255912780762],[35.48534449895104, -79.57972526550294],[35.488209890395495, -79.4209384918213],[35.491494481729625, -79.5741891860962],[35.4987620363685, -79.57908153533937],[35.5022558190032, -79.58320140838624],[35.516997907831666, -79.60676193237306],[35.52167847885105, -79.58457469940186],[35.54102659934359, -79.32231903076173],[35.578626829269595, -79.1922426223755],[35.585118675871925, -79.1818141937256],[35.616558289323535, -79.1505289077759],[35.619139906220845, -79.15773868560792],[35.62119816268766, -79.18773651123048],[35.62123304793393, -79.18228626251222],[35.622105174144835, -79.097957611084],[35.623361019178446, -79.18829441070558],[35.6237098615208, -79.13997173309326],[35.62381451392674, -79.61654663085939],[35.62433777390185, -79.20172691345215],[35.63051198300061, -79.61311340332033],[35.631907218437654, -79.23520088195802],[35.63253506643929, -79.21103954315187],[35.6579936350394, -79.24131631851198],[35.65869101589245, -79.23545837402345],[35.678563809891266, -79.2896819114685]]
+    var post2007sites = [[35.4605301307887, -79.38690662384035],[35.47660791889787, -79.36128616333009],[35.48807011757336, -79.38385963439943],[35.51867456165909, -79.34617996215822],[35.48723147553534, -79.38377380371095]]
+    var markeronthemove = -1
+    var fish = L.icon({iconUrl: './transparentsmallfish.png', iconAnchor:   [34, 16]});
+    var greenLayer = L.layerGroup().addTo(mymap);
+    var theTable = document.getElementById('mytable')
+    var segments = 1277
+    var subBasinProps = [["Sandy Creek",133,5,155565150],["White Oak Creek",87,4,0],["Bear Creek",111,4,133906615],["Polecat Creek",97,5,0],["McLendons Creek",138,4,262041539],["Deep River and minor tribs",293,0,0],["Randolph Richland Creek",185,4,171090935],["Rocky River and minor tribs",187,0,0],["Guilford Richland Creek",101,2,0],["Brush Creek",131,4,180013928],["Cape Fear River and minor tribs",122,0,0],["Cedar Creek",88,4,0],["Pocket Creek",91,4,0],["Cabin Creek",152,4,376609007],["Fork Creek",155,4,125088329],["Harlands Creek",122,4,40853870],["Lick Creek",101,4,125496890],["Indian Creek",99,4,67089134],["Bush Creek",120,5,34740627],["Landrum Creek",125,4,45303429],["Big Governors Creek",106,4,105841722],["Big Buffalo Creek",90,2,0],["Buckhorn Creek",106,4,86390177],["Muddy Creek",93,2,0],["Haw Creek",96,2,0],["New Hope Creek",168,4,134776048],["Big Cane Creek",174,5,176270203],["Bowden Branch",71,2,0],["Alamance Back Creek",91,2,0],["Morgan Creek",172,4,154306317],["Haw River and minor tribs",260,0,0],["Little Alamance Creek",136,2,0],["Stony Creek",125,2,0],["Jordan Lake",141,0,0],["Terrells Creek",121,4,75452229],["Buffalo Creek",109,2,0],["Guilford Back Creek",120,2,0],["Collins Creek",118,4,50683910],["Little Cane Creek",115,4,101651272],["Little Troublesome Creek",71,2,0],["Lower Troublesome Creek",103,2,0],["Stinking Quarter Creek",136,5,214624787],["Big Alamance Creek",124,2,0],["Little Creek",148,2,0],["Northeast Creek",72,2,0],["Third Fork Creek",70,2,0],["White Oak Creek2",90,2,0],["Roberson Creek",121,4,73987156],["Reedy Fork",135,2,0],["Beaver Creek",96,2,0]]
+    var damplaces = [["Roscoe Lake Dam","Harts Creek-Bear Creek",-79.365279999999998,35.62138999999997],["Garner Dam","Fork Creek",-79.6733999999999,35.5274000000000],["Burroughs Dam","Fork Creek",-79.7219000000000,35.5405000000000],["Fork Creek Road Dam","Fork Creek",-79.7239999999999,35.5522999999999],["Lambert Mill Lake Dam","Fork Creek",-79.7361999999999,35.5321999999999],["King Dam","Fork Creek",-79.7393000000000,35.5655000000000],["Cagle Pond Dam","Fork Creek",-79.7410000000000,35.5325999999999],["Loflin Pond Dam","Fork Creek",-79.7412000000000,35.5316999999999],["Gerald Cagle Pond Dam","Fork Creek",-79.7438000000000,35.5357999999999],["Slack Lake Dam","Fork Creek",-79.7514000000000,35.5357999999999],["Duke University Dam","Headwaters New Hope Creek",-78.9450999999999,35.9887000000000],["Duke Water Harvesting Pond Dam","Headwaters New Hope Creek",-78.9501000000000,36.0030999999999],["Forest at Duke Dam","Headwaters New Hope Creek",-78.9518000000000,35.9724999999999],["Van Trine Lake Dam","Headwaters New Hope Creek",-78.9577800000000,35.9494399999999],["Georgiade Dam","Headwaters New Hope Creek",-78.9680000000000,35.9839999999999],["Shephard Dam","Headwaters New Hope Creek",-78.9789999999999,36.0070000000000],["Waller Pond Dam","Headwaters New Hope Creek",-78.9912999999999,35.9910999999999],["East Chapel Hill HS Lower Dam","Headwaters New Hope Creek",-79.0275000000000,35.9637000000000],["East Chapel Hill HS Upper Dam","Headwaters New Hope Creek",-79.0289000000000,35.9627999999999],["New Hope Dam","Headwaters New Hope Creek",-79.0713899999999,36.0077799999999],["Lake Williams Dam","Lick Creek",-79.0932999999999,35.4871999999999],["San-Lee Park Upper Dam","Lick Creek",-79.1246999999999,35.4819000000000],["San-Lee Park Dam","Lick Creek",-79.1264999999999,35.4825999999999],["Oldham Lower Lake Dam #2","Lick Creek",-79.1389000000000,35.4865999999999],["Oldham Upper Lake Dam #1","Lick Creek",-79.1400000000000,35.4824999999999],["Robbins Raw Water Reservoir Dam","Lower Cabin Creek",-79.6008299999999,35.4313900000000],["Holly Ridge Farm Lagoon #2 Dam","Lower Cabin Creek",-79.6258999999999,35.3168000000000],["Holly Ridge Farm Lagoon #1 Dam","Lower Cabin Creek",-79.6273999999999,35.3167000000000],["Wet Creek Farm Pond Dam","Lower Cabin Creek",-79.6366000000000,35.3217999999999],["Wet Creek Farm Lagoon #2 Dam","Lower Cabin Creek",-79.6371000000000,35.3226000000000],["Wet Creek Farm Lagoon #1 Dam","Lower Cabin Creek",-79.6373000000000,35.3235999999999],["Deerfield Swine Waste Lagoon Dam No. 3","Lower Cabin Creek",-79.6403999999999,35.3215000000000],["Underwood Lake Dam","Lower Cabin Creek",-79.6503000000000,35.2941999999999],["Williams Lake Dam #8","Lower Cabin Creek",-79.6518000000000,35.3051999999999],["Alan Williams Pond Dam","Lower Cabin Creek",-79.6551000000000,35.3148000000000],["Randall Monroe Dam","Lower Cabin Creek",-79.6554999999999,35.3177999999999],["Kalawi Farm Pond Dam #1","Lower Cabin Creek",-79.6597999999999,35.3095000000000],["Williams Lake Dam #7","Lower Cabin Creek",-79.6625999999999,35.3061999999999],["R. Green Lake Dam","Lower Cabin Creek",-79.6694000000000,35.3169000000000],["Williams Pond Dam","Lower Cabin Creek",-79.6702999999999,35.3307999999999],["Lewis Lake Dam","Lower Cabin Creek",-79.6708000000000,35.3109000000000],["Mcduffie Lake Dam","Lower Cabin Creek",-79.6755000000000,35.3269999999999],["Williams Pond Dam","Lower Cabin Creek",-79.6755000000000,35.3314999999999],["Williams Pond Dam","Lower Cabin Creek",-79.6858000000000,35.3163000000000],["Clement Williams Pond Dam #2","Lower Cabin Creek",-79.6878999999999,35.3072000000000],["Clement Williams Pond Dam #1","Lower Cabin Creek",-79.6886999999999,35.3055000000000],["Carter Pond Dam","Lower Cabin Creek",-79.6951000000000,35.3061999999999],["Harris Lake Dam #1","Lower Cabin Creek",-79.6952000000000,35.3078999999999],["Harris Lake Dam #2","Lower Cabin Creek",-79.6984999999999,35.3068999999999],["Harris Lake Dam","Lower Cabin Creek",-79.7070000000000,35.3130000000000],["Candor Wastewater Dam","Lower Cabin Creek",-79.7144000000000,35.3086999999999],["Mccauley Lake Dam","Lower Cabin Creek",-79.7209999999999,35.3121999999999],["Baldwin Lake Dam","Lower Cabin Creek",-79.7230000000000,35.3160000000000],["McAuley Farm Road Dam","Lower Cabin Creek",-79.7239999999999,35.3085999999999],["J.C. Campbell Dam","Lower Cane Creek",-79.3413000000000,35.8741000000000],["Tredmont Lake Dam #2","Lower Cane Creek",-79.3969999999999,35.8654999999999],["Tredmont Lake Dam","Lower Cane Creek",-79.3995000000000,35.8617999999999],["Carthage Pond Dam #1","Lower Mclendons Creek",-79.4111099999999,35.3316699999999],["Marsh Lake Dam","Lower Mclendons Creek",-79.4135999999999,35.4178999999999],["Kelly Pond Dam","Lower Mclendons Creek",-79.4429999999999,35.3707999999999],["Jason Creek Dam","Lower Richland Creek",-79.6381000000000,35.6246000000000],["Earwood Dam","Lower Richland Creek",-79.6945000000000,35.6279000000000],["Goss Lake Dam","Lower Richland Creek",-79.6984999999999,35.6268999999999],["Whitley Dam","Lower Richland Creek",-79.7207999999999,35.6754999999999],["Craven Dam","Lower Richland Creek",-79.7530000000000,35.7020000000000],["Dehart Dam","Lower Richland Creek",-79.7734000000000,35.6190000000000],["Garner Dam","Lower Richland Creek",-79.7782000000000,35.6045000000000],["Brower Dam","Lower Sandy Creek",-79.5915999999999,35.8156999999999],["Kennedy Lake Dam","Lower Sandy Creek",-79.5939000000000,35.8019000000000],["Amick Dam","Lower Sandy Creek",-79.6368000000000,35.8001000000000],["Ramseur Water Supply Dam","Lower Sandy Creek",-79.6772199999999,35.7436099999999],["Purgatory Farm Pond Dam","Lower Sandy Creek",-79.6860000000000,35.7657999999999],["Bay Meadows Lake Dam","Morgan Creek",-78.9937000000000,35.8721000000000],["Few Lake Dam","Morgan Creek",-79.0028999999999,35.8787999999999],["Governors Club Dam #8","Morgan Creek",-79.0241999999999,35.8485999999999],["Governors Club Dam #1","Morgan Creek",-79.0369999999999,35.8470999999999],["Clearwater Lake Dam","Morgan Creek",-79.0421000000000,35.8636999999999],["Governors Club Dam #5","Morgan Creek",-79.0589000000000,35.8460999999999],["Governors Club Dam #7","Morgan Creek",-79.0622999999999,35.8422999999999],["Governors Club Dam #6","Morgan Creek",-79.0622999999999,35.8436000000000],["Cedar Village Lake Dam","Morgan Creek",-79.0945999999999,35.8446000000000],["Cedarock Millpond Dam","Rock Creek",-79.4398999999999,35.9959999999999],["Cedarock Park Pond Dam","Rock Creek",-79.4438999999999,35.9932999999999],["Rich Dam","Rock Creek",-79.4476999999999,35.9547000000000],["Holt Davis Pond Dam","Rock Creek",-79.4495000000000,35.9635999999999],["Lloyd Pond Dam","Rock Creek",-79.4514000000000,35.9579000000000],["Murray Dam","South Prong Stinking Quarter Creek",-79.5110000000000,35.9166999999999],["Timber Ridge Lake Dam","South Prong Stinking Quarter Creek",-79.5161999999999,35.9103999999999],["Isley & Bunton Dam","South Prong Stinking Quarter Creek",-79.5313000000000,35.9627999999999],["Hornady Dam","South Prong Stinking Quarter Creek",-79.5353999999999,35.9358999999999],["Nellie Smith Dam","South Prong Stinking Quarter Creek",-79.5430000000000,35.9169999999999],["Kimesville Lake Dam","South Prong Stinking Quarter Creek",-79.5458000000000,35.9509000000000],["Euliss Dam","South Prong Stinking Quarter Creek",-79.5505000000000,35.8794000000000],["Staley Mill Pond Dam","South Prong Stinking Quarter Creek",-79.5622999999999,35.8972999999999],["Coward Dam","South Prong Stinking Quarter Creek",-79.5632999999999,35.8743999999999],["Fogleman Dam","Stinking Quarter Creek",-79.4454999999999,36.0100000000000],["Campbell Dam","Stinking Quarter Creek",-79.4992999999999,36.0125999999999],["Coble Dam","Stinking Quarter Creek",-79.5087000000000,35.9961000000000],["Stafford Mill Dam","Stinking Quarter Creek",-79.5349999999999,35.9747200000000],["Sharpe Dam","Stinking Quarter Creek",-79.5558999999999,35.9705000000000],["Neese Dam","Stinking Quarter Creek",-79.6063999999999,35.9284000000000],["Brothers Lake Dam","Stinking Quarter Creek",-79.6220000000000,35.9350000000000],["Wolfspeed Storm Pond Dam #2","Upper Brush Creek",-79.5270000000000,35.7450000000000],["Wolfspeed Storm Pond Dam #3","Upper Brush Creek",-79.5309999999999,35.7419999999999],["Wolfspeed Storm Pond Dam #1","Upper Brush Creek",-79.5340000000000,35.7490000000000],["Wolfspeed Storm Pond Dam #5","Upper Brush Creek",-79.5369999999999,35.7490000000000],["Wolfspeed Storm Pond Dam #4","Upper Brush Creek",-79.5379999999999,35.7450000000000],["Langley Dam","Upper Brush Creek",-79.5604999999999,35.7712999999999],["Kaufman Pond Dam","Upper Brush Creek",-79.5615000000000,35.7449000000000],["Liles Dam","Upper Brush Creek",-79.5733000000000,35.7017000000000],["Peavine Lake Dam","Upper Brush Creek",-79.5735999999999,35.7413999999999],["Jordan Pond Dam","Upper Cabin Creek",-79.7172000000000,35.3743999999999],["Ott Lake Dam","Upper Cabin Creek",-79.7727999999999,35.3914000000000],["Lamm Dam","Upper Cane Creek",-79.3457000000000,35.8955999999999],["Snow Camp Milling Dam","Upper Cane Creek",-79.4050000000000,35.8969999999999],["Mathis Dam","Upper Cane Creek",-79.4177999999999,35.8993000000000],["Bear Lake Dam","Upper Cane Creek",-79.4275000000000,35.9315999999999],["Braeburn Farm Dam","Upper Cane Creek",-79.4410000000000,35.9200000000000],["Owens Dam","Upper Cane Creek",-79.4822000000000,35.8809999999999],["Overman Dam","Upper Cane Creek",-79.5067999999999,35.8883999999999],["Reeb Pond Dam","Upper Mclendons Creek",-79.4680999999999,35.3277999999999],["Breeden Lake Dam","Upper Mclendons Creek",-79.4691000000000,35.3293999999999],["Dowdy Road Dam","Upper Mclendons Creek",-79.5007999999999,35.3571999999999],["Needham Farm Pond Dam","Upper Mclendons Creek",-79.5055999999999,35.3458999999999],["Neville Pond Dam","Upper Mclendons Creek",-79.5130999999999,35.3448000000000],["Boy Scouts Of America Dam Lower","Upper Mclendons Creek",-79.5454999999999,35.3322999999999],["Seven Lakes Dam #3","Upper Mclendons Creek",-79.5559999999999,35.2777000000000],["Seven Lakes Dam #2","Upper Mclendons Creek",-79.5572999999999,35.2839000000000],["Boy Scouts Of America Dam Upper","Upper Mclendons Creek",-79.5594900000000,35.3363600000000],["Seven Lakes Dam #5","Upper Mclendons Creek",-79.5613000000000,35.2757000000000],["Seven Lakes Dam #4","Upper Mclendons Creek",-79.5674000000000,35.2786000000000],["Frith Pond Dam","Upper Mclendons Creek",-79.5700000000000,35.3139999999999],["J.L. Frith Pond Dam #2","Upper Mclendons Creek",-79.5730000000000,35.3097000000000],["Seven Lakes Dam #1","Upper Mclendons Creek",-79.5743000000000,35.2786000000000],["Seven Lakes Dam #6","Upper Mclendons Creek",-79.5760000000000,35.2850000000000],["Seven Lakes Dam #7","Upper Mclendons Creek",-79.5797999999999,35.2734000000000],["Oldham Lake Dam","Upper Mclendons Creek",-79.5841999999999,35.3384000000000],["Hatchery Pond Dam","Upper Mclendons Creek",-79.5910000000000,35.3379999999999],["Mclendon Creek Dam","Upper Mclendons Creek",-79.5927400000000,35.2831399999999],["Gilmore Dam","Upper Sandy Creek",-79.5969999999999,35.8650000000000],["Patterson Lake Dam","Upper Sandy Creek",-79.5991999999999,35.8305000000000],["Hicks Dam","Upper Sandy Creek",-79.6096999999999,35.8230999999999],["Daniels Dam","Upper Sandy Creek",-79.6147000000000,35.8617999999999],["East Pond Dam","Upper Sandy Creek",-79.6245999999999,35.8825000000000],["Smith Lagoon Dam","Upper Sandy Creek",-79.6266699999999,35.8119400000000],["Dodson Lake Dam","Upper Sandy Creek",-79.6303900000000,35.8754300000000],["Upper Three Lakes Estate Dam","Upper Sandy Creek",-79.6315999999999,35.8900999999999],["Lower Three Lakes Estate Dam","Upper Sandy Creek",-79.6317999999999,35.8875999999999],["West Pond Dam","Upper Sandy Creek",-79.6364999999999,35.8863999999999],["Koopman Waste Pond Dam No. 4","Upper Sandy Creek",-79.6398000000000,35.8530999999999],["Rogers Dam","Upper Sandy Creek",-79.6580000000000,35.8926999999999],["Kidds Mill Dam","Upper Sandy Creek",-79.6676999999999,35.7993000000000],["Nelson Lake Dam","Upper Sandy Creek",-79.6808999999999,35.9100000000000],["Bradley Oliver Dam","Upper Sandy Creek",-79.6814000000000,35.9079999999999],["Lineberry Lake Dam","Upper Sandy Creek",-79.6956999999999,35.8271999999999]]
+
+function shinerMap() {
+    markerLayer.clearLayers();
+    // var shineMap = "./ShineMap.png"
+    // L.imageOverlay(shineMap, [[35.32998013023665,-79.8644219806927],[35.96898013023665,-78.6209099806927]], {opacity: 1}).addTo(baseMap);
+    for (var i = 0; i < sites.length; i = i + 1) {
+        var popup = "<button onclick='MarkerMove(" + i + ")'>Move?<button"
+        var marker = L.marker(sites[i], {icon: fish}).addTo(markerLayer)
+        .bindPopup("site" + i)
+    }
+    if (hydro[506].status=='removed dam'){
+        for (var i = 0; i < post2007sites.length; i = i + 1){
+        var marker = L.marker(post2007sites[i], {icon: fish}).addTo(markerLayer)
+        .bindPopup("site" + i)
+        }
+    }
+}
+
+
+
+function coordLog(e){
+    mouseLat = e.latlng['lat'] 
+    mouseLong = e.latlng['lng']
+    console.log(mouseLat,mouseLong)
+    if (moving == "true") {
+        baseMap.clearLayers();
+        var marker = L.marker([mouseLat,mouseLong]).addTo(baseMap)
+    }
+}
+
+function MarkerMove(a){
+    moving = "true"
+    markeronthemove = a
+    console.log("Move Marker " + markeronthemove)
+    markerLayer.clearLayers();
+    for (var i = 0; i < sites.length; i = i + 1) {
+        if (i != a) {    
+        var marker = L.marker(sites[i]).addTo(markerLayer)
+        }
+    }
+    sites.splice(markeronthemove,1)
+}
+
+function setdown(){
+    console.log("Setting down at " + mouseLat +"," + mouseLong);
+    sites.push([mouseLat,mouseLong])
+    sites.splice(markeronthemove, 0, [mouseLat,mouseLong]);
+    markeronthemove = -1
+    moving = "false"
+    shinerMap();
+}
+
+function updateHydro(){
+        greenLayer.clearLayers();
+        for (var i = 1; i < segments-1; i = i + 1){
+            // var marker = L.circle([hydro[i].lat,hydro[i].long], {color: 'red', fillColor: 'red', fillOpacity: 0.5, radius: 10}).addTo(greenLayer)
+            // .bindTooltip(""+ hydro[i].order)
+            if (hydro[i].stream == hydro[i+1].stream && hydro[i-1].stream == hydro[i].stream) {
+                console.log("stream of segment " + i + " is " + hydro[i].stream)
+                if (hydro[i].status=='dam') {
+                    var blurb = hydro[i].name + " <button onclick='removeDam(" + i + ")'>Remove this dam?</button>"
+                    var marker = L.marker([hydro[i].lat,hydro[i].long]).addTo(greenLayer)
+                    .bindPopup(blurb)
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                }
+
+                if (hydro[i].status=='pond') {
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'red'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+
+                if (hydro[i].status=='removed dam') {
+                    var blurb = hydro[i].name + " <button onclick='replaceDam(" + i + ")'>Put this dam back?</button>"
+                    var marker = L.marker([hydro[i].lat,hydro[i].long]).addTo(greenLayer)
+                    .bindPopup(blurb)
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                }
+
+                if (hydro[i].status=='former pond'){
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+
+                if (hydro[i].status=='free'){
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+            }
+        }
+        updateTable()
+    }
+
+    function removeDam(a) {
+        console.log("Removing dam at position " + a)
+        hydro[a].status ='removed dam'
+        for (var i = a-1; i > 0; i = i -1) {
+            if (hydro[i].status != 'pond') {i = 0}
+            if (hydro[i].status == 'pond') {hydro[i].status = 'former pond'}
+        }
+        shinerMap()
+        updateHydro()
+    }
+
+    function replaceDam(a) {
+        hydro[a].status ='dam'
+        for (var i = a-1; i > 0; i = i -1) {
+            if (hydro[i].status != 'former pond') {i = 0}
+            if (hydro[i].status == 'former pond') {hydro[i].status = 'pond'}
+        }
+        shinerMap()
+        updateHydro()
+    }
+    
+    function handleFileSelect(evt) {
+        console.log(evt)
+        loaded="yes"
+        var file = evt.files[0]
+        Papa.parse(file, papaConfig)
+    }
+
+    function updateTable(){
+        var stretchlengths = []
+        var lengthofthissegment
+        var lengthofthisstretch = 0
+        for (var i = 0; i < segments-1; i = i + 1) {
+            console.log("testing " + hydro[i].stream)
+            if (hydro[i].stream == hydro[i+1].stream) {
+                lengthofthissegment = mymap.distance([hydro[i].lat, hydro[i].long], [hydro[i+1].lat, hydro[i+1].long])
+                if (hydro[i+1].status != 'dam' && hydro[i+1].status != 'pond') {
+                    lengthofthisstretch = lengthofthisstretch +lengthofthissegment
+                }
+                else{
+                    console.log("encountered a dam/pond")
+                    if (lengthofthisstretch != 0) {
+                        stretchlengths.push(lengthofthisstretch)
+                        stretchlengths.push(hydro[i].stream)
+                    }
+                    lengthofthisstretch = 0
+                }
+            }
+            else{
+                console.log("end of " + hydro[i].stream)
+                    if (lengthofthisstretch != 0) {
+                        stretchlengths.push(lengthofthisstretch)
+                        stretchlengths.push(hydro[i].stream)
+                    }
+                    lengthofthisstretch = 0
+            }
+            if (i == segments-2) {
+                if (lengthofthisstretch != 0) {
+                    lengthofthissegment = mymap.distance([hydro[i].lat, hydro[i].long], [hydro[i+1].lat, hydro[i+1].long])
+                    lengthofthisstretch = lengthofthisstretch +lengthofthissegment
+                    stretchlengths.push(lengthofthisstretch)
+                    stretchlengths.push(hydro[i].stream)
+                    }
+                    lengthofthisstretch = 0
+            }
+        }
+        console.log(stretchlengths)
+        var longestStretch = 0
+        var streamName
+        try {document.getElementById('mytable').deleteRow(1);}
+        catch {}
+        
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Deep River") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var DeepLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Rocky River") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var RockyLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Fork Creek") {
+                console.log("found a fork creek section")
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var ForkLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Bear Creek") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var BearLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 =document.createElement('td');
+        var myNewCell2 =document.createElement('td');
+        var myNewCell3 =document.createElement('td');
+        var myNewCell4 =document.createElement('td');
+        myNewCell1.innerText = DeepLength + " km"
+        myNewCell2.innerText = RockyLength + " km"
+        myNewCell3.innerText = BearLength + " km"
+        myNewCell4.innerText = ForkLength + " km"
+        myNewRow.append(myNewCell1)
+        myNewRow.append(myNewCell2)
+        myNewRow.append(myNewCell3)
+        myNewRow.append(myNewCell4)
+        theTable.append(myNewRow);
+    }
+
+
+</script>
+</html>
