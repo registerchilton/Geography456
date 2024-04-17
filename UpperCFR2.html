@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cape Fear Shiner</title>
+</head>
+
+<script src="./UpperCFR.js"></script>
+<script src="DeepRiverHydro.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap { height: 800px; width: 100pct}
+</style>
+
+<body>
+    <button onclick="shiner()">Present habitat of CFS</button>
+    <button onclick="shinerMap()">Shiner Map</button>
+    <button onclick="updateHydro()">Show dams</button>
+    <div id="myfirstmap"></div>
+    <h3>The longest free flowing stretch of each stream (in kilometers) is:</h3>
+    <table id="mytable">
+        <tr>
+            <th>Deep River</th>
+            <th>Rocky River</th>
+            <th>Bear Creek</th>
+            <th>Fork Creek</th>
+        </tr>
+    </table>
+</body>
+<script>
+    var mymap = L.map('myfirstmap').setView([35.733149, -79.362114], 9);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+    var subbasins = []
+    var baseMap = L.layerGroup().addTo(mymap);
+    var markerLayer = L.layerGroup().addTo(mymap);
+    mymap.on('mousemove', coordLog);
+    mymap.on('contextmenu', setdown);
+    var mouseLat 
+    var mouseLong
+    var moving = "false"
+    var sites = [[35.52384402383153,-79.61791992187501],[35.46717134595175, -79.48239326477052],[35.47164511859225, -79.49629783630373],[35.474021709073654, -79.47921752929689],[35.477516567464775, -79.5212745666504],[35.47807573070901, -79.51475143432617],[35.478425205761624, -79.50676918029787],[35.48171019699442, -79.56255912780762],[35.48534449895104, -79.57972526550294],[35.488209890395495, -79.4209384918213],[35.491494481729625, -79.5741891860962],[35.4987620363685, -79.57908153533937],[35.5022558190032, -79.58320140838624],[35.516997907831666, -79.60676193237306],[35.52167847885105, -79.58457469940186],[35.54102659934359, -79.32231903076173],[35.578626829269595, -79.1922426223755],[35.585118675871925, -79.1818141937256],[35.616558289323535, -79.1505289077759],[35.619139906220845, -79.15773868560792],[35.62119816268766, -79.18773651123048],[35.62123304793393, -79.18228626251222],[35.622105174144835, -79.097957611084],[35.623361019178446, -79.18829441070558],[35.6237098615208, -79.13997173309326],[35.62381451392674, -79.61654663085939],[35.62433777390185, -79.20172691345215],[35.63051198300061, -79.61311340332033],[35.631907218437654, -79.23520088195802],[35.63253506643929, -79.21103954315187],[35.6579936350394, -79.24131631851198],[35.65869101589245, -79.23545837402345],[35.678563809891266, -79.2896819114685]]
+    var post2007sites = [[35.4605301307887, -79.38690662384035],[35.47660791889787, -79.36128616333009],[35.48807011757336, -79.38385963439943],[35.51867456165909, -79.34617996215822],[35.48723147553534, -79.38377380371095]]
+    var markeronthemove = -1
+    var fish = L.icon({iconUrl: './transparentsmallestfish.png', iconAnchor:   [20, 12]});
+    var greenLayer = L.layerGroup().addTo(mymap);
+    var theTable = document.getElementById('mytable')
+    var segments = 1277
+    var first
+
+for (var i = 0; i < UpperCFR.features.length; i = i + 1){
+    subbasins.push([])
+    var nextSubBasin = []
+    for (var j = 0; j < UpperCFR.features[i].geometry.coordinates[0].length; j = j + 1) {
+        var nextLong = UpperCFR.features[i].geometry.coordinates[0][j][0]
+        var nextLat = UpperCFR.features[i].geometry.coordinates[0][j][1]
+        nextCoord = [nextLat, nextLong]
+        nextSubBasin.push(nextCoord)
+    }
+subbasins[i].push(nextSubBasin)
+}
+
+for (var i = 0; i < subbasins.length; i = i + 1){
+    var button = "<button onclick='selectone(" + i + ")'>select " + UpperCFR.features[i].properties.HU_12_NAME + " to unify</button>"
+    var shape = L.polygon(subbasins[i], {color: 'green', fillColor: 'green', fillOpacity: 0.2}).addTo(baseMap)
+    .bindPopup(button)
+}
+
+function shiner(){
+    baseMap.clearLayers();
+    for (var i = 0; i < subbasins.length; i = i + 1){
+        if (UpperCFR.features[i].properties.HU_12_NAME == "Fork Creek" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Rocky River" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Rocky Branch-Deep River" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Georges Creek-Deep River" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Smiths Creek-Deep River" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Tysons Creek-Deep River" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Buffalo Creek-Deep River" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Grassy Creek-Deep River" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Flat Creek-Deep River" || 
+            UpperCFR.features[i].properties.HU_12_NAME == "Harts Creek-Bear Creek"){
+            var shape = L.polygon(subbasins[i], {color: 'green', fillColor: 'green', fillOpacity: 0.2}).addTo(baseMap)
+            .bindTooltip(UpperCFR.features[i].properties.HU_12_NAME)
+        }
+        else{
+            var shape = L.polygon(subbasins[i], {color: 'red', fillColor: 'red', fillOpacity: 0.2}).addTo(baseMap)        
+            .bindTooltip(UpperCFR.features[i].properties.HU_12_NAME)
+        }
+    }
+}
+
+function shinerMap() {
+    markerLayer.clearLayers();
+    // var shineMap = "./ShineMap.png"
+    // L.imageOverlay(shineMap, [[35.32998013023665,-79.8644219806927],[35.96898013023665,-78.6209099806927]], {opacity: 1}).addTo(baseMap);
+    for (var i = 0; i < sites.length; i = i + 1) {
+        var popup = "<button onclick='MarkerMove(" + i + ")'>Move?<button"
+        var marker = L.marker(sites[i], {icon: fish}).addTo(markerLayer)
+        .bindPopup("site" + i)
+    }
+    if (hydro[506].status=='removed dam'){
+        for (var i = 0; i < post2007sites.length; i = i + 1){
+        var marker = L.marker(post2007sites[i], {icon: fish}).addTo(markerLayer)
+        .bindPopup("site" + i)
+        }
+    }
+}
+
+function coordLog(e){
+    mouseLat = e.latlng['lat'] 
+    mouseLong = e.latlng['lng']
+//    console.log(mouseLat,mouseLong)
+    if (moving == "true") {
+        baseMap.clearLayers();
+        var marker = L.marker([mouseLat,mouseLong]).addTo(baseMap)
+    }
+}
+
+function MarkerMove(a){
+    moving = "true"
+    markeronthemove = a
+    console.log("Move Marker " + markeronthemove)
+    markerLayer.clearLayers();
+    for (var i = 0; i < sites.length; i = i + 1) {
+        if (i != a) {    
+        var marker = L.marker(sites[i]).addTo(markerLayer)
+        }
+    }
+    sites.splice(markeronthemove,1)
+}
+
+function setdown(){
+    console.log("Setting down at " + mouseLat +"," + mouseLong);
+    sites.push([mouseLat,mouseLong])
+    sites.splice(markeronthemove, 0, [mouseLat,mouseLong]);
+    markeronthemove = -1
+    moving = "false"
+    shinerMap();
+}
+
+
+
+
+function updateHydro(){
+        greenLayer.clearLayers();
+        for (var i = 1; i < segments-1; i = i + 1){
+            // var marker = L.circle([hydro[i].lat,hydro[i].long], {color: 'red', fillColor: 'red', fillOpacity: 0.5, radius: 10}).addTo(greenLayer)
+            // .bindTooltip(""+ hydro[i].order)
+            if (hydro[i].stream == hydro[i+1].stream && hydro[i-1].stream == hydro[i].stream) {
+                console.log("stream of segment " + i + " is " + hydro[i].stream)
+                if (hydro[i].status=='dam') {
+                    var blurb = hydro[i].name + " <button onclick='removeDam(" + i + ")'>Remove this dam?</button>"
+                    var marker = L.marker([hydro[i].lat,hydro[i].long]).addTo(greenLayer)
+                    .bindPopup(blurb)
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                }
+
+                if (hydro[i].status=='pond') {
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'red'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+
+                if (hydro[i].status=='removed dam') {
+                    var blurb = hydro[i].name + " <button onclick='replaceDam(" + i + ")'>Put this dam back?</button>"
+                    var marker = L.marker([hydro[i].lat,hydro[i].long]).addTo(greenLayer)
+                    .bindPopup(blurb)
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                }
+
+                if (hydro[i].status=='former pond'){
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+
+                if (hydro[i].status=='free'){
+                    var blurb = hydro[i].blurb
+                    var segment = L.polyline([[hydro[i].lat,hydro[i].long],[hydro[i+1].lat,hydro[i+1].long]], {color: 'blue'}).addTo(greenLayer)
+                    .bindTooltip(blurb)
+                }
+            }
+        }
+        updateTable()
+    }
+
+    function removeDam(a) {
+        console.log("Removing dam at position " + a)
+        hydro[a].status ='removed dam'
+        for (var i = a-1; i > 0; i = i -1) {
+            if (hydro[i].status != 'pond') {i = 0}
+            if (hydro[i].status == 'pond') {hydro[i].status = 'former pond'}
+        }
+        shinerMap()
+        updateHydro()
+    }
+
+    function replaceDam(a) {
+        hydro[a].status ='dam'
+        for (var i = a-1; i > 0; i = i -1) {
+            if (hydro[i].status != 'former pond') {i = 0}
+            if (hydro[i].status == 'former pond') {hydro[i].status = 'pond'}
+        }
+        shinerMap()
+        updateHydro()
+    }
+    
+    function handleFileSelect(evt) {
+        console.log(evt)
+        loaded="yes"
+        var file = evt.files[0]
+        Papa.parse(file, papaConfig)
+    }
+
+    function updateTable(){
+        var stretchlengths = []
+        var lengthofthissegment
+        var lengthofthisstretch = 0
+        for (var i = 0; i < segments-1; i = i + 1) {
+            console.log("testing " + hydro[i].stream)
+            if (hydro[i].stream == hydro[i+1].stream) {
+                lengthofthissegment = mymap.distance([hydro[i].lat, hydro[i].long], [hydro[i+1].lat, hydro[i+1].long])
+                if (hydro[i+1].status != 'dam' && hydro[i+1].status != 'pond') {
+                    lengthofthisstretch = lengthofthisstretch +lengthofthissegment
+                }
+                else{
+                    console.log("encountered a dam/pond")
+                    if (lengthofthisstretch != 0) {
+                        stretchlengths.push(lengthofthisstretch)
+                        stretchlengths.push(hydro[i].stream)
+                    }
+                    lengthofthisstretch = 0
+                }
+            }
+            else{
+                console.log("end of " + hydro[i].stream)
+                    if (lengthofthisstretch != 0) {
+                        stretchlengths.push(lengthofthisstretch)
+                        stretchlengths.push(hydro[i].stream)
+                    }
+                    lengthofthisstretch = 0
+            }
+            if (i == segments-2) {
+                if (lengthofthisstretch != 0) {
+                    lengthofthissegment = mymap.distance([hydro[i].lat, hydro[i].long], [hydro[i+1].lat, hydro[i+1].long])
+                    lengthofthisstretch = lengthofthisstretch +lengthofthissegment
+                    stretchlengths.push(lengthofthisstretch)
+                    stretchlengths.push(hydro[i].stream)
+                    }
+                    lengthofthisstretch = 0
+            }
+        }
+        console.log(stretchlengths)
+        var longestStretch = 0
+        var streamName
+        try {document.getElementById('mytable').deleteRow(1);}
+        catch {}
+        
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Deep River") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var DeepLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Rocky River") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var RockyLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Fork Creek") {
+                console.log("found a fork creek section")
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var ForkLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        for (var i = 0; i < stretchlengths.length; i = i + 2){
+            if (stretchlengths[i+1] == "Bear Creek") {
+                if (stretchlengths[i]>longestStretch) {
+                    longestStretch = stretchlengths[i]
+                }
+            }
+        }
+        var BearLength = Math.floor(longestStretch/100)/10
+        longestStretch = 0
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 =document.createElement('td');
+        var myNewCell2 =document.createElement('td');
+        var myNewCell3 =document.createElement('td');
+        var myNewCell4 =document.createElement('td');
+        myNewCell1.innerText = DeepLength + " km"
+        myNewCell2.innerText = RockyLength + " km"
+        myNewCell3.innerText = BearLength + " km"
+        myNewCell4.innerText = ForkLength + " km"
+        myNewRow.append(myNewCell1)
+        myNewRow.append(myNewCell2)
+        myNewRow.append(myNewCell3)
+        myNewRow.append(myNewCell4)
+        theTable.append(myNewRow);
+    }
+
+function selectone(a){
+    baseMap.clearLayers();
+    first = a
+    for (var i = 0; i < subbasins.length; i = i + 1){
+        var button = "<button onclick='selecttwo(" + i + ")'>Unify " + UpperCFR.features[first].properties.HU_12_NAME + " with this?</button>"
+        var shape = L.polygon(subbasins[i], {color: 'green', fillColor: 'green', fillOpacity: 0.2}).addTo(baseMap)
+        .bindPopup(button)
+    }
+}
+
+function selecttwo(a){
+    second = a
+    console.log("comparing " + first + " with " + second)
+    var firstArray = []
+    var secondArray = []
+    for (var i = 0; i < subbasins[first][0].length; i = i + 1) {
+        for (var j = 0; j < subbasins[second][0].length; j = j + 1) {
+            if (mymap.distance(subbasins[first][0][i], subbasins[second][0][j]) < 3) {
+                console.log("found near corners")
+                secondArray.push([i,j])
+            }
+        }
+    }
+    console.log(secondArray);
+    // for (var i = 0; i < subbasins[first][0].length; i = i + 1) {
+    //     var corner = L.marker(subbasins[first][0][i]).addTo(baseMap)
+    //     .bindPopup("Remove corner " + i +"?")
+    // }    
+}
+
+</script>
+</html>
