@@ -30,31 +30,6 @@
     <h1 id="yearheader">The Making of the History of Chapel Hill's 'Color Line'</h1>
     <h3 id="comment"></h3>
 
-        <div class="slider-container">
-            <input type="range" min="0" max="10" value="0" class="slider" id="year" oninput='yearChange()'>
-            <div class="tick-container">
-            </div>
-        </div>
-        <div class="slider-container" id="slider">
-            <input type="range" min="1960" max="2024" value="1960" class="slider" id="sliderval" oninput='drawparcel()'>
-              <div class="tick-container">
-                  <span class="tick">1960</span>
-                  <span class="tick">1965</span>
-                  <span class="tick">1970</span>
-                  <span class="tick">1975</span>
-                  <span class="tick">1980</span>
-                  <span class="tick">1985</span>
-                  <span class="tick">1990</span>
-                  <span class="tick">1995</span>
-                  <span class="tick">2000</span>
-                  <span class="tick">2005</span>
-                  <span class="tick">2010</span>
-                  <span class="tick">2015</span>
-                  <span class="tick">2020</span>
-                  <span class="tick">2024</span>
-              </div>
-            </div>
-
     <!-- <button id="button1" onclick="button1()">What is Leaflet Javascript?</button> -->
     <button id="button2" onclick="button2()">How did you make Tanyard Branch turn red?</button>
     <button id="button3" onclick="button3()">How did you make Emily Tailor's location spin in a circle?</button>
@@ -64,8 +39,6 @@
 </body>
 
 <script>
-    document.getElementById("year").style.display = "none";
-    document.getElementById("slider").style.display = "none";
     var mymap = L.map('myfirstmap').setView([35.91359630123158,-79.05896902084352], 15);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(mymap);
@@ -78,7 +51,7 @@
     var comment1 = ""
     var comment2 = "Tanyard Branch is first rapidly drawn in blue with an L.polyline Leaflet command (at weight:5). Then I sent a series of commands to re-draw each tiny segment of Tanyard Branch in red (at weight:7), but I needed to slow the process down dramatically, which I did with Javascript's setTimeout feature. <br><br>setTimeout tells Javascript to continue with the rest of the program, but delay a particular instruction by the specified number of milliseconds. The human eye can detect changes about every 32 milliseconds, so I usually set about that length of time for my delay time. But for Tanyard Branch, I needed the blood to ooze down the creek, so I had to not only make it very slow, but I also had to decrease the distance between each point in the polyline.<br><br>By exporting the points in the polyline over into MS Excel, I was able to calculate a series of points that were midway between the original points. That was still too fast, so I did that again. And again. Until I finally had over 600 points along the course of Tanyard Branch. Then I fired the function 600 times at 15 millisend intervals."
     var comment3 = "I did this in a very similar way to Tanyard Branch. I picked a point as the center of the vicinity I wanted to show her. Then I used Excel's Sine and Cosine functions to project a series of locations along a circular path around the center point.  <br><br>Then I used setTimeout to project Emily Taylor's marker in each of those calculated positions in turn (and drew a polyline from her location on the census image to each of those locations). Every time the position changes, Leaflet executes a clearLayers command on a special layer created just for carrying out this function."
-    var comment4 = "Making Young Evans' neighbors float around was complex, but basically, I defined min and max latitudes & longitudes for where they would go. Then I used the Math.random method to select random destinations within those bounds. Each of the five neighbors has their own destination. Then using setTimeout, I have each marker move 1 meter closer to their destination every 30 milliseconds. When a marker gets close to its destination, a new random destination is chosen for that marker, and the process repeats.This approach allows me to show each of these people in a location, while visually conveying the extnet of my uncertainty about the exact location."
+    var comment4 = "Making Young Evans' neighbors float around was complex, but basically, I defined min and max latitudes & longitudes for where they would go. Then I used the Math.random method to select random destinations within those bounds. Each of the five neighbors has their own destination. Then using setTimeout, I have each marker move 1 meter closer to their destination every 30 milliseconds.<br><br>When a marker gets close to its destination, a new random destination is chosen for that marker, and the process repeats.This approach allows me to show each of these people in a location, while visually conveying the extnet of my uncertainty about the exact location."
     var comment5 = "The audio component of the presentation uses the HTML <audio> element, which you can read more about at W3Schools. I recorded each of the audio segments as WAV files on my iPhone, then used a free online utility to convert them to MP3 files (which is what the HTML audio element uses).<br><br>Each audio clip plays when called with an 'x = document.getElementById('slide1')' command, followed by an 'x.play()' command.<br><br>I put an event listener after each recording like this: 'x.addEventListener('ended', slide2)' so the next recording automatically plays when the last one ended."
     
     var imageBounds1850 = [[35.89168040667976,-79.07330979026091],[35.928918506679764,-79.01788779026091]]
@@ -100,47 +73,6 @@
     L.imageOverlay(imageUrl1850, imageBounds1850, {opacity: opacity1850}).addTo(baseMap);
     L.imageOverlay(imageUrl1860, imageBounds1860, {opacity: opacity1860}).addTo(baseMap);
     mymap.on('click', affix);
-
-function affix(e){
-    toggle = toggle + 1
-    var mouseLat = e.latlng['lat'] 
-    var mouseLong = e.latlng['lng']
-    console.log(mouseLat,mouseLong)
-}
-
-function intro(){
-    document.getElementById('comment').innerText = comment1944
-    document.getElementById('yearheader').innerText = ""
-    baseMap.clearLayers();
-    markerLayer.clearLayers();
-    hydroLayer.clearLayers();
-    mymap.panTo([35.91359630123158,-79.05896902084352]);
-    mymap.flyTo([35.91359630123158,-79.05896902084352], 15);
-    L.imageOverlay("./Freeman2.png", [[35.90257394310867,-79.07430087090853],[35.92609154310867,-79.04332797090854]], {opacity: 1}).addTo(baseMap);
-}
-
-function Map1850() {
-    baseMap.clearLayers();
-    L.imageOverlay(imageUrl1850, imageBounds1850, {opacity: 1}).addTo(baseMap);
-    markerLayer.clearLayers();
-        for (i=0; i < chorus.features.length-1; i = i + 1) {
-            coords = chorus.features[i].coords.split(",")
-            toolTip = chorus.features[i].person
-            if (chorus.features[i].status == "FPOC") {
-                var green = L.circle(coords, {color: 'green', fillColor: 'green', fillOpacity: 1.0, radius: 8}).addTo(markerLayer)
-                .bindTooltip(toolTip);
-            }
-            if (chorus.features[i].status == "enslaved") {
-                var red = L.circle(coords, {color: 'red', fillColor: 'red', fillOpacity: 1.0, radius: 8}).addTo(markerLayer)
-                .bindTooltip(toolTip);
-            }
-            if (chorus.features[i].status == "white") {
-                var red = L.circle(coords, {color: 'yellow', fillColor: 'yellow', fillOpacity: 1.0, radius: 8}).addTo(markerLayer)
-                .bindTooltip(toolTip);
-            }
-    }
-}
-
 
 function button2(){
         mymap.panTo([35.9122581360450,-79.0609860420227])
@@ -193,7 +125,7 @@ function button4(){
     mymap.panTo([35.91584815839376,-79.05934453010559])
     mymap.setView([35.91584815839376,-79.05934453010559], 16);
     document.getElementById('comment').style.display = ""
-    document.getElementById("comment"). innerText = comment4
+    document.getElementById("comment"). innerHTML = comment4
             var maxLat = 35.917158838457155 
             var minLong = -79.06106114387514
             var minLat = 35.91437833534177
