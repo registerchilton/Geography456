@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapel Hill's 'Color Line'</title>
+</head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap {height: 750px; width: 100pct}
+    .slider{width: 500px;}
+</style>
+<script src="./Census1880withCoords.js"></script>
+<script src="./map1880.js"></script>
+
+<body>
+    <audio id="slide4">
+        <source src="slide4.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="slide7">
+        <source src="slide7.mp3" type="audio/mpeg">
+    </audio>
+    <h1 id="yearheader">The Making of the History of Chapel Hill's 'Color Line'</h1>
+    <h3 id="comment"></h3>
+    <h3 id="EvansDestination"></h3>
+            
+    <!-- <button id="button1" onclick="button1()">What is Leaflet Javascript?</button> -->
+    <button id="button2" onclick="start()">Start</button>
+    <div id="myfirstmap"></div>
+    <table id="mytable">
+        <tr>
+            <th>Household</th>
+            <th>Name</th>
+            <th>Race</th>
+            <th>buttons</th>
+        </tr>
+      </table>
+</body>
+
+<script>
+    var lasercounter= 0
+    var locat
+    var randcolor
+    var mymap = L.map('myfirstmap').setView([35.91359630123158,-79.05896902084352], 15);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(mymap);
+    var tempLayer = L.layerGroup().addTo(mymap);
+    var showLayer = L.layerGroup().addTo(mymap);
+    var markerLayer = L.layerGroup().addTo(mymap);
+    var baseMap = L.layerGroup().addTo(mymap);
+    var moveLayer = L.layerGroup().addTo(mymap);
+    var hydroLayer = L.layerGroup().addTo(mymap);
+    var comment1 = ""
+    var comment2 = "Tanyard Branch is first rapidly drawn in blue with an L.polyline Leaflet command (at weight:5). Then I sent a series of commands to re-draw each tiny segment of Tanyard Branch in red (at weight:7), but I needed to slow the process down dramatically, which I did with Javascript's setTimeout feature. <br><br>setTimeout tells Javascript to continue with the rest of the program, but delay a particular instruction by the specified number of milliseconds. The human eye can detect changes about every 32 milliseconds, so I usually set about that length of time for my delay time. But for Tanyard Branch, I needed the blood to ooze down the creek, so I had to not only make it very slow, but I also had to decrease the distance between each point in the polyline.<br><br>By exporting the points in the polyline over into MS Excel, I was able to calculate a series of points that were midway between the original points. That was still too fast, so I did that again. And again. Until I finally had over 600 points along the course of Tanyard Branch. Then I fired the function 600 times at 15 millisend intervals."
+    var comment3 = "I did this in a very similar way to Tanyard Branch. I picked a point as the center of the vicinity I wanted to show her. Then I used Excel's Sine and Cosine functions to project a series of locations along a circular path around the center point.  <br><br>Then I used setTimeout to project Emily Taylor's marker in each of those calculated positions in turn (and drew a polyline from her location on the census image to each of those locations). Every time the position changes, Leaflet executes a clearLayers command on a special layer created just for carrying out this function."
+    var comment4 = "Making Young Evans' neighbors float around was complex, but basically, I defined min and max latitudes & longitudes for where they would go (shown as a red box here). Then I used the Math.random method to select random destinations within those bounds. For example John Evans destination is where the blue marker is.<br><br>Then using the setTimeout method, each marker moves 1 meter closer to its destination every 30 milliseconds. When a marker gets to its destination, a new random destination is chosen for that marker, and the process repeats.<br><br>This approach allows me to show each of these people in a location, while visually conveying the extent of my uncertainty about the exact location."
+    var comment5 = "The audio component of the presentation uses the HTML audio element, which you can read more about at W3Schools. I recorded each of the audio segments as WAV files on my iPhone, then used a free online utility to convert them to MP3 files (which is what the HTML audio element uses).<br><br>Each audio clip plays when called with an 'x = document.getElementById('slide1')' command, followed by an 'x.play()' command.<br><br>I put an event listener after each recording like this: 'x.addEventListener('ended', slide2)' so the next recording automatically plays when the last one ended."
+    var floaterScale = 1000
+    var loopcounter = 0
+    var delay = 30
+    var markerColor
+    var tracker = -1
+    var inMotion = -1
+    var colorLine = [[35.90395302242906,-79.06149029731752],[35.90447199875475,-79.06154394149782],[35.90528888395202,-79.0616297721863],[35.905949338159466,-79.06182289123537],[35.90692262904967,-79.06180143356323],[35.907756868856104,-79.06150102615358],[35.90852158095237,-79.06071782112123],[35.90898214262625,-79.06050324440004],[35.909381873226735,-79.06041741371155],[35.910528915042455,-79.06049251556398],[35.911806282948326,-79.06066417694093],[35.91284032757661,-79.06069636344911],[35.91320528127748,-79.06050324440004],[35.913492029432774,-79.06006336212158],[35.913926494354385,-79.05974149703981],[35.91437833534177,-79.0596127510071],[35.91493444378348,-79.05959129333498],[35.91536021166686,-79.0597951412201],[35.91577728818787,-79.05969858169556],[35.91614222833987,-79.05926942825319],[35.91665487951925,-79.05895829200746],[35.91698505987574,-79.05859351158144],[35.917323927755895,-79.05777812004091],[35.91769754963337,-79.05730605125429],[35.9180885473828,-79.05699491500856],[35.91855774213086,-79.05683398246767],[35.91951350060105,-79.0564262866974],[35.9201912132454,-79.05611515045167],[35.92193759983511,-79.05614733695985],[35.923484118947414,-79.05610442161561],[35.92470046104681,-79.0560829639435]]
+    var lastFixedLocation = -1
+    var nextFixedLocation = -1
+    var randofunction = "no"
+    
+    mymap.panTo([35.911636294276306,-79.05476331710817]);
+    mymap.flyTo([35.911636294276306,-79.05476331710817], 16);
+    baseMap.clearLayers();
+    L.imageOverlay("./map1880.png", [[35.898060479430455,-79.07148545663641],[35.92501887943045,-79.03066145663641]], {opacity: 1}).addTo(baseMap);
+    markerLayer.clearLayers()
+    hydroLayer.clearLayers()
+    document.getElementById('comment').innerText = ""
+    for (var i = 0; i < map1880.features.length; i = i + 1){
+        var nextCoord = map1880.features[i].coords.split(',');
+        if (map1880.features[i].race == "white"){var circlecolor = "yellow"}
+        if (map1880.features[i].race == "poc"){var circlecolor = "green"}
+        if (map1880.features[i].race == "institution"){var circlecolor = "#56a0d3"}
+        var marker = L.circle(nextCoord, {color: circlecolor, fillColor: circlecolor, fillOpacity: 1.0, radius: 8}).addTo(baseMap)
+            .bindTooltip(map1880.features[i].description);
+    }
+    //adding legend
+    L.imageOverlay("./legend.png", [[35.9087078899065,-79.0531325340271],[35.9106726899065,-79.0501484340271]]).addTo(markerLayer);
+    var line = L.polyline(colorLine, {color:'green', weight: 5}).addTo(baseMap)
+    document.getElementById('comment').style.display = ""
+    document.getElementById("comment"). innerHTML = comment4
+//            var box = L.polyline([[maxLat,maxLong],[maxLat,minLong],[minLat,minLong],[minLat,maxLong],[maxLat,maxLong]], {color:'red', weight: 4}).addTo(mymap)
+populateTable()
+    // var marker = L.circle([35.91691554833627,-79.06049251556398], {color: "green", fillColor: "green", fillOpacity: 1.0, radius: 8}).addTo(markerLayer)
+    //     .bindTooltip("Young Evans");
+    function populateTable(){
+        var x = document.getElementById('mytable')
+        for (var i = 0; i < census.features.length; i = i +1){
+            var myNewRow = document.createElement('tr');
+            var myNewCell = document.createElement('td');
+            var myNewCell1 = document.createElement('td');
+            var myNewCell2 = document.createElement('td');
+            var myNewCell3 = document.createElement('td');
+            var myNewCell4 = document.createElement('td');
+            myNewCell.innerText = census.features[i].censusNumber
+            myNewCell1.innerText = census.features[i].alphaName
+            myNewCell2.innerText = census.features[i].race
+            var buttonString
+            if (census.features[i].lat > 0) {buttonString = "<button onclick='dislocate(" + i + ")'>dislocate</button>"}
+            else{buttonString = "<button onclick='locate(" + i + ")'>bind location</button>"}
+            myNewCell3.innerHTML = buttonString
+            if (census.features[i].lat > 0) {buttonString = "<button onclick='markThis(" + i + ")'>show location</button>"}
+            else{buttonString = "<button onclick='markThis(" + i + ")'>show range</button>"}
+            myNewCell4.innerHTML = buttonString
+            myNewRow.append(myNewCell)
+            myNewRow.append(myNewCell1)
+            myNewRow.append(myNewCell2)
+            myNewRow.append(myNewCell3)
+            myNewRow.append(myNewCell4)
+            x.append(myNewRow);
+        }
+    if (tracker>-1){markThis(tracker)}
+    if (randofunction == "yes") {Rando()}
+    }
+// var census.features[i].currentLat census.features[i].currentLat 
+// var census.features[i].currentLong census.features[i].currentLong
+// var census.features[i].hypoteneuse census.features[i].hypoteneuse
+// var census.features[i].counter census.features[i].counter
+// var census.features[i].increment census.features[i].increment
+// var census.features[i].deltaLat census.features[i].deltaLat
+// var census.features[i].deltaLong census.features[i].deltaLong
+// var census.features[i].destinationLat census.features[i].destinationLat
+// var census.features[i].destinationLong census.features[i].destinationLong
+// var census.features[i].name census.features[i].name
+// var census.features[i].maxLat census.features[i].maxLat
+// var census.features[i].maxLong census.features[i].maxLong
+// var census.features[i].minLat census.features[i].minLat
+// var census.features[i].minLong census.features[i].minLong
+
+    function Rando(){
+        tempLayer.clearLayers();
+        for (var i = 0; i < census.features.length; i = i + 1){
+        //console.log("marking " + i + " whose lat is " + census.features[i].lat + " and has destination lat of " + census.features[i].destinationLat)
+        census.features[i].counter = census.features[i].counter + 1
+        if (census.features[i].lat==0 && census.features[i].destinationLat==0){ //on start up floaters have no lat and no destination
+            console.log("person " + i + "needs a starting location")
+            census.features[i].currentLat = (Math.random() * (census.features[i].maxLat-census.features[i].minLat)) + census.features[i].minLat
+            census.features[i].currentLong = (Math.random() * (census.features[i].maxLong-census.features[i].minLong)) + census.features[i].minLong
+            census.features[i].counter = 1
+            //console.log("which is " + census.features[i].currentLat + "," + census.features[i].currentLong)
+        }
+        if (census.features[i].counter > census.features[i].hypoteneuse && census.features[i].lat==0) {
+            //console.log("person " + i + " needs a new desitation")
+            census.features[i].destinationLat = (Math.random() * (census.features[i].maxLat-census.features[i].minLat)) + census.features[i].minLat
+            census.features[i].destinationLong = (Math.random() * (census.features[i].maxLong-census.features[i].minLong)) + census.features[i].minLong
+            census.features[i].hypoteneuse = mymap.distance([census.features[i].currentLat, census.features[i].currentLong], [census.features[i].destinationLat, census.features[i].destinationLong])
+            census.features[i].increment = (floaterScale/1000)/mymap.distance([census.features[i].currentLat, census.features[i].currentLong], [census.features[i].destinationLat, census.features[i].destinationLong]) // increment
+            census.features[i].deltaLat = census.features[i].destinationLat - census.features[i].currentLat 
+            census.features[i].deltaLong = census.features[i].destinationLong - census.features[i].currentLong
+            census.features[i].counter = 0
+        }
+        else{
+            //console.log("person " + i + "does not need a new destiation")
+        }
+        if (census.features[i].lat==0){
+            census.features[i].currentLat = census.features[i].currentLat + (census.features[i].deltaLat * census.features[i].increment) // that is to say, next Lat = present Lat + (deltaLat * increment)
+            census.features[i].currentLong = census.features[i].currentLong + (census.features[i].deltaLong * census.features[i].increment)
+        }
+        if (census.features[i].race == "W") {markerColor = "yellow"}
+        if (census.features[i].race == "B") {markerColor = "green"}
+        if (census.features[i].race == "M") {markerColor = "green"}
+        //console.log(census.features[i].currentLat, census.features[i].currentLong)
+        if (census.features[i].lat==0){//mark the new floater locations 
+            if (i !=tracker){
+                var markerA = L.circle([census.features[i].currentLat, census.features[i].currentLong], {color: markerColor, fillColor: markerColor, fillOpacity: 1, radius: 8}).addTo(tempLayer)
+                .bindTooltip(census.features[i].name);
+            }
+            else{
+                var markerA = L.marker([census.features[i].currentLat, census.features[i].currentLong]).addTo(tempLayer)
+                .bindTooltip(census.features[i].name);
+            }
+            if (mymap.distance([census.features[i].currentLat,census.features[i].currentLong],[census.features[i].destinationLat,census.features[i].destinationLong]) < 1){census.features[i].counter = 1000000000000000}
+        }
+        else{
+            //console.log("marking a fixed person " + i + " at " + census.features[i].lat + "," + census.features[i].long)
+            var markerA = L.circle([census.features[i].lat, census.features[i].long], {color: markerColor, fillColor: markerColor, fillOpacity: 1, radius: 8}).addTo(tempLayer)
+            .bindTooltip(census.features[i].name);
+        }
+    }
+    loopcounter = loopcounter + 1
+    if (randofunction == "yes") {setTimeout(Rando, delay)}
+        }
+    
+    function markThis(i){
+        showLayer.clearLayers();
+        var showPerson = i
+        console.log(showPerson)
+        if (census.features[showPerson].lat == 0) {//show this persons range
+            tracker = showPerson
+            var marker = L.polyline([[census.features[showPerson].maxLat,census.features[showPerson].maxLong],[census.features[showPerson].maxLat,census.features[showPerson].minLong],[census.features[showPerson].minLat,census.features[showPerson].minLong],[census.features[showPerson].minLat,census.features[showPerson].maxLong],[census.features[showPerson].maxLat,census.features[showPerson].maxLong]], {color:'green', weight:2}).addTo(showLayer)
+        }
+        else {//show this persons fixed location
+            var marker = L.marker([census.features[showPerson].lat,census.features[showPerson].long]).addTo(showLayer)
+            .bindTooltip(census.features[showPerson].name);
+        }
+//        setTimeout(function(){markerLayer.clearLayers();},5000)
+    }
+
+    function locate(i){
+        inMotion = i
+        mymap.on('click', affix);
+        mymap.on('mousemove', markerMove);
+    }
+
+    function markerMove(e){
+        randofunction = "no"
+        tempLayer.clearLayers();
+        var mouseLat = e.latlng['lat']
+        var mouseLong = e.latlng['lng']
+        var marker = L.marker([mouseLat,mouseLong]).addTo(tempLayer)
+    }
+
+
+    function affix(e){
+        var mouseLat = e.latlng['lat'] 
+        var mouseLong = e.latlng['lng']
+        console.log(mouseLat,mouseLong)
+        census.features[inMotion].lat = mouseLat
+        census.features[inMotion].long = mouseLong
+        census.features[inMotion].maxLat = 0
+        census.features[inMotion].maxLong = 0
+        census.features[inMotion].minLat = 0
+        census.features[inMotion].minLong = 0
+        mymap.off('click', affix);
+        mymap.off('mousemove', markerMove);
+        inMotion = -1
+        updateJSON()
+    }
+
+function updateJSON(){
+    for (var i = 0; i < census.features.length; i = i + 1){
+        if (census.features[i].lat != 0){ //if you have a fixed lat then all your floater features should be zero
+            console.log(i + "has a fixed location")
+            census.features[i].currentLat = 0
+            census.features[i].currentLong = 0
+            census.features[i].hypoteneuse = 0
+            census.features[i].counter = 0
+            census.features[i].increment = 0
+            census.features[i].deltaLat = 0
+            census.features[i].deltaLong = 0
+            census.features[i].destinationLat = 0
+            census.features[i].destinationLong = 0
+            census.features[i].maxLat = 0
+            census.features[i].maxLong = 0
+            census.features[i].minLat = 0
+            census.features[i].minLong = 0
+        }
+        else{
+            //if you don't have a fixed lat, then you need your min/max lat/long updated
+            //so first run up the JSON looking for last fixed location 
+            console.log(i + " needs the min and max updated")
+            for (var j = i - 1; j > -1; j = j - 1) {
+                console.log("looing for previous record")
+                if (census.features[j].lat != 0){
+                    lastFixedLocation = j
+                    console.log(lastFixedLocation)
+                    console.log("last fixed location is home of " + census.features[lastFixedLocation].name)
+                    j = 0
+                }
+            }
+            // then run down the JSON lookin for the next fixed location
+            console.log(census.features[i].name + " is " + i)
+            for (var j = i + 1; j < census.features.length; j = j + 1) {
+                console.log("Testing next person at " + j)
+                if (census.features[j].lat != 0){
+                    nextFixedLocation = j
+                    console.log("next fixed location is home of " + census.features[nextFixedLocation].name)
+                    j = census.features.length + 1
+                }
+            }
+            // now update min & max lats using last and next fixed locations
+            if (census.features[lastFixedLocation].lat > census.features[nextFixedLocation].lat){
+                census.features[i].maxLat = census.features[lastFixedLocation].lat
+                census.features[i].minLat = census.features[nextFixedLocation].lat
+            }
+            else{
+                census.features[i].maxLat = census.features[nextFixedLocation].lat
+                census.features[i].minLat = census.features[lastFixedLocation].lat
+            }
+            //now update min & max longs using last and next fixed locations
+            if (census.features[lastFixedLocation].long > census.features[nextFixedLocation].long){
+                census.features[i].maxLong = census.features[lastFixedLocation].long
+                census.features[i].minLong = census.features[nextFixedLocation].long
+            }
+            else{
+                census.features[i].maxLong = census.features[nextFixedLocation].long
+                census.features[i].minLong = census.features[lastFixedLocation].long
+            }
+            lastFixedLocation = - 1
+            nextFixedLocation = - 1
+        }
+    }
+    updateTable()
+}
+
+function updateTable(){
+    var x = document.getElementById('mytable')
+    for (var k = 0; k < census.features.length; k = k + 1) {
+        document.getElementById('mytable').deleteRow(1);
+    }
+randofunction = "yes"
+populateTable()
+}
+
+function dislocate(i){
+    randofunction = "no"
+    var dislocatedPerson = i
+    census.features[dislocatedPerson].lat = 0
+    census.features[dislocatedPerson].long = 0
+    updateJSON
+}
+
+function start(){
+    randofunction = "yes"
+    Rando()
+}
+
+</script>
+</html>
