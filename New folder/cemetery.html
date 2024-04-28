@@ -64,7 +64,7 @@ var markerLayer = L.layerGroup().addTo(mymap);
 graveSites();
 
 var boundary = L.polyline([[36.0175861371018,-79.08334761857986],[36.01765664480204,-79.08318400382997],[36.0177976600132,-79.08318534493449],[36.01779982947604,-79.0832805633545],[36.01774667761984,-79.0833516418934],[36.0175861371018,-79.08334761857986]], {color:"blue", weight:4}).addTo(mymap);
-var marker = L.marker([36.01765230586845,-79.08322289586069]).addTo(mymap).bindPopup("cemetery of people enslaved<br>on the Strayhorn plantation<br><a href='sign.jpg'><img src='sign.jpg' alt='cemetry map' style='width:200px'></a>").openPopup();
+var marker = L.marker([36.01765230586845,-79.08322289586069]).addTo(mymap).bindPopup("cemetery of people enslaved<br>on the Strayhorn plantation<br><a href='sign.jpg'><img src='https://registerchilton.github.io/Geography456/New%20folder/CemeterySign.html' alt='cemetry map' style='width:200px'></a>").openPopup();
 function graveSites(){
     for (var i = 0; i < graves.features.length; i = i + 1){
         var marker = L.circle([graves.features[i].lat,graves.features[i].long], {color:'green', fillcolor:'green', opacity:1, radius:1}).addTo(mymap)
