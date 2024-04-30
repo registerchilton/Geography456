@@ -205,7 +205,10 @@ var NewHopePresbyterian = [36.01309575140759,-79.07216548919679]
 var marker = L.marker(NewHopePresbyterian, {icon:church}).addTo(mymap).bindTooltip("New Hope Presbyterian Church")
 var OrangeMethodist = [35.948731868993185,-79.05766010284425]
 var marker = L.marker(OrangeMethodist, {icon:church}).addTo(mymap).bindTooltip("Orange Methodist Church")
+var UnionGroveMethodist = [35.986952169982594,-79.12424325942993]
+var marker = L.marker(UnionGroveMethodist, {icon:church}).addTo(mymap).bindTooltip("Union Grove Methodist Church")
 
+    
 //INITIAL SET UP
 for (var i = 0; i < parcelsShown.length; i = i + 1){
         var currentPlacement = L.polygon(parcelsShown[i], {color: 'yellow', fillColor: 'yellow', fillOpacity: 0.5})
