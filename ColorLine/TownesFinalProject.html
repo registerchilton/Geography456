@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Townes Ellum Leaflet HW 7</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
+    <script src="https://tellum1.github.io/GEOG456/EAB%20county%20+%20point%20slider%20map/EAB_infested_counties_clipped_smaller.js"></script>
+    <script src="https://tellum1.github.io/GEOG456/EAB%20county%20+%20point%20slider%20map/EAB_EDD_pointdataclean.js"></script>
+    <script src="https://tellum1.github.io/GEOG456/EAB%20county%20+%20point%20slider%20map/iNat_EAB_obs.js"></script>
+    <script src="https://tellum1.github.io/GEOG456/EAB%20county%20+%20point%20slider%20map/iNat_ash_obs1.js"></script>
+    <!-- <script src="b10_year_buffer.js"></script> -->
+</head>
+
+<style>
+    #map {
+        width: 80%;
+        margin: 0 10%; /* 20% margin on each side */
+        height: 600px;
+        background-color: lightblue;
+    }
+</style>
+
+<style>
+    body {
+        background-color: lightgreen;
+    }
+</style>
+
+<body>
+
+<!-- <h1>Spread of the Emerald Ash Borer in the United States: Past, Present and...Future?</h1>
+<h2>GEOG456 Final Project</h2>
+<h3>Townes Ellum </h3>
+<h3 id="daYear">Year</h3>
+<input id="yearSlider" type="range" name="year" min="2001" max="2024" oninput="moveSlider(this.value)" value="2001">
+<br><br>
+<div id="map"></div> -->
+<style>
+    .container {
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <h1>Spread of the Emerald Ash Borer in the United States: Past, Present and...Future?</h1>
+    <h2>GEOG456 Final Project</h2>
+    <h3>Townes Ellum </h3>
+    <h3 id="daYear">Year</h3>
+    <input id="yearSlider" type="range" name="year" min="2001" max="2024" oninput="moveSlider(this.value)" value="2001">
+    <br><br>
+</div>
+<div id="map"></div>
+
+
+</body>
+<script>
+    var map = L.map('map').setView([40.42081487986973,-87.4505069364699], 5);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    }).addTo(map);
+
+    var sliderCurrent = document.getElementById("yearSlider") 
+    var factor = 4
+    var tempLayer = L.layerGroup().addTo(map);
+    var floaterScale    
+    var toggle = 0
+    var loopcounter = 0
+    var delay
+    var floaters = []
+    map.on('click', logit);
+    function logit(e){
+        clickLat = e.latlng['lat'] 
+        clickLong = e.latlng['lng']
+    console.log(clickLat + "," + clickLong)
+    }
+    var thisYear = 2002
+    document.getElementById("yearSlider").style.display = "none";
+
+
+    function myStyleCounty(features) {
+        return {
+            color: getColorCounty(features.properties.PPQ_EAB__6),
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 1
+        }
+    };
+
+    function myStylePointEDD(features) {
+        return {
+            fillColor: getColorPointEDD(features.properties.year),
+            color: "#8a00c2",
+            weight: 1,
+            opacity: 0,
+            fillOpacity: 0.8,
+            radius: 1
+        };
+    };
+
+    function myStylePointiNat(features) {
+        return {
+            fillColor: getColorPointiNat(features.properties.year),
+            color: "#8a00c2",
+            weight: 1,
+            opacity: 0,
+            fillOpacity: 0.8,
+            radius: 1
+        };
+    };
+
+    function myStylePointiNatASH(features) {
+        return {
+            fillColor: getColorPointiNatASH(features.properties.year),
+            color: "#0000ff",
+            weight: 1,
+            opacity: 0,
+            fillOpacity: 0.8,
+            radius: 2
+        };
+    };
+
+    // function myStyle10ybuffer(features) {
+    //     return {
+    //         fillColor: getColor10ybuffer(features.properties.year),
+    //         weight: 1,
+    //         opacity: 1,
+    //         fillOpacity: 1
+    //     }
+    // };
+
+
+function getColorCounty(d) {
+    var difference = myCurrentSelectionYear - d;
+    var transparency = 1-(difference / 24); // Assuming the range is from 2001 to 2024
+    var greenValue = 255 - Math.floor((255 - 80) * transparency);
+
+    return d < (myCurrentSelectionYear + 1) ? "rgb(0, " + greenValue + ", 0)" : "transparent";
+}
+
+    function getColorPointEDD(d) {
+        return d < (myCurrentSelectionYear + 1) ? "red" : "transparent";
+    }
+
+    function getColorPointiNat(d) {
+        return d < (myCurrentSelectionYear + 1) ? "red" : "transparent";
+    }
+
+    function getColorPointiNatASH(d) {
+        return d < (myCurrentSelectionYear + 1) ? "yellow" : "yellow";
+    }
+
+    // function getColor10ybuffer(d) {
+    //     return d < (myCurrentSelectionYear + 1) ? "blue" : "blue";
+    // }
+
+    var geojsonPointiNatASH = L.geoJSON(iNat_ash_obs1, {
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, myStylePointiNatASH(feature));
+        }
+    }).addTo(map);
+    // var b10_year_buffer = L.geoJSON(b10_year_buffer, {style: myStyle10ybuffer}).addTo(map);
+    var geojsonCounty = L.geoJSON(EAB_inf_counties, {style: myStyleCounty}).addTo(map);
+    var geojsonPointEDD = L.geoJSON(EAB_EDD_pointdataclean, {
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, myStylePointEDD(feature));
+        }
+    }).addTo(map);
+    var geojsonPointiNat = L.geoJSON(iNat_EAB_obs, {
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, myStylePointiNat(feature));
+        }
+    }).addTo(map);
+
+    var myCurrentSelectionYear = 2001;
+
+    function moveSlider(value) {
+        document.getElementById('daYear').innerHTML = 'Year: ' + value;
+        geojsonPointiNatASH.eachLayer(function (layer) {
+            layer.setStyle(myStylePointiNatASH(layer.feature));
+        });
+        myCurrentSelectionYear = value;
+        // b10_year_buffer.resetStyle();
+        geojsonCounty.resetStyle();
+        geojsonPointEDD.eachLayer(function (layer) {
+            layer.setStyle(myStylePointEDD(layer.feature));
+        });
+        geojsonPointiNat.eachLayer(function (layer) {
+            layer.setStyle(myStylePointiNat(layer.feature));
+        });
+        
+    }
+   
+    moveSlider(myCurrentSelectionYear);
+
+    window.onload = function() {
+        document.getElementById('yearSlider').value = 2002;  
+        moveSlider(thisYear)
+        button7(500)
+    };
+
+
+
+
+
+
+
+function button7(a){
+    console.log("button7")
+    loopcounter = 0
+    var maxLat = 42.842340
+    var minLong = -84.118905
+    var minLat = 41.764039
+    var maxLong = -83.033243
+    floaterScale = map.distance([maxLat,maxLong],[minLat,minLong])
+//    var box = L.polyline([[maxLat,maxLong],[maxLat,minLong],[minLat,minLong],[minLat,maxLong],[maxLat,maxLong]], {color:'red', weight: 4}).addTo(map)
+    var LatRange = maxLat - minLat
+    var LongRange = maxLong - minLong
+    
+    delay = 1
+    floaters = []
+    setUpFloaters(a)
+    // var currentLat 0 
+    // var currentLong 1 
+    // var hypoteneuse 2  
+    // var counter 3
+    // var increment 4
+    // var deltaLat 5
+    // var deltaLong 6
+    // var destinationLat 7
+    // var destinationLong 8
+    function setUpFloaters(a){
+        numberOfFloaters = a
+        for (var i = 0; i < numberOfFloaters; i = i + 1){
+            floaters.push([0,0,0,0,0,0,0,0,0])
+        }
+        if (sliderCurrent.value >2001){Rando()}
+    }
+
+    function Rando(){
+        console.log("Rando")
+        tempLayer.clearLayers();
+        for (var i = 0; i < floaters.length; i = i + 1){
+            floaters[i][3] = floaters[i][3] + 1
+            if (floaters[i][0]==0){
+                floaters[i][0] = (Math.random() * LatRange) + minLat
+                floaters[i][1] = (Math.random() * LongRange) + minLong
+                floaters[i][3] = 1
+            }
+            if (floaters[i][3] > floaters[i][2]) {
+                floaters[i][7] = (Math.random() * LatRange) + minLat
+                floaters[i][8] = (Math.random() * LongRange) + minLong
+                floaters[i][2] = map.distance([floaters[i][0], floaters[i][1]], [floaters[i][7], floaters[i][8]])
+                floaters[i][4] = ((factor*floaterScale)/1000)/map.distance([floaters[i][0], floaters[i][1]], [floaters[i][7], floaters[i][8]]) // increment
+                floaters[i][5] = floaters[i][7] - floaters[i][0] 
+                floaters[i][6] = floaters[i][8] - floaters[i][1]
+                floaters[i][3] = 0
+            }
+            floaters[i][0] = floaters[i][0] + (floaters[i][5] * floaters[i][4]) // that is to say, next Lat = present Lat + (deltaLat * increment)
+            floaters[i][1] = floaters[i][1] + (floaters[i][6] * floaters[i][4])
+            var markerA = L.circle([floaters[i][0], floaters[i][1]], {color: "green", fillColor: "green", fillOpacity: 0, radius: 1}).addTo(tempLayer)
+            if (map.distance([floaters[i][0],floaters[i][1]],[floaters[i][7],floaters[i][8]]) < 1){floaters[i][3] = 1000000000000000}
+        }
+    loopcounter = loopcounter + 1
+    if (loopcounter > 170) {
+        thisYear=thisYear+1
+        moveSlider(thisYear)
+        loopcounter = 0
+        }
+    if(thisYear <2018) {setTimeout(Rando, delay)}
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</script>   
+<br>
+<a href="https://usda-mrp.maps.arcgis.com/home/item.html?id=1dfcee71467846d6ac8beea04d2cf6b3">
+    Link to Data Source (USDA)</a>
+</br>
+</html>
