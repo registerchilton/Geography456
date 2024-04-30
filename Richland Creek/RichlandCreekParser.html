@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Richland Creek Parser</title>
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+ 
+        label {
+            font: 18px;
+        }
+ 
+        input {
+            margin: 10px;
+            padding: 2px
+        }
+    </style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap {height: 600px; width: 100pct}
+    .crosshair {cursor: crosshair;}
+</style>
+        
+
+<body>
+    <h1></h1>
+    <!-- <input type="file" id="csv-file" names="files" onchange="handleFileSelect(this)"/> -->
+    <div id='caption'></div>
+    <input type="text" placeholder = "first corner, first call (like N 200 po or N70E 20 ch), 
+    second call..., final call" id="legal" style="width: 1000px" onchange="parsepreview(this)"> 
+    <!-- <button onclick="parsepreview()">Parse it!</button> -->
+    <button onclick="clearActive()">Clear!</button>
+    <button onclick="download()">download a CSV of the revised JSON</button>
+    <div id="imageDiv"><img src="" id ="currentImage" width=800px></div>
+    <div class="crosshair", id="myfirstmap"></div>
+    <div id="previewDiv"></div>
+    
+
+
+</body>
+
+<script>
+var imageNumber = 0
+let cfileslist = 0
+const papaConfig = {header: true, complete: function(result){cfileslist = result.data}}
+
+var mymap = L.map('myfirstmap').setView([36.02074156610897,-79.100510], 14);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+
+mymap.on('mousemove', mouse);
+mymap.on('click', affix);
+
+var cemetery = L.icon({iconUrl: 'cemetery.png', iconSize: [30, 30], popupAnchor: [15, 15]});
+var church = L.icon({iconUrl: 'church.png', iconSize: [30, 30], popupAnchor: [15, 15]});
+
+var moveToggle = 0
+var roadLayer = L.layerGroup().addTo(mymap);
+var enslavedLayer = L.layerGroup().addTo(mymap);
+var greenLayer = L.layerGroup().addTo(mymap);
+var yellowLayer = L.layerGroup().addTo(mymap);
+
+var units = ''
+var myCsv = ''
+var newLat
+var newLong
+var tempCorners
+var legals = []
+var corners = []
+var directions = []
+var distances = []
+var typedinput
+var convertedDistances = []
+var nextImage
+var loaded = "no"
+var parcelsShown = [
+    [[36.02296298176395, -79.07701492309572],[36.02296298176395, -79.08551339509572],[36.02182872465989, -79.08645023971263],[36.019365243450125, -79.08687821161126],[36.01750766155599, -79.08658609691395],[36.017567536183556, -79.08545688119914],[36.017567536183556, -79.08310861919914],[36.01213984618356, -79.08310861919914],[36.01213984618356, -79.07841209519914],[36.017567536183556, -79.07841209519914],[36.017567536183556, -79.07710377779914]]
+    ,[[36.01755006967693,-79.08545315265657],[36.01619314717693,-79.08545315265657],[36.01619314717693,-79.09439891265657],[36.01935929967693,-79.09439891265657],[36.01935929967693,-79.08688447425656],[36.01750070435341,-79.0866023814106]]
+    ,[[36.02297789584199,-79.08551752567293],[36.02183381548645,-79.08643593727562],[36.01937033427669,-79.08686390917426],[36.01937033427669,-79.09437834757425],[36.023622024776685,-79.09437834757425],[36.023622024776685,-79.09057639957425],[36.02814509977669,-79.09057639957425],[36.02814509977669,-79.08509712157425],[36.022762640526686,-79.08509712157425],[36.02297789584199,-79.08551752567293]]
+    ,[[36.02377809978085,-79.10172343254091],[36.010769736080846,-79.10172343254091],[36.010769736080846,-79.09439909154091],[36.02361526908085,-79.09439909154091],[36.02361526908085,-79.1013544199409],[36.02377809978085,-79.10172343254091]]
+    ,[[36.01159709129813,-79.10186290740968],[36.02353800929813,-79.10186290740968],[36.02353800929813,-79.11125595540969],[36.02055277979813,-79.11125595540969],[36.0124221540362,-79.1161579092473],[36.01214793579038,-79.11293283585317],[36.01106239779038,-79.11293283585317],[36.01106239779038,-79.10197427985318]]
+    ,[[36.003136151360316,-79.1118621826172],[36.004402612360316,-79.1118621826172],[36.004402612360316,-79.1129804026172],[36.01073491736032,-79.1129804026172],[36.01073491736032,-79.1005681606172],[36.00331707436032,-79.1005681606172],[36.00331707436032,-79.11175036061721],[36.003136151360316,-79.1118621826172]]
+    ,[[36.01072923311161,-79.10044670104982],[36.00598000436161,-79.10044670104982],[36.00598000436161,-79.09642110904981],[36.00126153252161,-79.09642110904981],[36.00126153252161,-79.09098655984982],[36.01072923311161,-79.09098655984982],[36.01072923311161,-79.09293226264982],[36.01072923311161,-79.10044670104982]]
+    ,[[36.02959160448231,-79.09378409385683],[36.02552083698232,-79.09378409385683],[36.02552083698232,-79.09479049185683],[36.023555186068215,-79.09440564993233],[36.023555186068215,-79.09057574643234],[36.02816872256821,-79.09057574643234],[36.02816872256821,-79.08537602343233],[36.03323456656821,-79.08537602343233],[36.03323456656821,-79.08682970943234],[36.0315275264473,-79.08772540232546],[36.02959160448231,-79.09378409385683]]
+    ,[[36.023746102625815,-79.09465312957765],[36.02519348662582,-79.09465312957765],[36.02519348662582,-79.09389273997765],[36.02848628522582,-79.09389273997765],[36.02848628522582,-79.09892472997765],[36.02369182572581,-79.09892472997765],[36.02369182572581,-79.09451894317765],[36.023746102625815,-79.09465312957765]]
+    ,[[36.022974913026616,-79.0769934654236],[36.03247337052662,-79.0769934654236],[36.03284560548893,-79.0768701739381],[36.03284560548893,-79.0855922899381],[36.02296901891893,-79.0855922899381],[36.02296901891893,-79.0770938179381]]
+    ,[[36.03804482447539,-79.09443855285646],[36.03804482447539,-79.09894497945646],[36.02854998543539,-79.09894497945646],[36.02854998543539,-79.09413663345646],[36.038043378365415,-79.09434146950817],[36.03804482447539,-79.09443855285646]]
+    ,[[36.024509692204106,-79.10336494445802],[36.02362307255054,-79.10280651707573],[36.02362307255054,-79.09897102247574],[36.03843162010054,-79.09897102247574],[36.03843162010054,-79.10359150751574],[36.02460548444054,-79.10359150751574],[36.024509692204106,-79.10336494445802]]
+    ,[[36.038669466738185,-79.10370826721193],[36.024919318738185,-79.10370826721193],[36.031032710857176,-79.10899969051384],[36.031032710857176,-79.11067702051385],[36.038450553857174,-79.11067702051385],[36.038450553857174,-79.10379996751384]]
+    ,[[36.02895224842183,-79.10735607147218],[36.023579873529386,-79.10270603281292],[36.023579873529386,-79.10458016953292],[36.02835943464059,-79.10871710047806],[36.029017283722524,-79.10725007460468],[36.02895224842183,-79.10735607147218]]
+    ,[[36.03104057543169,-79.11064982414246],[36.0283769488915,-79.10874885014246],[36.029034797973424,-79.10728182426908],[36.0310355444851,-79.10901356280425],[36.0310355444851,-79.11069089280426]]
+    ,[[36.03104057543169,-79.11064982414246],[36.02353800929813,-79.11064982414246],[36.023579873529386,-79.10458016953292]]
+    ,[[36.00111272500268,-79.08452510833742],[36.005816723002674,-79.08452510833742],[36.005816723002674,-79.07971676233741],[36.007897337502676,-79.07971676233741],[36.007897337502676,-79.07177740033741],[36.01061118250268,-79.07177740033741],[36.01061118250268,-79.06892593933742],[35.99740380350268,-79.06892593933742],[35.99740380350268,-79.07010007033742],[35.99102626775268,-79.07010007033742],[35.99159680139715,-79.07027590957378],[35.99287189145738,-79.07084959022079],[35.99408724431902,-79.07235192201601],[35.99484670035402,-79.07250061094139],[35.99538392270025,-79.07422542572023],[35.99555752888402,-79.07585620880128],[35.996147787050624,-79.07718658447267],[35.99649499567341,-79.07791614532472],[35.99621722889745,-79.0783452987671],[35.99573113468567,-79.07864570617677],[35.99590474010522,-79.07971858978273],[35.99649499567341,-79.08027648925781],[35.99687421084475,-79.08031940460206],[35.99714329518232,-79.08009409904481],[35.99746445915765,-79.07987952232362],[35.99770750129663,-79.08025503158571],[35.99769882123314,-79.08050179481508],[35.9980373430016,-79.08071637153627],[35.9982471552433,-79.08056885004044],[35.99850755492216,-79.08058494329454],[35.9990615795032,-79.08085584640504],[35.999512933738956,-79.08069491386415],[35.999903526665655,-79.08082365989686],[35.999860127547116,-79.08117771148683],[35.99975596956515,-79.08148884773256],[35.99959973233428,-79.08181071281435],[35.99966049129418,-79.08231496810915],[36.000111842102186,-79.0827763080597],[36.00032015698848,-79.08323764801027],[36.000528471324465,-79.08375263214113],[36.00068470671534,-79.08403158187868],[36.00090169980027,-79.08451437950136]]
+]
+
+var ownersin1850 = [
+    "William F Strayhorn (see ODB 33-289)"
+    ,"James Newton Craig (see ODB 33-290)"
+    ,"David Craig (see ODB 39-72)"
+    ,"John P Faucett (see ODB 37-483)"
+    ,"John M Faucett (see his 1863 estate file)"
+    ,"Hugh Currie (see ODB 12-266)"
+    ,"Allen Petty (see ODB 25-176, 27-537, 30-332, 28-40; estate of Samuel Craig 1824; will of Hugh Currie)"
+    ,"John Barton Jr (see  NC to Joseph Marlett Ofile 2101, to George Marlett ODB 16/273, to John Barton ODB 16/33. Later mortgaged to Allen Parks trustee ODB 24/334.]"
+    ,"Thomas G Pratt (see ODB 29/519, ODB 32/54. Later ODB 37/322 sixth tract, to Harvey Clark ODB 66/210)."
+    ,"John Barton Jr (Later ODB 34/506 to William F Strayhorn, 28 Feb 1855 - see also ODB 55-469)"
+    ,"Polly Clark Sr (from her father Hugh Currie in 1849 see ODB 33/342; SW corner later to Polly Clark & son Harvey Clark."
+    ,"Willie P Mangum heirs (see ODB 40-362)"
+    ,"John W Latta subject to life estate of his sisters (see ODB 27/276; will of Thomas Latta OWB F/121)"
+    ,"Jane Latta in 1850 (later Jane Latta Cole to John W Latta ODB 37/154)"
+    ,"John W Latta (from his sisters ODB 30/119 in 1842"
+    ,"Dower of Elizabeth Latta?"
+    ,"Isaac Craig (see ODB 26/244 in 1835)"
+]
+
+var enslavedPeople = [
+    ["Charles", "Sandy", "Betsy", "Phillis", "five", "six", "seven", "eight", "nine", "ten"]
+    ,["Jarmesia", "George", "Jim", "1850 census list one more"] //James N Craig
+    ,["Rose", "Anthony", "Charles", "Anderson"] //David Craig
+    ,["Calvin", "Rachel", "name unknown"] //John P Faucett
+    ,["Sam", "Diner", "child unknown"] //John M Faucett
+    ,["Sandy", "William", "Martha & child", "Beccy & child", "Dilcy"]//Hugh Currie
+    ,["Lucy","Rachel & her children","Jinny","Simon","Maria","Charles"]
+    ,[] //Marlett to Barton
+    ,[] //Wm J Bingham to Thos G Pratt
+    ,[] //John Barton to Wm F Strayhorn
+    ,[] //Hugh Currie to Polly Clark
+    ,[] //Willie P Mangum heirs
+    ,["Phebe (b 1819)","David (b 1837)","Ann (b 1843)","Mary (b 1845)","Allen (b 1849)"] //John W Latta w life estate of sisters
+    ,[] //Jane Latta Cole to John W Latta
+    ,[] //John W Latta in 1850
+    ,["old Rose (b 1780)", "Phil (b 1780)"] //Dower of Eliz Latta
+    ,["one", "two", "three", "four"]//Isaac Craig
+]
+
+var maxLat = 0
+var minLat = 90
+var maxLong = -90
+var minLong = -70
+var bounds = []
+for (var i = 0; i < parcelsShown.length; i = i + 1){
+    for (var j = 0; j < parcelsShown[i].length; j = j + 1){
+        if (parcelsShown[i][j][0] > maxLat) {maxLat = parcelsShown[i][j][0]}
+        if (parcelsShown[i][j][0] < minLat) {minLat = parcelsShown[i][j][0]}
+        if (parcelsShown[i][j][1] > maxLong) {maxLong = parcelsShown[i][j][1]}
+        if (parcelsShown[i][j][1] < minLong) {minLong = parcelsShown[i][j][1]}
+    }
+    bounds.push([maxLat,minLat,maxLong,minLong])
+    maxLat = 0
+    minLat = 90
+    maxLong = -90
+    minLong = -70
+}
+
+for (var i = 0; i < enslavedPeople.length; i = i + 1){
+    var averageLat = (bounds[i][0] + bounds [i][1])/2
+    for (var j = 0; j < enslavedPeople[i].length; j = j + 1){
+        var longDiff = bounds[i][2] - bounds [i][3]
+        var x = enslavedPeople[i].length + 2
+//        var nextLong = bounds[i][3] + (((1+j)*longDiff)/x)
+        var nextLong = (j*0.00075) + (bounds[i][3] + bounds[i][2])/2
+//        console.log("and here!" + averageLat + "," + nextLong)
+        var marker = L.marker([averageLat + 0.001, nextLong]).addTo(enslavedLayer)
+        .bindTooltip(enslavedPeople[i][j])
+    }
+}
+
+var oldHillsboroughtoCHRoad = [[36.03826659473491,-79.08946037292482],[36.0381191094485,-79.08938527107239],[36.03792824572665,-79.0892779827118],[36.037746057197,-79.08912777900697],[36.03745108439823,-79.08879518508913],[36.03723419192956,-79.08868789672852],[36.03702597459764,-79.08852696418764],[36.036696296029604,-79.08834457397462],[36.03642734670193,-79.08815145492555],[36.03625383051925,-79.08806562423707],[36.035967527982,-79.08793687820436],[36.03568990028526,-79.08788323402406],[36.0284984,-79.0832762],[36.0278888,-79.0829661],[36.02427432518271,-79.081027507782],[36.02373634077932,-79.0809202194214],[36.02333718868695,-79.08087730407716],[36.02293803457257,-79.08077001571657],[36.021471830874916,-79.08049643039705],[36.021272249345785,-79.0804696083069],[36.02046957939589,-79.08042669296266],[36.02081234215853,-79.0804159641266],[36.02017454189988,-79.0804159641266],[36.01981008229154,-79.08028185367586],[36.01965388480054,-79.08025503158571],[36.01925471202803,-79.08009409904481],[36.01876008209188,-79.08001363277437],[36.01858218811018,-79.07996535301208],[36.0183261936269,-79.0798205137253],[36.01800511462487,-79.07965421676637],[36.01751047684565,-79.07934844493867],[36.017306546331085,-79.07925188541414],[36.017033191834926,-79.07909631729127],[36.0167902092646,-79.07893002033235],[36.016560242927696,-79.07877981662752],[36.01641705600158,-79.07868862152101],[36.01623047870753,-79.07851696014406],[36.015427757404474,-79.07847940921785],[36.01563603182529,-79.07846331596376],[36.01603088390396,-79.07843649387361],[36.01578355920705,-79.07843112945558],[36.01521514336552,-79.07841503620149],[36.01502422414793,-79.07837748527528],[36.01490706894454,-79.07835066318512],[36.01461201062368,-79.07817363739015],[36.014460141939736,-79.0779483318329],[36.01414772544118,-79.07752454280855],[36.01397849932076,-79.07731533050539],[36.01389171655395,-79.07718122005464],[36.01170611530727,-79.07716512680054],[36.011489151956454,-79.07716512680054],[36.01123747372139,-79.07715439796448],[36.011029187677785,-79.07713294029236],[36.0100745362696,-79.07711148262025],[36.00965795748657,-79.07707929611207],[36.00914590971658,-79.07706856727602],[36.0088247933165,-79.07703638076784],[36.00840820792944,-79.07700419425966],[36.00824330893895,-79.07698273658754],[36.00801765712987,-79.0769398212433],[36.007783325721434,-79.07687544822694],[36.00754031463626,-79.07676815986635],[36.00704561118408,-79.07652139663698],[36.00690674649919,-79.07646775245667],[36.006585620978605,-79.07642483711244],[36.00637732264427,-79.07639265060426],[36.00499136528759,-79.07637119293214],[36.00604751582276,-79.07634973526002],[36.00619506115028,-79.07633900642396],[36.00591732853973,-79.07630681991579],[36.003828335696525,-79.07630681991579],[36.00065161521742,-79.07619953155519],[36.00037386308087,-79.07613515853883],[35.99967947845955,-79.07574892044067],[35.99665883421147,-79.07420396804811],[35.995704008804374,-79.07345294952394],[35.99398529394275,-79.07214403152467],[35.99287418561642,-79.07175779342653],[35.9915373626687,-79.07124280929565],[35.989367147305806,-79.07066345214845],[35.987891366757324,-79.07023429870607],[35.98664127222673,-79.06978368759157],[35.98617248167127,-79.06948328018188],[35.984818182198346,-79.06834602355958],[35.9842625654337,-79.06798124313356],[35.98155387768,-79.06699419021608],[35.98085932738181,-79.06662940979005],[35.97914028910665,-79.0655565261841],[35.97837626007624,-79.06514883041383],[35.97219429863938,-79.06326055526735],[35.97002355126706,-79.06195163726808],[35.96859950856981,-79.06079292297365],[35.96649813035737,-79.05944108963014],[35.965751346118566,-79.05903339385988],[35.96377146534805,-79.05830383300781]]
+    
+var road = L.polyline(oldHillsboroughtoCHRoad, {color: 'blue', weight: 5}).addTo(roadLayer).bindTooltip("old version of NC86")
+
+// var image = L.imageOverlay("ODB40-362.png", [[36.023665296193414,-79.10359025001527],[36.038441190930165,-79.09895539283754]], {opacity: 1}).addTo(roadLayer);
+var oldOld86 = [[36.01697000559129,-79.1023349761963],[36.01776837225935,-79.10179853439332],[36.01960805596405,-79.1017770767212],[36.02153447116908,-79.10179853439332],[36.02281872180887,-79.10175561904909],[36.02340877589582,-79.10126209259035],[36.02376942258754,-79.10094022750856],[36.02436814668336,-79.10075783729555],[36.025452780197725,-79.1005861759186],[36.02630312243098,-79.10065054893495],[36.02704933356455,-79.10063982009889],[36.028541734628014,-79.10041451454164],[36.029392043520915,-79.10027503967287],[36.03090175302212,-79.10023212432863],[36.032090411982814,-79.10017848014832],[36.03287127307055,-79.0998673439026],[36.0336694786258,-79.099760055542],[36.03477133604739,-79.099577665329],[36.035968612463265,-79.0994167327881],[36.037269979228014,-79.09916996955873],[36.0376777363897,-79.09898757934572],[36.03787727635903,-79.0987515449524],[36.03834575951737,-79.09863352775575]]
+var road = L.polyline(oldOld86, {color: 'blue', weight: 5}).addTo(roadLayer).bindTooltip("old version of old 86")
+
+var oldNewHopeChurchRoad = [[36.01088517708368,-79.08209502696992],[36.01088517708368,-79.08167123794556],[36.01102837405936,-79.08109188079835],[36.01118024935539,-79.08071100711824],[36.011453624150874,-79.08019602298738],[36.01157078448727,-79.07976686954498],[36.011726997998295,-79.0793538093567],[36.011609837894056,-79.07904267311098],[36.01148926614188,-79.0786597199842],[36.01148058759544,-79.0785497494146],[36.011469739411034,-79.07845318989007],[36.01147190904803,-79.07838613466468],[36.01146106086246,-79.0782976217672],[36.01145455195038,-79.07816619352546],[36.01144804303777,-79.07805890516488],[36.01145238231289,-79.0779542990133],[36.01145238231289,-79.07785237507073],[36.01146106086246,-79.0777397222921],[36.01147190904803,-79.07757878975121],[36.011487096505356,-79.07742053941932],[36.01150445359584,-79.07727838234155],[36.01154133740045,-79.07711208538262],[36.01158039082181,-79.07697529272286],[36.011623783489526,-79.07681167797296],[36.011680193921855,-79.0766775675222],[36.01173443468408,-79.07653004602639],[36.011784336152374,-79.07637716011253],[36.011810393105264,-79.07627195119859],[36.01184293751333,-79.07614052295686],[36.011879821159575,-79.07597154378892],[36.01189934778882,-79.07583206892014],[36.01191887441323,-79.07572478055955],[36.01193840103281,-79.07559603452684],[36.011949249152714,-79.07547265291215],[36.011964436518056,-79.07536268234254],[36.011988302371975,-79.07519638538362],[36.01200132010743,-79.0750488638878],[36.01201867708471,-79.07489329576494],[36.01204037330091,-79.07474577426912],[36.01205122140677,-79.07462775707246],[36.01205773026957,-79.07451778650285],[36.01206206951113,-79.07439440488817],[36.0120555606487,-79.07434076070787],[36.01205773026957,-79.07425224781038],[36.01205339102778,-79.07419592142107],[36.0120468821646,-79.07408595085145],[36.01204471254342,-79.07403767108919],[36.01203603405815,-79.07395184040071],[36.011915484374626,-79.07314181327821],[36.01202830478139,-79.07258391380311],[36.01196755535166,-79.07215476036073],[36.01185473485795,-79.07151103019716],[36.01167248602702,-79.07125353813173],[36.01157702218549,-79.07089948654176],[36.01153362949206,-79.07047033309938],[36.01161173632305,-79.070041179657]]
+var road = L.polyline(oldNewHopeChurchRoad, {color: 'green', weight: 5}).addTo(roadLayer).bindTooltip("the old New Hope Church Road");
+
+
+var CurrieSlaveCemetery = [36.008111,-79.110417]
+var marker = L.marker(CurrieSlaveCemetery, {icon:cemetery}).addTo(mymap).bindTooltip("Currie slave cemetery")
+var StrayhornSlaveCemetery = [36.0176742717172,-79.0833342075348]
+var marker = L.marker(StrayhornSlaveCemetery, {icon:cemetery}).addTo(mymap).bindTooltip("Strayhorn slave cemetery")
+var NewHopePresbyterian = [36.01309575140759,-79.07216548919679]
+var marker = L.marker(NewHopePresbyterian, {icon:church}).addTo(mymap).bindTooltip("New Hope Presbyterian Church")
+var OrangeMethodist = [35.948731868993185,-79.05766010284425]
+var marker = L.marker(OrangeMethodist, {icon:church}).addTo(mymap).bindTooltip("Orange Methodist Church")
+
+//INITIAL SET UP
+for (var i = 0; i < parcelsShown.length; i = i + 1){
+        var currentPlacement = L.polygon(parcelsShown[i], {color: 'yellow', fillColor: 'yellow', fillOpacity: 0.5})
+        .addTo(yellowLayer)
+        .bindTooltip(ownersin1850[i])
+    }
+
+
+
+function parse(){
+output = [] 
+typedinput = document.getElementById("legal").value
+var splitbycomma = []
+splitbycomma = typedinput.split(',');
+//var itemName = splitbycomma.shift()
+var firstCorner = splitbycomma.shift()
+legals = [[firstCorner]]
+var lengthTotal = splitbycomma.length
+var divy
+for (i = 0; i < lengthTotal; i = i + 1){
+    var reassembly = ''
+    var splitbyspace = splitbycomma[i].split(' ');
+//    console.log("splitbyspace = " + splitbyspace)
+    directions.push(splitbyspace[1])
+    distances.push(splitbyspace[2])
+    for (k = 4; k < splitbyspace.length; k = k + 1) {
+        reassembly = reassembly + splitbyspace[k] + ' '
+    }
+//    console.log('reassembly = ' + reassembly)
+    corners.push(reassembly)
+}
+//console.log("split by comma = " + splitbycomma)
+
+var divisor
+if (splitbycomma[1].includes('feet')) {
+    divisor = 66
+    units="feet"
+}
+if (splitbycomma[1].includes('po')) {
+    divisor = 4
+    units = "po"
+}
+if (splitbycomma[1].includes('ch')) {
+    divisor = 1
+    units = "ch"
+}
+
+//console.log ("divisor = " + divisor)
+for (var i = 0; i < lengthTotal; i = i + 1) {
+    var nextDirection = directions[i]
+    var nextDistance = distances[i]
+//    console.log("next distance = " + nextDistance)
+    var convertedDistance = nextDistance/divisor
+    convertedDistances.push(convertedDistance)
+//    console.log("converted distance = " + convertedDistance)
+    var nextCorner = corners[i]
+    nextDirection = "'"+ nextDirection + "'"
+    legals[0].push(nextDirection)
+    legals[0].push(convertedDistance)
+    nextCorner = "'" + nextCorner + "'"
+    legals[0].push(nextCorner)
+}
+//console.log(legals)
+}
+
+var output
+var NSscaling = 0.000180923
+var EWscaling = 0.000223644
+var tempCorners = []
+
+function preview() {
+output = [[0,0]] //output is going to be the array of the coordinates for the tract we just typed
+var nextCoord = 1
+for (i = 0; i < directions.length; i = i + 1){
+//    console.log('output is now  ' + output)
+    if (directions[i].length > 1) { //ANGLES
+//        console.log('Angles!')
+        var partsArray = directions[i].split('');
+//            console.log(partsArray)
+            direction1 = partsArray[0]
+            direction2 = partsArray[partsArray.length - 1]
+//            console.log(direction2)
+            var theta =""
+            for (var j = 1; j < partsArray.length -1; j = j + 1) {
+                theta = theta.concat(partsArray[j]);
+                }
+            var hypChains = convertedDistances[i]
+            theta = (90-theta)*3.14159265359/180 //convert to complimentary angle in radians
+//            console.log('theta is ' + theta)
+            var oppChains = hypChains * Math.sin(theta)
+            var adjChains = hypChains * Math.cos(theta)
+            if (direction1 == "N") {newLat = output[nextCoord-1][0] + oppChains * NSscaling}
+            if (direction1 == "S") {newLat = output[nextCoord-1][0] - oppChains * NSscaling}
+            if (direction2 == "E") {newLong = output[nextCoord-1][1] + adjChains * EWscaling}
+            if (direction2 == "W") {newLong = output[nextCoord-1][1] - adjChains * EWscaling}
+            if (newLat != NaN && newLong !=NaN) {output.push([newLat, newLong])}
+    }
+    if (directions[i] == "N") {
+        output.push([convertedDistances[i] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+    if (directions[i] == "S") {
+        output.push([- convertedDistances[i] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+    if (directions[i] == "E") {
+        output.push([output[nextCoord-1][0], convertedDistances[i] * EWscaling + output[nextCoord-1][1]])}
+    if (directions[i] == "W") {
+        output.push([output[nextCoord-1][0], - convertedDistances[i] * EWscaling + output[nextCoord-1][1]])}
+    var nextCoord = nextCoord + 1
+//    console.log('next coord = ' + nextCoord)
+    } //end of loop //now test whether the description closes, and if not send the origin coordinates
+    if (output[output.length-1][0] >= 10**-14 || output[output.length-1][1] >= 10**-14) {output.push([0,0])}
+//    console.log('output is ' + output)
+    var activeTract = output
+    greenLayer.clearLayers();
+    clickLat = 36.014186
+    clickLong = -79.100510
+    var tempActiveTractCoords = []
+        for (var j = 0; j < activeTract.length; j = j + 1) {
+            tempActiveTractCoords.push([activeTract[j][0] + clickLat, activeTract[j][1] + clickLong])
+        }
+        var currentPlacement = L.polygon(tempActiveTractCoords, {color: 'green', fillColor: 'green', fillOpacity: 0.5}).addTo(greenLayer)
+        var originMarker = L.circle([clickLat, clickLong], {color: 'red', fillColor: 'red', fillOpacity: 0.5, radius: 100}).addTo(greenLayer);
+        document.getElementById('previewDiv').innerText = "output = [" + output + "]"
+    }// end of preview function
+
+function handleFileSelect(evt) {
+//    console.log(evt)
+    loaded="yes"
+    var file = evt.files[0]
+    Papa.parse(file, papaConfig)
+}
+
+function download() {
+    window.open('data:text/csv;charset=utf-8,' + escape(parcelsShown));
+}
+
+function mouse(e){
+    if (output == []) {moveToggle = 0}
+    if (moveToggle == 0) {
+        var mouseLat = e.latlng['lat'] 
+        var mouseLong = e.latlng['lng']
+        var activeTract = output
+        var tempActiveTractCoords = []
+        greenLayer.clearLayers();
+        for (var j = 0; j < activeTract.length; j = j + 1) {
+            tempActiveTractCoords.push([activeTract[j][0] + mouseLat, activeTract[j][1] + mouseLong])
+        }
+        var currentPlacement = L.polygon(tempActiveTractCoords, {color: 'green', fillColor: 'green', fillOpacity: 0.5}).addTo(greenLayer)
+        .addTo(yellowLayer)
+        .bindTooltip(ownersin1850[i])
+    }
+}
+
+function affix(e){
+    if (moveToggle == 1) {
+        var clickLat = e.latlng['lat'] 
+        var clickLong = e.latlng['lng']
+        var marker = L.marker([clickLat,clickLong]).addTo(roadLayer)
+        console.log("[" + clickLat + "," + clickLong+"]")
+    }
+    if (moveToggle == 0 && output != undefined) {
+//        console.log("output = " + output)
+        var clickLat = e.latlng['lat'] 
+        var clickLong = e.latlng['lng']
+        var activeTract = output
+        var tempActiveTractCoords = []
+        greenLayer.clearLayers();
+        for (var j = 0; j < activeTract.length; j = j + 1) {
+            tempActiveTractCoords.push([activeTract[j][0] + clickLat, activeTract[j][1] + clickLong])
+        }
+
+        yellowLayer.clearLayers();
+        parcelsShown.push(tempActiveTractCoords)
+        for (var i = 0; i < parcelsShown.length; i = i + 1){
+            var currentPlacement = L.polygon(parcelsShown, {color: 'yellow', fillColor: 'yellow', fillOpacity: 0.5}).addTo(yellowLayer)
+            .addTo(yellowLayer)
+            .bindTooltip(ownersin1850[i])
+        }
+        var mostRecent = parcelsShown.length - 1
+        var latest ="["
+        for (var i = 0; i < parcelsShown[mostRecent].length; i = i + 1){
+            latest = latest + "[" + parcelsShown[mostRecent][i] + "]"
+            if (i < parcelsShown[mostRecent].length - 1) {latest = latest + ","}
+        }
+        latest = latest + "]"
+        document.getElementById('previewDiv').innerText = latest
+        latest = ""
+        tempActiveTractCoords=[]
+        activeTract = []
+        moveToggle = 1
+    }
+}
+
+
+function parsepreview(){
+    parse()
+    preview()
+    moveToggle = 0
+    legals = []
+    corners = []
+    directions = []
+    distances = []
+    convertedDistances = []
+}
+
+function clearActive(){
+    moveToggle = 1
+    output = []
+    activeTract = []
+    legals = []
+    corners = []
+    directions = []
+    distances = []
+    convertedDistances = []
+}
+
+</script>
+</html>
