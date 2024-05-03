@@ -37,8 +37,9 @@
     <button id="button4" onclick="button4()">Making Young Evans' neighbors float</button>    
     <button id="button5" onclick="button5()">The audio component</button>
     <button id="button7" onclick="button7()">JSON's and CSV's</button>
-    
-    
+    <button id="button8" onclick="button8()">PapaParse</button>
+    <button id="button9" onclick="button9()">exporting the CSV</button>
+    <button id="button10" onclick="button10()">moving markers</button>
     <div class='crosshair' id="myfirstmap"></div>
 </body>
 
@@ -50,15 +51,19 @@
     var colorline = L.layerGroup().addTo(mymap);
     var markerLayer = L.layerGroup().addTo(mymap);
     var baseMap = L.layerGroup().addTo(mymap);
+    var moveMode = 0
     var moveLayer = L.layerGroup().addTo(mymap);
     var hydroLayer = L.layerGroup().addTo(mymap);
-    var comment1 = "Probably the single most important thing that I have learned about using Leaflet is the importance and value of creating Leaflet maps iteratively. That is, creating maps which allow me to create better maps. For example, for my purposes, it is often important to be able to overlay an image of an existing historical paper map. To do this effectively, you need to be able to identify the correct locations for the SW corner of the map image and the NE corner. But typically we don't know just where those should be. So I created a Leaflet utility page to asist in that process, which you can see here:<br><a href='https://registerchilton.github.io/Geography456/ColorLine/imageOverlay7.html'>Image Overlay</a><br><br>The image overlay utility page allows you to choose a local jpg or png file to display as an overlay. It reads the naturalHeight and naturalWidth features of the image and projects them over downtown Chapel Hill, but you can pick the image up and move it wherever you want it. You can also use the sliders to rescale the image - either with or without maintaining it's naturalHeight and naturalWidth. Once you get the image just where you want it, you can click a button and the page will console log the exact lat & long to be used for each corner in order to show this image in this location on another map-page.<br><br>But my main point here is not the details of how the Image Overlay utility works. It is that I think it is important to use Leaflet to create map-pages which can then be used to create still better and more specialized map pages.<br><br>Another example of this is methodology is using the map.on('click', function) command in javascript. See more about that by clicking that button below."
+    var comment1 = "Probably the single most important thing that I have learned about using Leaflet is the importance and value of creating Leaflet maps iteratively. That is, creating maps which allow me to create better maps. For example, for my purposes, it is often important to be able to overlay an image of an existing historical paper map. To do this effectively, you need to be able to identify the correct locations for the SW corner of the map image and the NE corner. But typically we don't know just where those should be. So I created a Leaflet utility page to assist in that process, which you can see here:<br><a href='https://registerchilton.github.io/Geography456/ColorLine/imageOverlay7.html'>Image Overlay</a><br><br>The image overlay utility page allows you to choose a local jpg or png file to display as an overlay. It reads the naturalHeight and naturalWidth features of the image and projects them over downtown Chapel Hill, but you can pick the image up and move it wherever you want it. You can also use the sliders to rescale the image - either with or without maintaining it's naturalHeight and naturalWidth. Once you get the image just where you want it, you can click a button and the page will console log the exact lat & long to be used for each corner in order to show this image in this location on another map-page.<br><br>But my main point here is not the details of how the Image Overlay utility works. It is that I think it is important to use Leaflet to create map-pages which can then be used to create still better and more specialized map pages.<br><br>Another example of this is methodology is using the map.on('click', function) command in javascript. See more about that by clicking that button below."
     var comment2 = "Tanyard Branch is first rapidly drawn in blue with an L.polyline Leaflet command (at weight:5). Then I sent a series of commands to re-draw each tiny segment of Tanyard Branch in red (at weight:7), but I needed to slow the process down dramatically, which I did with Javascript's setTimeout feature. <br><br>setTimeout tells Javascript to continue with the rest of the program, but delay a particular instruction by the specified number of milliseconds. The human eye can detect changes about every 32 milliseconds, so I usually set about that length of time for my delay time. But for Tanyard Branch, I needed the blood to ooze down the creek, so I had to not only make it very slow, but I also had to decrease the distance between each point in the polyline.<br><br>By exporting the points in the polyline over into MS Excel, I was able to calculate a series of points that were midway between the original points. That was still too fast, so I did that again. And again. Until I finally had over 600 points along the course of Tanyard Branch. Then I fired the function 600 times at 15 millisecond intervals."
     var comment3 = "I did this in a very similar way to Tanyard Branch. I picked a point as the center of the vicinity I wanted to show her. Then I used Excel's Sine and Cosine functions to project a series of locations along a circular path around the center point.  <br><br>Then I used setTimeout to project Emily Taylor's marker in each of those calculated positions in turn (and drew a polyline from her location on the census image to each of those locations). Every time the position changes, Leaflet executes a clearLayers command on a special layer created just for carrying out this function."
     var comment4 = "Making Young Evans' neighbors float around was complex, but basically, I defined min and max latitudes & longitudes for where they would go. Then I used the Math.random method to select random destinations within those bounds. Each of the five neighbors has their own destination. Then using setTimeout, I have each marker move 1 meter closer to their destination every 30 milliseconds.<br><br>When a marker gets close to its destination, a new random destination is chosen for that marker, and the process repeats.This approach allows me to show each of these people in a location, while visually conveying the extent of my uncertainty about the exact location."
     var comment5 = "The audio component of the presentation uses the HTML audio element, which you can read more about at W3Schools. I recorded each of the audio segments as WAV files on my iPhone, then used a free online utility to convert them to MP3 files (which is what the HTML audio element uses).<br><br>Each audio clip plays when called with an 'x = document.getElementById('slide1')' command, followed by an 'x.play()' command.<br><br>I put an event listener after each recording like this: 'x.addEventListener('ended', slide2)' so the next recording automatically plays when the last one ended."
-    var comment6 = "The map.on('click', function) Javascript Leaflet command allows you to define what happens when a use clicks on the map. This can be very helpful in developing more refined map-pages. I like to set up my Leaflet utility pages so that when I click on the map in a location it calls a function which causes the coordinates of that location to be console logged.  That way I can use this functionality to determine exactly where I want various markers to go on the finished map-page.<br><br>In this situation, it is often desirable to use CSS to change the cursor to the crosshairs to allow for more precise clicking. This is done by adding .crosshair {cursor: crosshair;} into the CSS style and then, when creating the map assigning it the appropriate class like this: class='crosshair'<br><br>You can try this now because I just turned that functionality on for this slide (by using making the variable 'clickMode' equal 1, when you go to any other slide, I will set clickMode back to zero to turn this off).<br><br>This brings me to another point, which is the effective use of document.getElementByID to change what appears in this space. I set the div containing the text to have the id 'comment' - I can change what you read here with each function you call be clicking one of the buttons below. Also I made another div called 'output' which is blank all of the time, except when you click on the map below, in which case it gets set with a document.getElementByID command to show the coordinates of the place you clicked."
-    var comment7 = "JSON's and CSV's are essential to the effective use of Leaflet. JSON's and CSV's are just differnet types of databases and they can be used to store all sorts of information. For our purposes, they are mostly used to store various coordinates defining where to place markers, polylines or polygons (and what tooltip or popup text to give them and perhaps other properties like what years in which they should appear).<br><br>Mostly, in javascript, we prefer to use the JSON rather than the CSV because JSON's are designed to work particularly effectively in javascript.  The only problem with JSON's is that javascript has exacting standards for how a JSON is formatted. One typo will kill your JSON. And JSON's are not easily editted with Microsoft Office.  That is why it is useful, particularly in the map-page drafting process, to use CSV's (which are highly compatible with Microsoft Excel). If you work with your data in Excel as a CSV, you can use Papa Parse to transform that CSV into a JSON."
+    var comment6 = "The map.on('click', myFunction) Javascript/Leaflet command allows you to define what happens when a user clicks on the map. This can be very helpful in developing more refined map-pages. I like to set up my Leaflet utility pages so that when I click on the map in a location it calls a function which causes the coordinates of that location to be console logged.  That way I can use this functionality to determine exactly where I want various markers to go on the finished map-page.<br><br>In this situation, it is often desirable to use CSS to change the cursor to the crosshairs to allow for more precise clicking. This is done by adding .crosshair {cursor: crosshair;} into the CSS style and then, when creating the map div assigning it the appropriate class like this: class='crosshair'<br><br>You can try this now because I just turned that functionality on for this slide (by making the variable 'clickMode' equal 1, when you go to any other slide, I will set clickMode back to zero to turn this off).<br><br>This brings me to another point, which is the effective use of document.getElementByID to change what appears in this space. I set the div containing the text to have the id 'comment' - I can change what you read here each time you click one of the buttons below, by having the corresponding function use document.getElementByID('comment').innerHTML = 'whatever comment I want'. Also I made another div called 'output' which is blank all of the time, except when you click on the map below while viewing this slide, in which case it gets set with a document.getElementByID command to show the coordinates of the place you clicked. Try it!"
+    var comment7 = "JSON's and CSV's are essential to the effective use of Leaflet. JSON's and CSV's are just different types of databases and they can be used to store all sorts of information. For our purposes, they are mostly used to store various coordinates defining where to place markers, polylines or polygons (and what tooltip or popup text to give them and perhaps other properties like what years in which they should appear).<br><br>Mostly, in javascript, we prefer to use the JSON rather than the CSV because JSON's are designed to work particularly effectively in javascript.  The only problem with JSON's is that javascript has exacting standards for how a JSON is formatted. One typo will kill your JSON. And JSON's are not easily edited with Microsoft Office.  That is why it is useful, particularly in the map-page drafting process, to use CSV's (which are highly compatible with Microsoft Excel). If you work with your data in Excel as a CSV, you can use PapaParse to transform that CSV into a JSON."
+    var comment8 = "Papa Parse is a super useful function for parsing a CSV into a JSON (or unparsing a JSON into a CSV). <br><br>The essential steps are to call Papa Parse as a javascript method by using the following language within a script tag:<br><br>script src='https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js' integrity='sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==' crossorigin='anonymous' referrerpolicy='no-referrer'<br><br>And then setting up the configuration by creating a javascript constant as follows: const papaConfig = {header: true, complete: function(result){richland = result.data}}<br><br>To actually use Papa Parse you simply call the function with the following javascript command: Papa.parse(file, papaConfig)<br><br>Note that the name of the resulting JSON will be 'richland' because that it was I specified in the configuration constant, but you can make it whatever you want.<br><br>It is important to realize, though, that PapaParse has some shortcomings. For example and especially important in this context, PapaParse will automatically read a CSV cell like '[1,0,2,3,5]' as a string, not an array. To convert the resulting string into an array, you need to use the JSON.parse() method (which W3Schools has a nice tutorial on).<br><br>When the array you are trying to bring in from a CSV is a nested array of coordinates, things get a bit messier, but you can write a series of for loops to split apart the string using the .split javascript method and reassembling it using the .push() javascript method to create the intended array. This is a necessary evil in early Leaflet map-page development, but once you are done, you can then create a finished JSON and dispense with the use of CSV's altogether.<br><br>The reason I use CSV's during the development stage is that a CSV is easier to edit outside of javascript. So we can have it both ways for a while, working with a CSV in windows and Papa Parsing it into a JSON in the javascript environment. After we work with the JSON in the javascript environment, we can return it to the CSV/Windows world by using Papa Unparse and exporting the resulting CSV (see the 'exporting the CSV' button for more on this)."
+    var comment9 = "After we have used one of the Leaflet utility maps to revise our JSON data, by moving markers around or adjusting the corners of one of our polygons (see the 'moving markers & adjusting polygons' button), we want to be able to save the changes we have made in the JSON.  Unfortunately that is not easy to do without having a back end server set up, but I developed a bit of a workaround which I employed in creating my maps.<br><br>What I did is to call on Papa to unparse my JSON 'richland' as follows:<br><br>downloadRichland = Papa.unparse (richland)<br><br> and then download the unparsed CSV called 'downloadRichland' with the following javascript command:<br><br>window.open('data:text/csv;charset=utf-8,' + escape(downloadRichland));<br><br>This results in a new file called 'download' being saved to my downloads folder. I can then work on that CSV in Excel or whatever other program and when I am ready, bring it right back into one of my leaflet pages by Papa Parsing it back into a JSON."
+    var comment10 = "One rather wonderful feature of Leaflet is that it interprets the contents of any .bindPopup() command as being HTML. That means that we can set up a marker's popup to include an HTML Button command - like button onclick='myNewFunction' and then in our javascript we can define myNewFunction.<br><br>Using this technique, we can create a situation in which the marker contains a button, which when clicked runs a function that allows us to move that marker to a new location. We can do this using much the same function described under the 'map.on('click', function)' button below. Anywhere we click, we can make the marker show up there and at the same time change the marker's lat & long value in the JSON. The function will know where in the JSON to store the new lat & long because when we set up the button text in the popup, we instruct it to call on the function as myNewFunction(7) or whatever number the marker is in the JSON.  We can do this by defining the button text as 'button onclick='myNewFunction(' + i + ')' - where i is the variable controlling the for loop which placed the markers based on their order in the JSON.<br><br>This gets a little complicated, but basically we set another map.on, but this time map.on('mousemove', functionName) which causes every movement of the mouse to send a .clearLayers command to erase the current marker and re-draw it to the latest mouse location - so the marker follows your mouse around until you click the map (because there is also a map.on command for that), at which point it affixes the marker where you clicked it.<br><br>During this whole process the marker is being shown on tempLayer - a special layer I created for just this purpose. That way when we send the tempLayer.clearLayers() command constantly, we are not erasing any other markers or polygons in the process.<br><br>You can try this functionality out with the marker below. Note that when you affix it by clicking, we re-send the buttonText as the Popup for this new marker, so that we can again pick it up and move it. You can actually use this same basic method to move around polygons or even to adjust an individual polygon corner."
     var clickMode = 0
     document.getElementById('comment').innerHTML = comment1
     var tanyard = [[35.91193934091917,-79.0595054626465],[35.91182992109533,-79.06091015943092],[35.91418048732109,-79.06080869361139],[35.91381167724889,-79.05913648466544],[35.91443528755473,-79.05900056085979],[35.91443528755473,-79.05789799593978],[35.911947596304735,-79.05789799593978],[35.911947596304735,-79.05901621593979],[35.91193934091917,-79.0595054626465]]
@@ -71,6 +76,7 @@
     L.imageOverlay(imageUrl1860, imageBounds1860, {opacity: opacity1860}).addTo(baseMap);
     
     mymap.on('click', logit);
+    mymap.on('mousemove', moveMarker(e))
 
 function button2(){
     clickMode = 0
@@ -138,6 +144,7 @@ function button3(){
 
 function button4(){
     clickMode = 0
+    moveMode = 0
     document.getElementById('output').innerText = ""
     mymap.panTo([35.91584815839376,-79.05934453010559])
     mymap.setView([35.91584815839376,-79.05934453010559], 16);
@@ -310,6 +317,7 @@ function button4(){
 
 function button5(){
     clickMode = 0
+    moveMode = 0
     document.getElementById('output').innerText = ""
     document.getElementById('comment').style.display = ""
     document.getElementById("comment"). innerHTML = comment5
@@ -318,6 +326,8 @@ function button5(){
 }
 
 function button6(){
+    moveMode = 0
+    document.getElementById('output').innerText = ""
     mymap.on('click', logit);
     document.getElementById('comment').innerHTML = comment6
     clickMode = 1
@@ -331,10 +341,60 @@ function logit(e){
         var statement = "You just clicked at " + clickLat + "," + clickLong
         document.getElementById('output').innerText = statement
     }
+    if (moveMode == 1){
+        var clickLat = e.latlng['lat'] 
+        var clickLong = e.latlng['lng']
+        var buttonText = "<button onclick='markerMove()'>move this marker?"
+        L.marker([clickLat,clickLong]).addTo(tempLayer).bindPopup(buttonText)
+        moveMode = 0
+    }
 }
 
 function button7(){
+    clickMode = 0
+    moveMode = 0
+    document.getElementById('output').innerText = ""
     document.getElementById('comment').innerHTML = comment7
+}
+
+function button8(){
+    clickMode = 0
+    moveMode = 0
+    document.getElementById('output').innerText = ""
+    document.getElementById('comment').innerHTML = comment8
+}
+
+function button9(){
+    clickMode = 0
+    moveMode = 0
+    document.getElementById('output').innerText = ""
+    document.getElementById('comment').innerHTML = comment9
+}
+
+function button10(){
+    clickMode = 0
+    moveMode = 0
+    document.getElementById('output').innerText = ""
+    document.getElementById('comment').innerHTML = comment10
+    var buttonText = "<button onclick='markerMove()'>move this marker?"
+    var marker = L.marker([35.92178066555249,-79.06019210815431]).addTo(tempLayer).bindPopup(buttonText)
+}
+
+function markerMove(){
+    console.log("markerMove")
+    mymap.on('mousemove', moveMarker)
+    mymap.on('click', logit);
+    moveMode = 1
+}
+
+function moveMarker(e){
+    if (moveMode == 1){
+        tempLayer.clearLayers();
+        var clickLat = e.latlng['lat'] 
+        var clickLong = e.latlng['lng']
+        var marker = L.marker([clickLat,clickLong]).addTo(tempLayer)
+    }
+    mymap.on('click', logit);
 }
 
 </script>
