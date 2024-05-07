@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet Map Overlay Utility</title>
+    <title>Looking through the leaves</title>
 </head>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -55,6 +55,7 @@
 <button id="LaurelSprings" onclick="LaurelSprings()">Laurel Springs</button>
 <button id="EliWhitney" onclick="EliWhitney()">Eli Whitney</button>
 <button id="MannsChapel" onclick="MannsChapel()">Mann's Chapel</button>
+<button id="Schley" onclick="Schley()">Schley</button>
 <div class="slider-container">
     <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider" oninput='display()'>
       <div class="tick-container">
@@ -111,14 +112,20 @@ var map = L.imageOverlay(EliimageUrl,EliimageBounds, {opacity:1}).addTo(maplayer
 
 var MCSWcornerLat = 35.8389525060194
 var MCSWcornerLong = -79.13494252784218
-var MCNEcornerLat = 35.85125250601941
+var MCNEcornerLat = 35.851452506019406
 var MCNEcornerLong = -79.11824252784218
 var MCimageBounds = [[MCSWcornerLat, MCSWcornerLong], [MCNEcornerLat, MCNEcornerLong]];
 var MCimageUrl = './MannsChapel.png'
 var map = L.imageOverlay(MCimageUrl,MCimageBounds, {opacity:1}).addTo(maplayer)
 
 
-
+var SchleySWcornerLat = 36.14356127388792
+var SchleySWcornerLong = -79.06755186418835
+var SchleyNEcornerLat = 36.167661273887916
+var SchleyNEcornerLong = -79.03445186418834
+var SchleyimageBounds = [[SchleySWcornerLat, SchleySWcornerLong], [SchleyNEcornerLat, SchleyNEcornerLong]];
+var SchleyimageUrl = './Schley.png'
+var map = L.imageOverlay(SchleyimageUrl,SchleyimageBounds, {opacity:1}).addTo(maplayer)
 
 mymap.on('mousemove', onMouseMove);
 mymap.on('click', markIt);
@@ -132,6 +139,8 @@ function display() {
     var map = L.imageOverlay(LSimageUrl,LSimageBounds, {opacity:Opacity}).addTo(maplayer)
     var map = L.imageOverlay(EliimageUrl,EliimageBounds, {opacity:Opacity}).addTo(maplayer)
     var map = L.imageOverlay(MCimageUrl,MCimageBounds, {opacity:Opacity}).addTo(maplayer)
+    var map = L.imageOverlay(SchleyimageUrl,SchleyimageBounds, {opacity:Opacity}).addTo(maplayer)
+
 }
 
 function clickMode(){
@@ -193,6 +202,10 @@ function EliWhitney(){
 
 function MannsChapel(){
     mymap.flyTo([35.84530200104697,-79.12658214569093],16)
+}
+
+function Schley(){
+    mymap.flyTo([36.15492698438557,-79.0503215789795],15)
 }
 
 </script>
