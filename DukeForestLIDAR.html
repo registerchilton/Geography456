@@ -53,6 +53,8 @@
 <button id="markerButton" onclick="clickMode()">Place some markers</button>
 <button id="RobinsWood" onclick="RobinsWood()">Robins Wood</button>
 <button id="LaurelSprings" onclick="LaurelSprings()">Laurel Springs</button>
+<button id="EliWhitney" onclick="EliWhitney()">Eli Whitney</button>
+<button id="MannsChapel" onclick="MannsChapel()">Mann's Chapel</button>
 <div class="slider-container">
     <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider" oninput='display()'>
       <div class="tick-container">
@@ -99,6 +101,24 @@ var LSimageBounds = [[LSSWcornerLat, LSSWcornerLong], [LSNEcornerLat, LSNEcorner
 var LSimageUrl = './laurelsprings.png'
 var map = L.imageOverlay(LSimageUrl,LSimageBounds, {opacity:1}).addTo(maplayer)
 
+var EliSWcornerLat = 35.83746372778201
+var EliSWcornerLong = -79.28775923921138
+var EliNEcornerLat = 35.852163727782006
+var EliNEcornerLong = -79.26965923921138
+var EliimageBounds = [[EliSWcornerLat, EliSWcornerLong], [EliNEcornerLat, EliNEcornerLong]];
+var EliimageUrl = './EliWhitney.png'
+var map = L.imageOverlay(EliimageUrl,EliimageBounds, {opacity:1}).addTo(maplayer)
+
+var MCSWcornerLat = 35.8389525060194
+var MCSWcornerLong = -79.13494252784218
+var MCNEcornerLat = 35.851452506019406
+var MCNEcornerLong = -79.11824252784218
+var MCimageBounds = [[MCSWcornerLat, MCSWcornerLong], [MCNEcornerLat, MCNEcornerLong]];
+var MCimageUrl = './MannsChapel.png'
+var map = L.imageOverlay(MCimageUrl,MCimageBounds, {opacity:1}).addTo(maplayer)
+
+
+
 
 mymap.on('mousemove', onMouseMove);
 mymap.on('click', markIt);
@@ -110,6 +130,8 @@ function display() {
     var map = L.imageOverlay(imageUrl,imageBounds, {opacity:Opacity}).addTo(maplayer)
     var map = L.imageOverlay(RWimageUrl,RWimageBounds, {opacity:Opacity}).addTo(maplayer)
     var map = L.imageOverlay(LSimageUrl,LSimageBounds, {opacity:Opacity}).addTo(maplayer)
+    var map = L.imageOverlay(EliimageUrl,EliimageBounds, {opacity:Opacity}).addTo(maplayer)
+    var map = L.imageOverlay(MCimageUrl,MCimageBounds, {opacity:Opacity}).addTo(maplayer)
 }
 
 function clickMode(){
@@ -163,6 +185,14 @@ function RobinsWood(){
 
 function LaurelSprings(){
     mymap.flyTo([35.94104812916833,-79.12683963775636],16)
+}
+
+function EliWhitney(){
+    mymap.flyTo([35.84455189799475,-79.27871704101564],16)
+}
+
+function MannsChapel(){
+    mymap.flyTo([35.84530200104697,-79.12658214569093],16)
 }
 
 </script>
