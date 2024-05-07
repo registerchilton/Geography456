@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Looking through the leaves</title>
+    <title>Leaflet Map Overlay Utility</title>
 </head>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -50,6 +50,9 @@
 <h3>LIDAR image of Duke Forest (Korstian Divison) and TLC's Johnston Mill Nature Preserve and surrounding area.</h3>
 <h5>LIDAR is a laser based system similar to radar. These images show the naked ground surface, revealing present and abandoned road beds. Many of the trails in Duke Forest are or were roads, though a close inspection of this image will reveal some other places which clearly were roads at one time. - Mark Chilton, Orange County Register of Deeds</h5>
 <div id="instruction">Adjust opacity of the LIDAR image with this slider.</div>
+<button id="markerButton" onclick="clickMode()">Place some markers</button>
+<button id="RobinsWood" onclick="RobinsWood()">Robins Wood</button>
+<button id="LaurelSprings" onclick="LaurelSprings()">Laurel Springs</button>
 <div class="slider-container">
     <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider" oninput='display()'>
       <div class="tick-container">
@@ -57,7 +60,6 @@
           <span class="tick">50</span>
           <span class="tick">100</span>
       </div>
-    <button id="markerButton" onclick="clickMode()">Place some markers</button>
     <div class="crosshair", id="myfirstmap"></div>
     <div id="array"></div>
     <div id="theMap" src=""></div>
@@ -82,6 +84,21 @@ var marker = L.marker([36.00384894924346,-79.0757703781128]).addTo(mymap).bindPo
 var markerMode = 1
 var layerClick = L.layerGroup().addTo(mymap);
 var tempArray = []
+var RWSWcornerLat = 35.907045570219076
+var RWSWcornerLong = -79.13501905505217
+var RWNEcornerLat = 35.920545570219076
+var RWNEcornerLong = -79.11831905505217
+var RWimageBounds = [[RWSWcornerLat, RWSWcornerLong], [RWNEcornerLat, RWNEcornerLong]];
+var RWimageUrl = './RobinsWood.png'
+var map = L.imageOverlay(RWimageUrl,RWimageBounds, {opacity:1}).addTo(maplayer)
+var LSSWcornerLat = 35.93464402704352
+var LSSWcornerLong = -79.13511962908035
+var LSNEcornerLat = 35.947644027043516
+var LSNEcornerLong = -79.11831962908035
+var LSimageBounds = [[LSSWcornerLat, LSSWcornerLong], [LSNEcornerLat, LSNEcornerLong]];
+var LSimageUrl = './laurelsprings.png'
+var map = L.imageOverlay(LSimageUrl,LSimageBounds, {opacity:1}).addTo(maplayer)
+
 
 mymap.on('mousemove', onMouseMove);
 mymap.on('click', markIt);
@@ -91,6 +108,8 @@ function display() {
     var opacityslider = document.getElementById('opacitySlider');
     var Opacity = opacityslider.value/100
     var map = L.imageOverlay(imageUrl,imageBounds, {opacity:Opacity}).addTo(maplayer)
+    var map = L.imageOverlay(RWimageUrl,RWimageBounds, {opacity:Opacity}).addTo(maplayer)
+    var map = L.imageOverlay(LSimageUrl,LSimageBounds, {opacity:Opacity}).addTo(maplayer)
 }
 
 function clickMode(){
@@ -138,7 +157,13 @@ function onMouseMove(e) {
         clickLong = e.latlng['lng']
 }
 
+function RobinsWood(){
+    mymap.flyTo([35.91376845801526,-79.12658214569093],16)
+}
 
+function LaurelSprings(){
+    mymap.flyTo([35.94104812916833,-79.12683963775636],16)
+}
 
 </script>
 </html>
