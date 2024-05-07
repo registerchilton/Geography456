@@ -56,6 +56,7 @@
 <button id="EliWhitney" onclick="EliWhitney()">Eli Whitney</button>
 <button id="MannsChapel" onclick="MannsChapel()">Mann's Chapel</button>
 <button id="Schley" onclick="Schley()">Schley</button>
+<button id="CedarGrove" onclick="CedarGrove()">Cedar Grove</button>
 <div class="slider-container">
     <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider" oninput='display()'>
       <div class="tick-container">
@@ -127,6 +128,14 @@ var SchleyimageBounds = [[SchleySWcornerLat, SchleySWcornerLong], [SchleyNEcorne
 var SchleyimageUrl = './schley.png'
 var map = L.imageOverlay(SchleyimageUrl,SchleyimageBounds, {opacity:1}).addTo(maplayer)
 
+var CGSWcornerLat = 36.15473198233723
+var CGSWcornerLong = -79.18643691374817
+var CGNEcornerLat = 36.18143198233723
+var CGNEcornerLong = -79.15233691374817
+var CGimageBounds = [[CGSWcornerLat, CGSWcornerLong], [CGNEcornerLat, CGNEcornerLong]];
+var CGimageUrl = './CedarGrove.png'
+var map = L.imageOverlay(CGimageUrl,CGimageBounds, {opacity:1}).addTo(maplayer)
+
 mymap.on('mousemove', onMouseMove);
 mymap.on('click', markIt);
 
@@ -140,7 +149,7 @@ function display() {
     var map = L.imageOverlay(EliimageUrl,EliimageBounds, {opacity:Opacity}).addTo(maplayer)
     var map = L.imageOverlay(MCimageUrl,MCimageBounds, {opacity:Opacity}).addTo(maplayer)
     var map = L.imageOverlay(SchleyimageUrl,SchleyimageBounds, {opacity:Opacity}).addTo(maplayer)
-
+    var map = L.imageOverlay(CGimageUrl,CGimageBounds, {opacity:Opacity}).addTo(maplayer)
 }
 
 function clickMode(){
@@ -206,6 +215,10 @@ function MannsChapel(){
 
 function Schley(){
     mymap.flyTo([36.15492698438557,-79.0503215789795],15)
+}
+
+function CedarGrove(){
+    mymap.flyTo([36.16802609891168,-79.16979789733888],15)
 }
 
 </script>
