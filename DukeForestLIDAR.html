@@ -53,6 +53,7 @@
 <button id="markerButton" onclick="clickMode()">Place some markers</button>
 <button id="RobinsWood" onclick="RobinsWood()">Robins Wood</button>
 <button id="LaurelSprings" onclick="LaurelSprings()">Laurel Springs</button>
+<button id="WinsomeLane" onclick="WinsomeLane()">Winsome Lane</button>
 <button id="EliWhitney" onclick="EliWhitney()">Eli Whitney</button>
 <button id="MannsChapel" onclick="MannsChapel()">Mann's Chapel</button>
 <button id="Schley" onclick="Schley()">Schley</button>
@@ -136,6 +137,15 @@ var CGimageBounds = [[CGSWcornerLat, CGSWcornerLong], [CGNEcornerLat, CGNEcorner
 var CGimageUrl = './CedarGrove.png'
 var map = L.imageOverlay(CGimageUrl,CGimageBounds, {opacity:1}).addTo(maplayer)
 
+var WLSWcornerLat = 35.92093502288158
+var WLSWcornerLong = -79.11788673741754
+var WLNEcornerLat = 35.93403502288158
+var WLNEcornerLong = -79.10138673741754
+var WLimageBounds = [[WLSWcornerLat, WLSWcornerLong], [WLNEcornerLat, WLNEcornerLong]];
+var WLimageUrl = './WinsomeLane.png'
+var map = L.imageOverlay(WLimageUrl,WLimageBounds, {opacity:1}).addTo(maplayer)
+
+
 mymap.on('mousemove', onMouseMove);
 mymap.on('click', markIt);
 
@@ -150,6 +160,7 @@ function display() {
     var map = L.imageOverlay(MCimageUrl,MCimageBounds, {opacity:Opacity}).addTo(maplayer)
     var map = L.imageOverlay(SchleyimageUrl,SchleyimageBounds, {opacity:Opacity}).addTo(maplayer)
     var map = L.imageOverlay(CGimageUrl,CGimageBounds, {opacity:Opacity}).addTo(maplayer)
+    var map = L.imageOverlay(WLimageUrl,WLimageBounds, {opacity:Opacity}).addTo(maplayer)
 }
 
 function clickMode(){
@@ -219,6 +230,9 @@ function Schley(){
 
 function CedarGrove(){
     mymap.flyTo([36.16802609891168,-79.16979789733888],15)
+}
+function WinsomeLane(){
+    mymap.flyTo([35.92714883579845,-79.10933017730714],16)
 }
 
 </script>
