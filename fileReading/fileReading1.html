@@ -16,7 +16,9 @@
     var reader = new XMLHttpRequest() || new ActiveXObject('MSXML2.XMLHTTP');
     
     function loadFile() {
-        reader.open('get', 'test.txt', true); 
+        var FILENAME = document.getElementById('csv-file').value 
+        console.log(FILENAME)
+        reader.open('get', FILENAME, true); 
         reader.onreadystatechange = displayContents;
         reader.send(null);
     }
