@@ -6,6 +6,7 @@
 </head>
 <body>
 <div id="container">
+    <input type="file" id="csv-file" names="files" onchange="loadFile(this)"/><br>
     <input type="button" value="test.txt"  onclick="loadFile()" />
     <div id="main">
     </div>
@@ -27,5 +28,10 @@
         }
     }
     
+    function handleFileSelect(evt) {
+        var file = evt.files[0]
+        Papa.parse(file, papaConfig)
+    }
+
 </script>
 </html>
