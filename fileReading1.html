@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" />
+<title>Read File (via AJAX)</title>
+
+</head>
+<body>
+<div id="container">
+    <input id="next" type="button" value="4.txt"  onclick="loadFile()" />
+    <div id="main">
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var reader = new XMLHttpRequest() || new ActiveXObject('MSXML2.XMLHTTP');
+    var number = 4
+    var previous = ""
+
+    function loadFile() {
+        var fileName = number + ".txt"
+        console.log(fileName)
+        reader.open('get', fileName, true); 
+        reader.onreadystatechange = displayContents;
+        reader.send(null);
+    }
+    
+    function displayContents() {
+        if(reader.readyState==4) {
+            var el = document.getElementById('main');
+            el.innerHTML = previous + "<br><br>" + reader.responseText;
+            number = number + 1
+            document.getElementById('next').value = number +".txt"
+            previous = document.getElementById('main').innerHTML
+        }
+    }
+    
+</script>
+</html>
