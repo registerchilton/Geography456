@@ -14,6 +14,7 @@
 <script type="text/javascript">
     var reader = new XMLHttpRequest() || new ActiveXObject('MSXML2.XMLHTTP');
     var number = 1
+    var previous = ""
 
     function loadFile() {
         var fileName = number + ".txt"
@@ -26,9 +27,10 @@
     function displayContents() {
         if(reader.readyState==4) {
             var el = document.getElementById('main');
-            el.innerHTML = reader.responseText;
+            el.innerHTML = previous + "<br><br>" + reader.responseText;
             number = number + 1
             document.getElementById('next').value = number +".txt"
+            previous = document.getElementById('main').innerHTML
         }
     }
     
