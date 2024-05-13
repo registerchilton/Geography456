@@ -6,8 +6,7 @@
 </head>
 <body>
 <div id="container">
-    <input type="file" id="csv-file" names="files" onchange="loadFile(this)"/><br>
-    <input type="button" value="test.txt"  onclick="loadFile()" />
+    <input type="button" value="1.txt"  onclick="loadFile()" />
     <div id="main">
     </div>
 </div>
@@ -16,9 +15,7 @@
     var reader = new XMLHttpRequest() || new ActiveXObject('MSXML2.XMLHTTP');
     
     function loadFile() {
-        var FILENAME = document.getElementById('csv-file').value 
-        console.log(FILENAME)
-        reader.open('get', FILENAME, true); 
+        reader.open('get', '1.txt', true); 
         reader.onreadystatechange = displayContents;
         reader.send(null);
     }
@@ -30,10 +27,5 @@
         }
     }
     
-    function handleFileSelect(evt) {
-        var file = evt.files[0]
-        Papa.parse(file, papaConfig)
-    }
-
 </script>
 </html>
