@@ -16,7 +16,9 @@
     var number = 1
 
     function loadFile() {
-        reader.open('get', '1.txt', true); 
+        var fileName = number + ".txt"
+        console.log(fileName)
+        reader.open('get', fileName, true); 
         reader.onreadystatechange = displayContents;
         reader.send(null);
     }
