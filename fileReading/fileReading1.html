@@ -6,14 +6,15 @@
 </head>
 <body>
 <div id="container">
-    <input type="button" value="1.txt"  onclick="loadFile()" />
+    <input id="next" type="button" value="1.txt"  onclick="loadFile()" />
     <div id="main">
     </div>
 </div>
 </body>
 <script type="text/javascript">
     var reader = new XMLHttpRequest() || new ActiveXObject('MSXML2.XMLHTTP');
-    
+    var number = 1
+
     function loadFile() {
         reader.open('get', '1.txt', true); 
         reader.onreadystatechange = displayContents;
@@ -24,6 +25,8 @@
         if(reader.readyState==4) {
             var el = document.getElementById('main');
             el.innerHTML = reader.responseText;
+            number = number + 1
+            document.getElementById('next').value = number +".txt"
         }
     }
     
