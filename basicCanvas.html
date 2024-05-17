@@ -74,11 +74,12 @@ function redraw(){
 	}
 
 	function rotate(){
-	newSliderValue = document.getElementById("rotateSlider").value
-	var iterations = newSliderValue - oldSliderValue
-	for (var i = 0; i < Math.abs(iterations); i = i +1){
-		if (iterations > 0){plus()}
-		else {minus()}
+		newSliderValue = document.getElementById("rotateSlider").value
+		var iterations = newSliderValue - oldSliderValue
+		for (var i = 0; i < Math.abs(iterations); i = i +1){
+			if (iterations > 0){plus()}
+			else {minus()}
+		}
 	}
 	
     function dimensions() {
