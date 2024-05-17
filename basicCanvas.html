@@ -80,7 +80,7 @@
                 myImageData = ctx.getImageData(i, j, 1, 1);
                 if (myImageData.data[0] > 0) {
                     console.log("whitening")
-                    myImageData.data[0] = 255
+                    myImageData.data[0] = 0
                 }
                 if (myImageData.data[1] > 200) {
                     console.log("whitening")
