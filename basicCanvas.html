@@ -13,6 +13,8 @@
     <br>
     <button onclick="dimensions()">Load the image</button><br>
     <button onclick="whiten()">Bleach the image</button><br>
+    <input type="number" id="rotate" onchange="draw(this)"/>
+
     <div id="pixelValues"></div>
     <canvas class="crosshair" id="canvas" width="1600" height="1600"></canvas>
     <br>
@@ -20,15 +22,16 @@
   </body>
 
 <script type="application/javascript">
+    var degrees
     var img = document.getElementById("theMap")
     var imageWidth
     var imageHeight
     var lowestNeighbor = 9
     console.log(img)
-    function draw() {
+    function draw(degrees) {
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-	    ctx.rotate((Math.PI/180)*20);
+	    ctx.rotate((Math.PI/180)*degrees);
         ctx.drawImage(img, 0, 0);
         document.getElementById("instructions").innerText = "Click on the Digital Elevation Model to search for down hill paths."
     }
@@ -43,7 +46,7 @@
             const ctx = canvas.getContext("2d");
             img.onload = () => {ctx.drawImage(img, 0, 0);}
         }
-        draw();
+        draw(0);
     }
 
     function getPixel(x,y){
