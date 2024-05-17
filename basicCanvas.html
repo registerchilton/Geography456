@@ -28,6 +28,7 @@
     function draw() {
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
+	    ctx.rotate((Math.PI/180)*20);
         ctx.drawImage(img, 0, 0);
         document.getElementById("instructions").innerText = "Click on the Digital Elevation Model to search for down hill paths."
     }
