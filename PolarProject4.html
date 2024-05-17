@@ -101,9 +101,7 @@ drawEarth()
 
 function wheelFunction(event){
     var y = event.deltaY
-    console.log(y)
     spin = spin + (y/100)
-    console.log(spin)
     drawContinents()
 }
 
@@ -242,20 +240,16 @@ function drawContinents(){
 }
 
 function drawCities(){
-    console.log("drawing cities")
     for (var i = 0; i < cities.length; i++){
         nextLat = cities[i][1]
         nextLong = cities[i][2]
-        console.log(nextLat,nextLong)
         if (nextLong < 0) {nextTheta = 360- Math.abs(nextLong)}
         else {nextTheta = nextLong}
         nextTheta = nextTheta + spin
         thetaRadians = (nextTheta*(2*pi)/360)
         nextr = mymap.distance([-90,0], [nextLat,nextLong]);
-        console.log("r is " + nextr + " & theta is " + nextTheta)
         hypoteneuse = nextr/1111949.3
         distApparent = 5670.25 * Math.sin(hypoteneuse * 0.00015692)
-        console.log("apparent distance is " + distApparent)
         nextLat = distApparent * Math.cos(thetaRadians)
         nextLong = distApparent * Math.sin(thetaRadians)
         var city = L.circle([nextLat,nextLong], {color:"black",fillColor:"black", opacity:1, fillOpacity:1}).addTo(mapLayer)
