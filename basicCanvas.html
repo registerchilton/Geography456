@@ -42,6 +42,8 @@
     console.log(img)
 	
     function draw() {
+	const context = canvas.getContext('2d');
+	context.clearRect(0, 0, canvas.width, canvas.height);
 	degrees = document.getElementById("rotateSlider").value
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
