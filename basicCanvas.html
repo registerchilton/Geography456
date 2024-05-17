@@ -5,11 +5,14 @@
     <meta charset="UTF-8" />
     <title>Canvas Digital Elevation Model Handler</title>
   </head>
+    <style>
+    .crosshair {cursor: crosshair;}
+    </style>
   <body>
     <h3 id="instructions">Click the Button below to load the Digital Elevation Model.</h3>
     <br>
     <button onclick="dimensions()">Load the DEM</button><br>
-    <canvas id="canvas" width="1600" height="1600"></canvas>
+    <canvas class="crosshair" id="canvas" width="1600" height="1600"></canvas>
     <br>
     <img id="theMap" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
   </body>
