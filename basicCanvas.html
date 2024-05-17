@@ -28,7 +28,7 @@
     <input type="range" min="0" max="90" value="0" class="slider" id="rotateSlider" oninput='draw()'>
 </div>	  
     <div id="pixelValues"></div>
-    <canvas class="crosshair" id="canvas" width="2500" height="2500"></canvas>
+    <canvas class="crosshair" id="canvas" width="3200" height="3200"></canvas>
     <br>
     <img id="theMap" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
   </body>
@@ -46,7 +46,7 @@
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 	    ctx.rotate((Math.PI/180)*degrees);
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, 1600, 1600);
         document.getElementById("instructions").innerText = "Click on the Digital Elevation Model to search for down hill paths."
     }
 
@@ -58,7 +58,7 @@
         const canvas = document.getElementById("canvas");
         if (canvas.getContext) {
             const ctx = canvas.getContext("2d");
-            img.onload = () => {ctx.drawImage(img,100,100);}
+            img.onload = () => {ctx.drawImage(img,1600,1600);}
         }
         draw(0);
     }
