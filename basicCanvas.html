@@ -24,9 +24,9 @@
     <br>
     <button onclick="dimensions()">Load the image</button><br>
     <button onclick="whiten()">Bleach the image</button><br>
-<div class="slider-container">
-    <input type="range" min="0" max="90" value="0" class="slider" id="rotateSlider" oninput='redraw()'>
-</div>	  
+	<div class="slider-container">
+	    <input type="range" min="0" max="90" value="0" class="slider" id="rotateSlider" oninput='redraw()'>
+	</div>	  
     <div id="pixelValues"></div>
     <canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
     <br>
@@ -54,7 +54,7 @@ function redraw(){
         const ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.rotate((Math.PI/180)*degrees);
-        ctx.drawImage(img, 0, degrees);
+        ctx.drawImage(img, 0, 300);
 }
 
     function dimensions() {
