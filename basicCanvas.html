@@ -42,15 +42,19 @@
     console.log(img)
 	
     function draw() {
-	const context = canvas.getContext('2d');
-	context.clearRect(0, 0, canvas.width, canvas.height);
-	degrees = document.getElementById("rotateSlider").value
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-	    ctx.rotate((Math.PI/180)*degrees);
         ctx.drawImage(img, 400, 400);
-        document.getElementById("instructions").innerText = "Click on the Digital Elevation Model to search for down hill paths."
     }
+
+function redraw(){
+	degrees = document.getElementById("rotateSlider").value
+        const canvas = document.getElementById("canvas");
+	context.clearRect(0, 0, canvas.width, canvas.height);
+        const ctx = canvas.getContext("2d");
+	ctx.rotate((Math.PI/180)*degrees);
+        ctx.drawImage(img, 400, 400);
+}
 
     function dimensions() {
         imageWidth = document.getElementById("theMap").naturalWidth;
