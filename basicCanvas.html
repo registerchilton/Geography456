@@ -25,7 +25,7 @@
     <button onclick="dimensions()">Load the image</button><br>
     <button onclick="whiten()">Bleach the image</button><br>
 	<div class="slider-container">
-	    <input type="range" min="0" max="90" value="0" class="slider" id="rotateSlider" oninput='redraw()'>
+	    <input type="range" min="0" max="9" value="0" class="slider" id="rotateSlider" oninput='redraw()'>
 	</div>	  
     <div id="pixelValues"></div>
     <canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
@@ -100,24 +100,6 @@ function redraw(){
 	});
 
     function whiten(){
-        const ctx = canvas.getContext("2d");
-        for (var i = 0; i < imageWidth; i++){
-            for (var j = 0; j < imageHeight; j++){
-                myImageData = ctx.getImageData(i, j, 1, 1);
-                if (myImageData.data[0] > 0) {
-                    console.log("whitening")
-                    myImageData.data[0] = 0
-                }
-                if (myImageData.data[1] > 200) {
-                    console.log("whitening")
-                    myImageData.data[1] = 255
-                }
-                if (myImageData.data[2] > 200) {
-                    console.log("whitening")
-                    myImageData.data[2] = 255
-                }
-            }
-        }
     }
 </script>
 </html>
