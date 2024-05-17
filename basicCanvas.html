@@ -3,18 +3,30 @@
 <html lang="en-US">
   <head>
     <meta charset="UTF-8" />
-    <title>Canvas Digital Elevation Model Handler</title>
+    <title>Canvas image rotater</title>
   </head>
     <style>
-    .crosshair {cursor: crosshair;}
+.slider-container {
+    margin-right: 20px;
+    display: flex;
+    align-items: left;
+    flex-direction: column;
+}
+
+.crosshair {cursor: crosshair;}
+
+.slider {
+    width: 545px; 
+}
     </style>
   <body>
     <h3 id="instructions">Click the Button below to load the Digital Elevation Model.</h3>
     <br>
     <button onclick="dimensions()">Load the image</button><br>
     <button onclick="whiten()">Bleach the image</button><br>
-    <input type="number" id="rotate" onchange="draw()"/>
-
+<div class="slider-container">
+    <input type="range" min="0" max="90" value="0" class="slider" id="rotateSlider" oninput='draw()'>
+</div>	  
     <div id="pixelValues"></div>
     <canvas class="crosshair" id="canvas" width="1600" height="1600"></canvas>
     <br>
@@ -30,7 +42,7 @@
     console.log(img)
 	
     function draw() {
-	degrees = document.getElementById("rotate").value
+	degrees = document.getElementById("rotateSlider").value
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 	    ctx.rotate((Math.PI/180)*degrees);
