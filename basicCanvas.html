@@ -12,6 +12,7 @@
     <h3 id="instructions">Click the Button below to load the Digital Elevation Model.</h3>
     <br>
     <button onclick="dimensions()">Load the DEM</button><br>
+    <div id="pixelValues"></div>
     <canvas class="crosshair" id="canvas" width="1600" height="1600"></canvas>
     <br>
     <img id="theMap" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
@@ -45,82 +46,12 @@
 
     function getPixel(x,y){
         console.log("testing " + x + "," + y)
-	const canvas = document.getElementById("canvas");
+	    const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d", {willReadFrequently: true});
         myImageData = ctx.getImageData(x, y, 1, 1);
-	console.log("lookin for neighbors below " + myImageData.data)
-        if (myImageData.data[0] > 0) {
-            var neighbor1 = ctx.getImageData(x-1, y-1, 1, 1);
-            var neighbor2 = ctx.getImageData(x, y-1, 1, 1);
-            var neighbor3 = ctx.getImageData(x+1, y-1, 1, 1);
-            var neighbor4 = ctx.getImageData(x-1, y, 1, 1);
-            var neighbor5 = ctx.getImageData(x+1, y, 1, 1);
-            var neighbor6 = ctx.getImageData(x-1, y+1, 1, 1);
-            var neighbor7 = ctx.getImageData(x, y+1, 1, 1);
-            var neighbor8 = ctx.getImageData(x+1, y+1, 1, 1);
-            var neighborvalues = []
-            neighborvalues.push(neighbor1.data[0])
-            neighborvalues.push(neighbor2.data[0])
-            neighborvalues.push(neighbor3.data[0])
-            neighborvalues.push(neighbor4.data[0])
-            neighborvalues.push(neighbor5.data[0])
-            neighborvalues.push(neighbor6.data[0])
-            neighborvalues.push(neighbor7.data[0])
-            neighborvalues.push(neighbor8.data[0])
-            var lowestNeighborValue = 255
-            lowestNeighbor = 9
-            for (var j = 0; j < 8; j = j + 1){
-                if (neighborvalues[j] < myImageData.data[0]) {
-                    //console.log("The point " + x + "," + y + " is " + myImageData.data[0] + " which has a lower neighbor at " + j + " and its value is " + neighborvalues[j])
-                    if (neighborvalues[j] < lowestNeighborValue){
-                        lowestNeighborValues = neighborvalues
-                        lowestNeighbor = j
-                    }
-                }
-            }
-            var newX
-            var newY
-            if (lowestNeighbor == 0) {
-                newX = x - 1
-                newY = y - 1
-            }
-            if (lowestNeighbor == 1) {
-                newX = x
-                newY = y - 1
-            }
-            if (lowestNeighbor == 2) {
-                newX = x + 1
-                newY = y - 1
-            }
-            if (lowestNeighbor == 3) {
-                newX = x - 1
-                newY = y
-            }
-            if (lowestNeighbor == 4) {
-                newX = x + 1
-                newY = y
-            }
-            if (lowestNeighbor == 5) {
-	                newX = x - 1
-                newY = y + 1
-            }
-            if (lowestNeighbor == 6) {
-                newX = x
-                newY = y + 1
-            }
-            if (lowestNeighbor == 7) {
-                newX = x + 1
-                newY = y + 1
-            }
-            ctx.lineTo(newX,newY);
-        }
-	if (lowestNeighbor != 9) {
-		console.log("The point " + x + "," + y + " has its lowest neighbor at " + j + " which is " + newX + "," + newY)
-		getPixel(newX,newY)
-	}
-        if (lowestNeighbor == 9) {
-            document.getElementById("instructions").innerText = "There is no adjacent pixel with lower elevation. Try clicking another spot on the DEM."
-        }
+	    console.log("lookin for neighbors below " + myImageData.data)
+        var comment = "RGB values are: red " + myImageData.data[0] + ", green " + myImageData.data[1] + ", blue " + myImageData.data[2] 
+        document.getElementById("pixelValues").innerText = comment
     }
 
     function getMousePosition(canvas, event) {
