@@ -28,7 +28,7 @@
 	<button onclick="minus()">one degree counterclockwise</button>
 	<br>
 	<div class="slider-container">
-	    <input type="range" min="0" max="9" value="0" class="slider" id="rotateSlider" oninput='redraw()'>
+	    <input type="range" min="0" max="90" value="0" class="slider" id="rotateSlider" oninput='rotate()'>
 	</div>	  
     <div id="pixelValues"></div>
     <canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
@@ -43,6 +43,8 @@
     var imageHeight
     var lowestNeighbor = 9
     console.log(img)
+	var oldSliderValue = 0
+	var newSliderValue = 0
 	
     function draw() {
         const canvas = document.getElementById("canvas");
@@ -51,7 +53,6 @@
     }
 
 function redraw(){
-//	degrees = document.getElementById("rotateSlider").value
 	var radians = degrees*(Math.PI/180)
 	console.log(""+ degrees + "=" + radians)
         const canvas = document.getElementById("canvas");
@@ -66,10 +67,20 @@ function redraw(){
 		degrees = 1
 		redraw()
 	}
+	
 	function minus(){
 		degrees = -1
 		redraw()
 	}
+
+	function rotate(){
+	newSliderValue = document.getElementById("rotateSlider").value
+	var iterations = newSliderValue - oldSliderValue
+	for (var i = 0; i < Math.abs(iterations); i = i +1){
+		if (iterations > 0){plus()}
+		else {minus()}
+	}
+	
     function dimensions() {
         imageWidth = document.getElementById("theMap").naturalWidth;
         imageHeight = document.getElementById("theMap").naturalHeight;
