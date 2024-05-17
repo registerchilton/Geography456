@@ -23,7 +23,10 @@
     <h3 id="instructions">Click the Button below to load the Digital Elevation Model.</h3>
     <br>
     <button onclick="dimensions()">Load the image</button><br>
-    <button onclick="whiten()">Bleach the image</button><br>
+
+    	<button onclick="plus()">one degree clockwise</button><br>
+	<button onclick="minus()">one degree counterclockwise</button>
+	<br>
 	<div class="slider-container">
 	    <input type="range" min="0" max="9" value="0" class="slider" id="rotateSlider" oninput='redraw()'>
 	</div>	  
@@ -48,7 +51,7 @@
     }
 
 function redraw(){
-	degrees = document.getElementById("rotateSlider").value
+//	degrees = document.getElementById("rotateSlider").value
 	var radians = degrees*(Math.PI/180)
 	console.log(""+ degrees + "=" + radians)
         const canvas = document.getElementById("canvas");
@@ -59,7 +62,14 @@ function redraw(){
 	ctx.translate(-Math.floor(imageWidth/2), -Math.floor(imageHeight/2));
         ctx.drawImage(img, 0, 0);
 }
-
+	function plus(){
+		degrees = 1
+		redraw()
+	}
+	function minus(){
+		degrees = -1
+		redraw()
+	}
     function dimensions() {
         imageWidth = document.getElementById("theMap").naturalWidth;
         imageHeight = document.getElementById("theMap").naturalHeight;
