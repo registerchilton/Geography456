@@ -46,7 +46,7 @@
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 	    ctx.rotate((Math.PI/180)*degrees);
-        ctx.drawImage(img, 1600, 1600);
+        ctx.drawImage(img, 400, 400);
         document.getElementById("instructions").innerText = "Click on the Digital Elevation Model to search for down hill paths."
     }
 
@@ -58,7 +58,7 @@
         const canvas = document.getElementById("canvas");
         if (canvas.getContext) {
             const ctx = canvas.getContext("2d");
-            img.onload = () => {ctx.drawImage(img,1600,1600);}
+            img.onload = () => {ctx.drawImage(img,400,400);}
         }
         draw(0);
     }
