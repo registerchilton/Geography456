@@ -78,9 +78,18 @@
         for (var i = 0; i < imageWidth; i++){
             for (var j = 0; j < imageHeight; j++){
                 myImageData = ctx.getImageData(i, j, 1, 1);
-                if (myImageData.data[0] > 200) {myImageData.data[0] = 255}
-                if (myImageData.data[1] > 200) {myImageData.data[1] = 255}
-                if (myImageData.data[2] > 200) {myImageData.data[2] = 255}
+                if (myImageData.data[0] > 0) {
+                    console.log("whitening")
+                    myImageData.data[0] = 255
+                }
+                if (myImageData.data[1] > 200) {
+                    console.log("whitening")
+                    myImageData.data[1] = 255
+                }
+                if (myImageData.data[2] > 200) {
+                    console.log("whitening")
+                    myImageData.data[2] = 255
+                }
             }
         }
     }
