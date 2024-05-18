@@ -24,7 +24,7 @@
     <br>
     <button onclick="dimensions()">Load the image</button><br>
 
-    	<button onclick="plus()">one degree clockwise</button><br>
+    	<button onclick="plus()">Bleach it!</button><br>
 	<button onclick="minus()">one degree counterclockwise</button>
 	<br>
 	<div class="slider-container">
@@ -67,8 +67,22 @@ function redraw(){
 	document.getElementById("output").src = dataURL
 }
 	function plus(){
-		degrees = 1
-		redraw()
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+	for (var i = 0; i < imageWidth; i ++){
+		for (var j = 0; j < imageHeight; j ++){
+			var myImageData = ctx.getImageData(x, y, 1, 1);
+			var d = myImageData.data
+			if (d[2] < 127){
+				var thisPixel =  ctx.createImageData(1,1);
+				var values = thisPixel.data
+				values[0] = 0
+				values[1] = 0
+				values[2] = 255
+				values[3] = 255
+				}
+			}
+		}
 	}
 	
 	function minus(){
