@@ -71,7 +71,7 @@ function redraw(){
         const ctx = canvas.getContext("2d");
 	for (var i = 0; i < imageWidth; i ++){
 		for (var j = 0; j < imageHeight; j ++){
-			var myImageData = ctx.getImageData(x, y, 1, 1);
+			var myImageData = ctx.getImageData(i, j, 1, 1);
 			var d = myImageData.data
 			if (d[2] < 127){
 				var thisPixel =  ctx.createImageData(1,1);
@@ -80,6 +80,7 @@ function redraw(){
 				values[1] = 0
 				values[2] = 255
 				values[3] = 255
+				ctx.putImageData(thisPixel, i, j);
 				}
 			}
 		}
