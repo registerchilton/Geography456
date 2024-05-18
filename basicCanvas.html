@@ -5,25 +5,15 @@
     <meta charset="UTF-8" />
     <title>Canvas image rotater</title>
 </head>
-    <style>
-	.slider-container {
-	margin-right: 20px;
-    	display: flex;
-    	align-items: left;
-    	flex-direction: column;
-	}
-
-.crosshair {cursor: crosshair;}
-
-.slider {
-    width: 545px; 
-}
-    </style>
-    <body>
-    <h3 id="instructions"></h3>
-    <br>
-    <button onclick="dimensions()">Load the image</button><br>
-
+<style>
+	.slider-container {margin-right: 20px; display: flex; align-items: left; flex-direction: column;}
+	.crosshair {cursor: crosshair;}
+	.slider {width: 545px;}
+</style>
+<body>
+	<h3 id="instructions"></h3>
+	<br>
+	<button onclick="dimensions()">Load the image</button><br>
     	<button onclick="plus()">Bleach it!</button><br>
 	<button onclick="minus()">Re-bleach it!</button>
 	<button onclick="oneMoreTime()">One more time!</button>
@@ -31,13 +21,12 @@
 	<div class="slider-container">
 	    <input type="range" min="0" max="360" value="0" class="slider" id="rotateSlider" oninput='rotate()'>
 	</div>	  
-    <div id="pixelValues"></div>
-    <canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
-    <br>
-    <img id="output" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
-    <img id="theMap" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
-  </body>
-
+	<div id="pixelValues"></div>
+	<canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
+	<br>
+	<img id="output" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
+	<img id="theMap" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
+</body>
 <script type="application/javascript">
     var degrees
     var img = document.getElementById("theMap")
@@ -55,18 +44,19 @@
         ctx.drawImage(img, 0, 0);
     }
 
-function redraw(){
-	var radians = degrees*(Math.PI/180)
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.translate(Math.floor(imageWidth/2), Math.floor(imageHeight/2));
-	ctx.rotate(radians);
-	ctx.translate(-Math.floor(imageWidth/2), -Math.floor(imageHeight/2));
-        ctx.drawImage(img, 0, 0);
-	var dataURL = canvas.toDataURL()
-	document.getElementById("output").src = dataURL
-}
+	function redraw(){
+		var radians = degrees*(Math.PI/180)
+	        const canvas = document.getElementById("canvas");
+	        const ctx = canvas.getContext("2d");
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.translate(Math.floor(imageWidth/2), Math.floor(imageHeight/2));
+		ctx.rotate(radians);
+		ctx.translate(-Math.floor(imageWidth/2), -Math.floor(imageHeight/2));
+	        ctx.drawImage(img, 0, 0);
+		var dataURL = canvas.toDataURL()
+		document.getElementById("output").src = dataURL
+	}
+
 	function plus(){
 	        const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
@@ -147,8 +137,10 @@ function redraw(){
 			}
 		}
 	}
+	
 	function oneMoreTime(){
-	        const canvas = document.getElementById("canvas");
+	        console.log("starting one more time");
+		const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
 		for (var i = 0; i < imageWidth; i = i + 1){
 			for (var j = 0; j < imageHeight; j + j + 2){
@@ -197,6 +189,7 @@ function redraw(){
 				}
 			}
 		}
+		console.log("finished one more time!");
 	}
 
 	function rotate(){
