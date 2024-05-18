@@ -73,7 +73,7 @@ function redraw(){
 		for (var j = 0; j < imageHeight; j ++){
 			var myImageData = ctx.getImageData(i, j, 1, 1);
 			var d = myImageData.data
-			if (d[2] < 100 || d[1] < 100){
+			if (d[2] > 50 || d[1] > 50){
 				var thisPixel =  ctx.createImageData(1,1);
 				var values = thisPixel.data
 				values[0] = 0
