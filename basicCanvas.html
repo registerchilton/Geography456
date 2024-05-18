@@ -45,6 +45,7 @@
     console.log(img)
 	var oldSliderValue = 0
 	var newSliderValue = 0
+	var dataURL
 	
     function draw() {
         const canvas = document.getElementById("canvas");
@@ -62,7 +63,7 @@ function redraw(){
 	ctx.translate(-Math.floor(imageWidth/2), -Math.floor(imageHeight/2));
         ctx.drawImage(img, 0, 0);
 	var dataURL = canvas.toDataURL()
-	console.log(dataURL)
+	document.getElementById("theMap").src = dataURL
 }
 	function plus(){
 		degrees = 1
