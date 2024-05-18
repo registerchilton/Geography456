@@ -145,6 +145,7 @@
 		for (var i = 0; i < imageWidth; i = i + 1){
 			console.log("working on column " + i);
 			for (var j = 0; j < imageHeight; j + j + 2){
+				console.log("row is " + j)
 				var myImageData = ctx.getImageData(i, j, 1, 1);
 				var d = myImageData.data
 				if (d[1]==0){
