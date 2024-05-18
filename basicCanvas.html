@@ -61,6 +61,8 @@ function redraw(){
 	ctx.rotate(radians);
 	ctx.translate(-Math.floor(imageWidth/2), -Math.floor(imageHeight/2));
         ctx.drawImage(img, 0, 0);
+	var dataURL = canvas.toDataURL()
+	console.log(dataURUL)
 }
 	function plus(){
 		degrees = 1
