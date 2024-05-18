@@ -110,22 +110,18 @@ function redraw(){
 					values[1] = 255
 					values[2] = 255
 					values[3] = 255
-					
 					values[4] = 255
 					values[5] = 255
 					values[6] = 255
 					values[7] = 255
-					
 					values[8] = 255
 					values[9] = 255
 					values[10] = 255
 					values[11] = 255
-					
 					values[12] = 255
 					values[13] = 255
 					values[14] = 255
-					values[15] = 255
-					
+					values[15] = 255					
 					values[16] = 0
 					values[17] = 0
 					values[18] = 255
@@ -152,6 +148,8 @@ function redraw(){
 		}
 	}
 	function oneMoreTime(){
+	        const canvas = document.getElementById("canvas");
+	        const ctx = canvas.getContext("2d");
 		for (var i = 0; i < imageWidth; i = i + 1){
 			for (var j = 0; j < imageHeight; j + j + 2){
 				var myImageData = ctx.getImageData(i, j, 1, 1);
@@ -163,22 +161,18 @@ function redraw(){
 					values[1] = 255
 					values[2] = 255
 					values[3] = 255
-					
 					values[4] = 255
 					values[5] = 255
 					values[6] = 255
 					values[7] = 255
-					
 					values[8] = 255
 					values[9] = 255
 					values[10] = 255
 					values[11] = 255
-					
 					values[12] = 255
 					values[13] = 255
 					values[14] = 255
 					values[15] = 255
-					
 					values[16] = 0
 					values[17] = 0
 					values[18] = 255
