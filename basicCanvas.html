@@ -149,6 +149,57 @@ function redraw(){
 			}
 			}
 		}
+	for (var i = 0; i < imageWidth; i = i + 1){
+		for (var j = 0; j < imageHeight; j + j + 2){
+			var myImageData = ctx.getImageData(i, j, 1, 1);
+			var d = myImageData.data
+			if (d[1]==0){
+				var thisBlock =  ctx.createImageData(3,3);
+				var values = thisBlock.data
+				values[0] = 255
+				values[1] = 255
+				values[2] = 255
+				values[3] = 255
+				
+				values[4] = 255
+				values[5] = 255
+				values[6] = 255
+				values[7] = 255
+				
+				values[8] = 255
+				values[9] = 255
+				values[10] = 255
+				values[11] = 255
+				
+				values[12] = 255
+				values[13] = 255
+				values[14] = 255
+				values[15] = 255
+				
+				values[16] = 0
+				values[17] = 0
+				values[18] = 255
+				values[19] = 255
+				values[20] = 255
+				values[21] = 255
+				values[22] = 255
+				values[23] = 255
+				values[24] = 255
+				values[25] = 255
+				values[26] = 255
+				values[27] = 255
+				values[28] = 255
+				values[29] = 255
+				values[30] = 255
+				values[31] = 255
+				values[32] = 255
+				values[33] = 255
+				values[34] = 255
+				values[35] = 255
+				ctx.putImageData(thisBlock, i, j);
+			}
+			}
+		}
 	}
 
 	function rotate(){
