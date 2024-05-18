@@ -25,7 +25,7 @@
     <button onclick="dimensions()">Load the image</button><br>
 
     	<button onclick="plus()">Bleach it!</button><br>
-	<button onclick="minus()">one degree counterclockwise</button>
+	<button onclick="minus()">Re-bleach it!</button>
 	<br>
 	<div class="slider-container">
 	    <input type="range" min="0" max="360" value="0" class="slider" id="rotateSlider" oninput='rotate()'>
@@ -96,8 +96,16 @@ function redraw(){
 	}
 	
 	function minus(){
-		degrees = -1
-		redraw()
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+	for (var i = 1; i < imageWidth; i ++){
+		for (var j = 1; j < imageHeight; j ++){
+			var myImageData = ctx.getImageData(i-1, j-1, 3, 3);
+			var d = myImageData.data
+			console.log(d)
+
+			}
+		}
 	}
 
 	function rotate(){
