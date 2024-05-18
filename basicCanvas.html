@@ -26,6 +26,7 @@
 
     	<button onclick="plus()">Bleach it!</button><br>
 	<button onclick="minus()">Re-bleach it!</button>
+	<button onclick="oneMoreTime()">One more time!</button>
 	<br>
 	<div class="slider-container">
 	    <input type="range" min="0" max="360" value="0" class="slider" id="rotateSlider" oninput='rotate()'>
@@ -149,6 +150,8 @@ function redraw(){
 				}
 			}
 		}
+	}
+	function oneMoreTime(){
 		for (var i = 0; i < imageWidth; i = i + 1){
 			for (var j = 0; j < imageHeight; j + j + 2){
 				var myImageData = ctx.getImageData(i, j, 1, 1);
