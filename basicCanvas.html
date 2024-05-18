@@ -20,7 +20,7 @@
 }
     </style>
   <body>
-    <h3 id="instructions">Click the Button below to load the Digital Elevation Model.</h3>
+    <h3 id="instructions"></h3>
     <br>
     <button onclick="dimensions()">Load the image</button><br>
 
@@ -33,6 +33,7 @@
     <div id="pixelValues"></div>
     <canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
     <br>
+    <img id="output" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
     <img id="theMap" src="https://registerchilton.github.io/Geography456/RockyRiverWatershed.jpg" alt="Digital Elevation Model">
   </body>
 
@@ -63,7 +64,7 @@ function redraw(){
 	ctx.translate(-Math.floor(imageWidth/2), -Math.floor(imageHeight/2));
         ctx.drawImage(img, 0, 0);
 	var dataURL = canvas.toDataURL()
-	document.getElementById("theMap").src = dataURL
+	document.getElementById("output").src = dataURL
 }
 	function plus(){
 		degrees = 1
