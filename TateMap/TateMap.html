@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map Overlay Utility</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="./TateMapItems.js"></script>
+
+<style>
+#myfirstmap { height: 550px; width: 100pct}
+.slider-container {
+    margin-right: 20px;
+    display: flex;
+    align-items: left;
+    flex-direction: column;
+}
+
+.crosshair {cursor: crosshair;}
+
+.slider {
+    width: 545px; 
+}
+.tick-container {
+    display: flex;
+    justify-content: space-between;
+    width: 550px;
+    margin-top: 5px;
+}
+
+.tick {
+    font-size: 12px; 
+    color: #888; 
+}
+</style>
+
+<body>
+    <button onclick="ToggleTateMap()">Toggle Tate Map</button><br>
+    <button onclick="Tate()">Interpolate Positions</button><br>
+    <button onclick="showByType()">Show by type</button>
+    <div id="instruction"></div>
+    <div class="crosshair", id="myfirstmap"></div>
+    <div id="array"></div>
+    <div id="theMap" src=""></div>
+    <h3>var TateMap = {'features':[</h3>
+    <table id="mytable">
+        <tr>
+            <th>name</th>
+            <th>type</th>
+            <th>lat</th>
+            <th>long</th>
+        </tr>
+    </table>
+    
+</body>
+
+<script>
+var mymap = L.map('myfirstmap').setView([36.076158444920615,-79.10276412963869], 12);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 22,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+var roadArray = []
+var SWchangelat
+var SWchangeLong
+var NEchangelat
+var NEchangeLong
+var maplayer = L.layerGroup().addTo(mymap);
+var imageWidth
+var imageHeight
+var imageScale
+var EWScale = 100
+var EWscaleSlider = 100
+var NSscale = 100
+var NSscaleSlider = 100
+var cemetery = L.icon({iconUrl: 'cemetery.png', iconSize: [30, 30], popupAnchor: [1, 1]});
+var church = L.icon({iconUrl: 'church.png', iconSize: [30, 30], popupAnchor: [1, 1]});
+var school = L.icon({iconUrl: 'school.png', iconSize: [30, 30], popupAnchor: [1, 1]});
+var mill = L.icon({iconUrl: 'mill.png', iconSize: [30, 30], popupAnchor: [1, 1]});
+var building = L.icon({iconUrl: 'building.png', iconSize: [30, 30], popupAnchor: [1, 1]});
+var post = L.icon({iconUrl: 'building.png', iconSize: [30, 30], popupAnchor: [1, 1]});
+var hill = L.icon({iconUrl: 'hill.png', iconSize: [30, 30], popupAnchor: [1, 1]});
+var mining = L.icon({iconUrl: 'mining.png', iconSize: [30, 30], popupAnchor: [1, 1]});
+var theTable = document.getElementById('mytable')
+var SWcornerLat = 35.80578572403521
+var SWcornerLong = -79.30762289701272
+var NEcornerLat = 36.30578572403521
+var NEcornerLong = -78.89646789701273
+
+var imageBounds = [[SWcornerLat,SWcornerLong],[NEcornerLat,NEcornerLong]]
+
+let NSlength = mymap.distance([36,-79], [36.1,-79]); // this gives us the distance of 0.1 degrees NS in meters
+let EWlength = mymap.distance([36,-79], [36,-79.1]); // this gives us the distance of 0.1 degrees EW in meters
+// var NSscaling = 0.1/NSlength 
+// var EWscaling = 0.1/EWlength
+var NSscaling = .0000005 
+var EWscaling = NSscaling
+var allMetaDataSpan
+var adjustmode = 0
+var erroneousLat
+var erroneousLong
+var firstCorrectedLocation = []
+var imageUrl = './clearedEdges.png'
+var markerMode = 0
+L.imageOverlay(imageUrl, imageBounds, {opacity: 1}).addTo(maplayer);
+var layerClick = L.layerGroup().addTo(mymap);
+var popup = L.popup();
+var upordown = 0
+var image
+var correctedLat
+var correctedLong
+var EWputdownscale = 10
+var NSputdownscale = 10
+var NSadjust = 0
+var markerList = []
+var markerNames = []
+var nextMarkerNumber = -1
+var nearestKnown = -1
+var secondNearestknown = -1
+var nearestTestResult = 1000000
+var Distance
+var Toggle = 0
+//mymap.on('mousemove', onMouseMove);
+mymap.on('click', Pickup);
+//mymap.on('contextmenu', rightClickSpotonMap);
+
+
+function Pickup(e) {
+    var clickLat = e.latlng['lat'] 
+    var clickLong = e.latlng['lng']
+    nextMarkerNumber = nextMarkerNumber + 1
+    var marker = L.marker([clickLat,clickLong]).addTo(maplayer).bindTooltip("" + nextMarkerNumber)
+    markerList.push([clickLat,clickLong])
+    var text = JSON.stringify(markerList)
+    document.getElementById('array').innerText = text
+    }
+
+function ToggleTateMap(){
+    if (Toggle/2 == Math.floor(Toggle/2)) {
+        maplayer.clearLayers();
+        Toggle = Toggle + 1
+    }
+    else {
+        L.imageOverlay(imageUrl, imageBounds, {opacity: 1}).addTo(maplayer);
+        Toggle = Toggle + 1
+    }
+}
+
+
+function Tate(){
+    for (var i = 0; i < TateMap.features.length; i++){
+        if (TateMap.features[i].status == "known"){
+            var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong]).addTo(maplayer)
+                .bindTooltip(TateMap.features[i].name)
+        }
+        else{
+            for (var j = 0; j < TateMap.features.length; j++){
+                if (TateMap.features[j].status == "known"){
+                    Distance = mymap.distance([TateMap.features[i].relLat,TateMap.features[i].relLong],[TateMap.features[j].relLat,TateMap.features[j].relLong])
+                    if (Distance > 0 && Distance < nearestTestResult) {
+                        nearestTestResult = Distance
+                        secondNearestknown = nearestKnown
+                        nearestKnown = j
+                    }
+                }
+            }
+        console.log("Nearest known neighbor to " + TateMap.features[i].name + " is " + TateMap.features[nearestKnown].name)
+
+        var AbsoluteDistFromNearestToSecond = Math.sqrt(((TateMap.features[nearestKnown].absLat - TateMap.features[secondNearestknown].absLat)**2) + ((TateMap.features[nearestKnown].absLong - TateMap.features[secondNearestknown].absLong)**2))
+        console.log("AbsoluteDistFromNearestToSecond is " + AbsoluteDistFromNearestToSecond)
+        var relativeDistFromNearestToSecond = Math.sqrt(((TateMap.features[nearestKnown].relLat - TateMap.features[secondNearestknown].relLat)**2) + ((TateMap.features[nearestKnown].relLong - TateMap.features[secondNearestknown].relLong)**2))
+        console.log("relativeDistFromNearestToSecond is " + relativeDistFromNearestToSecond)
+        var relativeDistFromNearestToSubject = Math.sqrt(((TateMap.features[nearestKnown].relLat - TateMap.features[i].relLat)**2) + ((TateMap.features[nearestKnown].relLong - TateMap.features[i].relLong)**2))
+        console.log("relativeDistFromNearestToSubject is " + relativeDistFromNearestToSubject)
+        var AbsoluteDistFromNearestToSubject = relativeDistFromNearestToSubject * (AbsoluteDistFromNearestToSecond/relativeDistFromNearestToSecond)
+        console.log("so AbsoluteDistFromNearestToSubject is " + AbsoluteDistFromNearestToSubject)
+        var theta = Math.atan((TateMap.features[nearestKnown].relLat - TateMap.features[i].relLat)/(TateMap.features[nearestKnown].relLong - TateMap.features[i].relLong))
+        var latFactor = 1
+        var longFactor = 1
+        if (TateMap.features[i].relLong < TateMap.features[nearestKnown].relLong) {//Quadrants II & III
+            theta = theta + Math.PI
+        }
+
+        TateMap.features[i].absLat = TateMap.features[nearestKnown].absLat + (latFactor * (AbsoluteDistFromNearestToSubject * Math.sin(theta)))
+        TateMap.features[i].absLong = TateMap.features[nearestKnown].absLong + (longFactor * (AbsoluteDistFromNearestToSubject * Math.cos(theta)))
+        var tooltipText = TateMap.features[i].name + "'s nearest known is " + TateMap.features[nearestKnown].name + " which is " + AbsoluteDistFromNearestToSubject + " degrees away in direction " + theta
+        var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong]).addTo(maplayer)
+//            .bindTooltip(TateMap.features[i].name)
+            .bindTooltip(tooltipText)
+
+
+        }
+    nearestTestResult = 100000
+    }
+}
+
+function showByType(){
+    maplayer.clearLayers();
+    for (var i = 0; i < TateMap.features.length; i ++ ){
+        if (TateMap.features[i].type == "mill"){var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong], {icon:mill}).addTo(mymap).bindTooltip(TateMap.features[i].name + i)}
+        if (TateMap.features[i].type == "building"){var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong], {icon:building}).addTo(mymap).bindTooltip(TateMap.features[i].name + i)}
+        if (TateMap.features[i].type == "mining"){var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong], {icon:mining}).addTo(mymap).bindTooltip(TateMap.features[i].name + i)}
+        if (TateMap.features[i].type == "post"){var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong], {icon:post}).addTo(mymap).bindTooltip(TateMap.features[i].name + i)}
+        if (TateMap.features[i].type == "cemetery"){var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong], {icon:cemetery}).addTo(mymap).bindTooltip(TateMap.features[i].name + i)}
+        if (TateMap.features[i].type == "church"){var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong], {icon:church}).addTo(mymap).bindTooltip(TateMap.features[i].name + i)}
+        if (TateMap.features[i].type == "school"){var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong], {icon:school}).addTo(mymap).bindTooltip(TateMap.features[i].name + i)}
+        if (TateMap.features[i].type == "hill"){var marker = L.marker([TateMap.features[i].absLat,TateMap.features[i].absLong], {icon:hill}).addTo(mymap).bindTooltip(TateMap.features[i].name + i)}
+    }
+    fillTable();
+}
+
+function fillTable(){
+    theTable.innerHTML=""
+    for (var i = 0; i < TateMap.features.length; i++){
+        var myNewRow = document.createElement('tr');
+        var name = document.createElement('td');
+        var type = document.createElement('td');
+        var lat = document.createElement('td');
+        var long = document.createElement('td');
+        name.innerText = TateMap.features[i].name
+        type.innerText = TateMap.features[i].type
+        lat.innerText = TateMap.features[i].absLat
+        long.innerText = TateMap.features[i].absLong
+        myNewRow.append(name)
+        myNewRow.append(type)
+        myNewRow.append(lat)
+        myNewRow.append(long)
+        theTable.append(myNewRow);
+    }
+}
+
+</script>
+</html>
