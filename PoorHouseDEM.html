@@ -17,6 +17,7 @@
     	<button onclick="searchVerticallyOne()">Search vertically by one pixel</button><br>
     	<button onclick="searchVerticallyTwo()">Search vertically by two pixels</button><br>
     	<button onclick="searchVerticallyThree()">Search vertically by three pixels</button><br>
+    	<button onclick="searchHorizontallyOne()">Search horizontally by one pixel</button><br>
 	<br>
 	<canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
 	<br>
@@ -152,6 +153,41 @@
 					values[2] = 0
 					values[3] = 255
 					ctx.putImageData(thisPixel, i, j);
+				}
+			previous = current
+			}
+		}
+	}
+
+	function searchHorizontallyOne(){
+	        const canvas = document.getElementById("canvas");
+	        const ctx = canvas.getContext("2d");
+		for (var i = 0; i < imageHeight; i ++){
+			console.log("Commencing row " + i);
+			var myImageData = ctx.getImageData(0, i, 1, 1);
+			previous = myImageData.data
+			for (var j = 1; j < imageWidth - 1; j ++){
+				var myImageData = ctx.getImageData(j, i, 1, 1);
+				var current = myImageData.data
+				var nextImageData = ctx.getImageData(j, i+1, 1, 1);
+				var next = nextImageData.data
+				if (current[0] < previous[0] && current[0] < next[0]){
+					var thisPixel =  ctx.createImageData(1,1);
+					var values = thisPixel.data
+					values[0] = 255
+					values[1] = 255
+					values[2] = 255
+					values[3] = 255
+					ctx.putImageData(thisPixel, j, i);
+					}
+				else {
+					var thisPixel =  ctx.createImageData(1,1);
+					var values = thisPixel.data
+					values[0] = 0
+					values[1] = 0
+					values[2] = 0
+					values[3] = 255
+					ctx.putImageData(thisPixel, j, i);
 				}
 			previous = current
 			}
