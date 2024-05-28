@@ -59,6 +59,7 @@
 	        const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
 		for (var i = 0; i < imageWidth; i ++){
+			console.log("Commencing column " + i);
 			var myImageData = ctx.getImageData(i, 0, 1, 1);
 			previous = myImageData.data
 			for (var j = 1; j < imageHeight - 1; j ++){
@@ -66,7 +67,7 @@
 				var current = myImageData.data
 				var nextImageData = ctx.getImageData(i, j+1, 1, 1);
 				var next = nextImageData.data
-				console.log("current is " + current[0] + " previous is " + previous [0] + " next is " + next[0])
+//				console.log("current is " + current[0] + " previous is " + previous [0] + " next is " + next[0])
 				if (current[0] < previous[0] && current[0] < next[0]){
 					console.log("found a dip at " + i + "," + j);
 					var thisPixel =  ctx.createImageData(1,1);
