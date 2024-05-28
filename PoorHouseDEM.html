@@ -62,18 +62,18 @@
 			console.log("Commencing column " + i);
 			var myImageData = ctx.getImageData(i, 0, 1, 1);
 			previous = myImageData.data
-			for (var j = 1; j < imageHeight - 1; j ++){
+			for (var j = 2; j < imageHeight - 2; j ++){
 				var myImageData = ctx.getImageData(i, j, 1, 1);
 				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i, j+1, 1, 1);
+				var nextImageData = ctx.getImageData(i, j+2, 1, 1);
 				var next = nextImageData.data
 //				console.log("current is " + current[0] + " previous is " + previous [0] + " next is " + next[0])
 				if (current[0] < previous[0] && current[0] < next[0]){
 					console.log("found a dip at " + i + "," + j);
 					var thisPixel =  ctx.createImageData(1,1);
 					var values = thisPixel.data
-					values[0] = 0
-					values[1] = 0
+					values[0] = 255
+					values[1] = 255
 					values[2] = 255
 					values[3] = 255
 					ctx.putImageData(thisPixel, i, j);
@@ -81,9 +81,9 @@
 				else {
 					var thisPixel =  ctx.createImageData(1,1);
 					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
+					values[0] = 0
+					values[1] = 0
+					values[2] = 0
 					values[3] = 255
 					ctx.putImageData(thisPixel, i, j);
 				}
