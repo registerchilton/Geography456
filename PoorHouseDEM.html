@@ -14,12 +14,9 @@
 	<h3 id="instructions"></h3>
 	<br>
 	<button onclick="dimensions()">Load the image</button><br>
-    	<button onclick="searchVertically()">Search vertically</button><br>
+    	<button onclick="searchVerticallyOne()">Search vertically by one pixel</button><br>
+    	<button onclick="searchVerticallyTwo()">Search vertically by two pixels</button><br>
 	<br>
-	<div class="slider-container">
-	    <input type="range" min="0" max="360" value="0" class="slider" id="rotateSlider" oninput='rotate()'>
-	</div>	  
-	<div id="pixelValues"></div>
 	<canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
 	<br>
 	<img id="theMap" src="https://registerchilton.github.io/Geography456/vertResIs4point6inchesPoorHouse.jpg" alt="Digital Elevation Model">
@@ -55,21 +52,19 @@
 		document.getElementById("output").src = dataURL
 	}
 
-	function searchVertically(){
+	function searchVerticallyOne(){
 	        const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
 		for (var i = 0; i < imageWidth; i ++){
 			console.log("Commencing column " + i);
 			var myImageData = ctx.getImageData(i, 0, 1, 1);
 			previous = myImageData.data
-			for (var j = 2; j < imageHeight - 2; j ++){
+			for (var j = 1; j < imageHeight - 1; j ++){
 				var myImageData = ctx.getImageData(i, j, 1, 1);
 				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i, j+2, 1, 1);
+				var nextImageData = ctx.getImageData(i, j+1, 1, 1);
 				var next = nextImageData.data
-//				console.log("current is " + current[0] + " previous is " + previous [0] + " next is " + next[0])
 				if (current[0] < previous[0] && current[0] < next[0]){
-					console.log("found a dip at " + i + "," + j);
 					var thisPixel =  ctx.createImageData(1,1);
 					var values = thisPixel.data
 					values[0] = 255
@@ -92,54 +87,37 @@
 		}
 	}
 	
-	function minus(){
+	function searchVerticallyTwo(){
 	        const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
-		for (var i = 0; i < imageWidth; i = i + 2){
-			for (var j = 0; j < imageHeight; j ++){
+		for (var i = 0; i < imageWidth; i ++){
+			console.log("Commencing column " + i);
+			var myImageData = ctx.getImageData(i, 0, 1, 1);
+			previous = myImageData.data
+			for (var j = 2; j < imageHeight - 2; j ++){
 				var myImageData = ctx.getImageData(i, j, 1, 1);
-				var d = myImageData.data
-				if (d[1]==0){
-					var thisBlock =  ctx.createImageData(3,3);
-					var values = thisBlock.data
+				var current = myImageData.data
+				var nextImageData = ctx.getImageData(i, j+2, 1, 1);
+				var next = nextImageData.data
+				if (current[0] < previous[0] && current[0] < next[0]){
+					var thisPixel =  ctx.createImageData(1,1);
+					var values = thisPixel.data
 					values[0] = 255
 					values[1] = 255
 					values[2] = 255
 					values[3] = 255
-					values[4] = 255
-					values[5] = 255
-					values[6] = 255
-					values[7] = 255
-					values[8] = 255
-					values[9] = 255
-					values[10] = 255
-					values[11] = 255
-					values[12] = 255
-					values[13] = 255
-					values[14] = 255
-					values[15] = 255					
-					values[16] = 0
-					values[17] = 0
-					values[18] = 255
-					values[19] = 255
-					values[20] = 255
-					values[21] = 255
-					values[22] = 255
-					values[23] = 255
-					values[24] = 255
-					values[25] = 255
-					values[26] = 255
-					values[27] = 255
-					values[28] = 255
-					values[29] = 255
-					values[30] = 255
-					values[31] = 255
-					values[32] = 255
-					values[33] = 255
-					values[34] = 255
-					values[35] = 255
-					ctx.putImageData(thisBlock, i, j);
+					ctx.putImageData(thisPixel, i, j);
+					}
+				else {
+					var thisPixel =  ctx.createImageData(1,1);
+					var values = thisPixel.data
+					values[0] = 0
+					values[1] = 0
+					values[2] = 0
+					values[3] = 255
+					ctx.putImageData(thisPixel, i, j);
 				}
+			previous = current
 			}
 		}
 	}
