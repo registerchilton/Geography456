@@ -60,9 +60,9 @@
 	        const ctx = canvas.getContext("2d");
 		//for (var i = 0; i < imageWidth; i ++){
 		for (var i = 0; i < 2; i ++){
-			var myImageData = ctx.getImageData(i, 0, 1, 1);
-			previous = myImageData.data
 			for (var j = 1; j < imageHeight - 1; j ++){
+				var myImageData = ctx.getImageData(i, j-1, 1, 1);
+				previous = myImageData.data
 				var myImageData = ctx.getImageData(i, j, 1, 1);
 				var current = myImageData.data
 				var nextImageData = ctx.getImageData(i, j+1, 1, 1);
