@@ -68,7 +68,7 @@
 				var nextImageData = ctx.getImageData(i, j+1, 1, 1);
 				var next = nextImageData.data
 				if (current[0] < previous[0] && current[0] < next[0]){
-					console.log('found a dip at " + i + "," + j);
+					console.log('found a dip at " + i + "," + j)
 					var thisPixel =  ctx.createImageData(1,1);
 					var values = thisPixel.data
 					values[0] = 0
