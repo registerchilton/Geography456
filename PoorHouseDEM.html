@@ -14,9 +14,7 @@
 	<h3 id="instructions"></h3>
 	<br>
 	<button onclick="dimensions()">Load the image</button><br>
-    	<button onclick="plus()">Bleach it!</button><br>
-	<button onclick="minus()">Re-bleach it!</button>
-	<button onclick="oneMoreTime()">One more time!</button>
+    	<button onclick="searchVertically()">Search vertically</button><br>
 	<br>
 	<div class="slider-container">
 	    <input type="range" min="0" max="360" value="0" class="slider" id="rotateSlider" oninput='rotate()'>
@@ -32,6 +30,7 @@
     var imageWidth
     var imageHeight
     var lowestNeighbor = 9
+	var previous = 0
     console.log(img)
 	var oldSliderValue = 0
 	var newSliderValue = 0
@@ -56,14 +55,20 @@
 		document.getElementById("output").src = dataURL
 	}
 
-	function plus(){
+	function searchVertically(){
 	        const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
-		for (var i = 0; i < imageWidth; i ++){
-			for (var j = 0; j < imageHeight; j ++){
+		//for (var i = 0; i < imageWidth; i ++){
+		for (var i = 0; i < 2; i ++){
+			var myImageData = ctx.getImageData(i, 0, 1, 1);
+			previous = myImageData.data
+			for (var j = 1; j < imageHeight - 1; j ++){
 				var myImageData = ctx.getImageData(i, j, 1, 1);
-				var d = myImageData.data
-				if (d[0] < 100 && d[2] > 50){
+				var current = myImageData.data
+				var nextImageData = ctx.getImageData(i, j+1, 1, 1);
+				var next = nextImageData.data
+				if (current[0] < previous[0] && current[0] < next[0]){
+					console.log('found a dip at " + i + "," + j);
 					var thisPixel =  ctx.createImageData(1,1);
 					var values = thisPixel.data
 					values[0] = 0
