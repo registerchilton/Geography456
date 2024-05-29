@@ -20,7 +20,8 @@
     	<button onclick="searchHorizontally(1)">Search horizontally by one pixel</button><br>
     	<button onclick="searchHorizontally(2)">Search horizontally by two pixels</button><br>
     	<button onclick="searchHorizontally(3)">Search horizontally by three pixels</button><br>
-    	<button onclick="searchDiagonally(1)">Search diagonally by one pixel</button><br>
+    	<button onclick="searchDiagonallySW(1)">Search diagonally NE to SW by one pixel</button><br>
+    	<button onclick="searchDiagonallySE(1)">Search diagonally NW to SE by one pixel</button><br>
 	<button onclick="searchKnightRight(1)">Search by Knight move right by one pixel</button><br>
 	<button onclick="searchKnightLeft(1)">Search by Knight move left by one pixel</button><br>
 	<br>
@@ -147,7 +148,7 @@
 		}
 	}
 
-	function searchDiagonally(p){
+	function searchDiagonallySW(p){
 		pass = pass + 1
 	        var spacing = p
 		const canvas = document.getElementById("canvas");
@@ -190,6 +191,50 @@
 		}
 	}
 
+	function searchDiagonallyNE(p){
+		pass = pass + 1
+	        var spacing = p
+		const canvas = document.getElementById("canvas");
+	        const ctx = canvas.getContext("2d");
+		const resultcanvas = document.getElementById("canvasresult");
+	        const resultctx = resultcanvas.getContext("2d");
+		console.log(resultctx)
+		for (var j = spacing; j < imageHeight - spacing; j ++){
+			console.log("Commencing row " + j);
+			for (var i = spacing; i < imageWidth - spacing; i ++){
+				var myImageData = ctx.getImageData(i - spacing, j - spacing, 1, 1);
+				previous = myImageData.data
+				myImageData = ctx.getImageData(i, j, 1, 1);
+				var current = myImageData.data
+				var nextImageData = ctx.getImageData(i + spacing, j + spacing, 1, 1);
+				var next = nextImageData.data
+				//console.log("comparing " + next[0] + ", " + current[0] + ", and " + previous[0])
+				if (current[0] < previous[0] && current[0] < next[0]){
+					var thisPixel =  ctx.createImageData(1,1);
+					var values = thisPixel.data
+					values[0] = 255
+					values[1] = 255
+					values[2] = 255
+					values[3] = 255
+					resultctx.putImageData(thisPixel, i, j);
+					}
+				else {
+					if (pass == 0) {
+						var thisPixel =  ctx.createImageData(1,1);
+						var values = thisPixel.data
+						values[0] = 0
+						values[1] = 0
+						values[2] = 0
+						values[3] = 255
+						resultctx.putImageData(thisPixel, i, j);
+					}
+				}
+			previous = current
+			}
+		}
+	}
+
+	
 	function searchKnightLeft(p){
 		pass = pass + 1
 	        var spacing = p
