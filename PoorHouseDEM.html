@@ -61,7 +61,7 @@
 		const resultcanvas = document.getElementById("canvasresult");
 	        const resultctx = resultcanvas.getContext("2d");
 		console.log(resultctx)
-		for (var i = 0; i < 3; i ++){
+		for (var i = 0; i < imageWidth; i ++){
 			console.log("Commencing column " + i);
 			var myImageData = ctx.getImageData(i, 0, 1, 1);
 			previous = myImageData.data
