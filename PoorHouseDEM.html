@@ -20,6 +20,7 @@
     	<button onclick="searchHorizontallyOne()">Search horizontally by one pixel</button><br>
 	<br>
 	<canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
+	<canvas class="crosshair" id="resultcanvas" width="900" height="900"></canvas>
 	<br>
 	<img id="theMap" src="https://registerchilton.github.io/Geography456/vertResIs4point6inchesPoorHouse.jpg" alt="Digital Elevation Model">
 </body>
@@ -57,6 +58,8 @@
 	function searchVerticallyOne(){
 	        const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
+		const resultcanvas = document.getElementById("canvasresult");
+	        const resultctx = resultcanvas.getContext("2d");
 		for (var i = 0; i < imageWidth; i ++){
 			console.log("Commencing column " + i);
 			var myImageData = ctx.getImageData(i, 0, 1, 1);
@@ -74,7 +77,7 @@
 					values[1] = 255
 					values[2] = 255
 					values[3] = 255
-					ctx.putImageData(thisPixel, i, j);
+					resultctx.putImageData(thisPixel, i, j);
 					}
 				else {
 					var thisPixel =  ctx.createImageData(1,1);
@@ -83,7 +86,7 @@
 					values[1] = 0
 					values[2] = 0
 					values[3] = 255
-					ctx.putImageData(thisPixel, i, j);
+					resultctx.putImageData(thisPixel, i, j);
 				}
 			previous = current
 			}
@@ -251,7 +254,7 @@
 
 	function rotate(){
 		newSliderValue = document.getElementById("rotateSlider").value
-		var iterations = newSliderValue - oldSliderValue
+		var iterations = newSliderValue - oldSliderValue	
 		for (var i = 0; i < Math.abs(iterations); i = i +1){
 			if (iterations > 0){plus()}
 			else {minus()}
@@ -264,6 +267,8 @@
         imageHeight = document.getElementById("theMap").naturalHeight;
         document.getElementById("canvas").width = imageWidth
         document.getElementById("canvas").height = imageHeight
+        document.getElementById("canvasresult").width = imageWidth
+        document.getElementById("canvasresult").height = imageHeight
         const canvas = document.getElementById("canvas");
         if (canvas.getContext) {
             const ctx = canvas.getContext("2d");
