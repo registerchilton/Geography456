@@ -17,7 +17,9 @@
     	<button onclick="searchVertically(1)">Search vertically by one pixel</button><br>
     	<button onclick="searchVertically(2)">Search vertically by two pixels</button><br>
     	<button onclick="searchVertically(3)">Search vertically by three pixels</button><br>
-    	<button onclick="searchHorizontallyOne()">Search horizontally by one pixel</button><br>
+    	<button onclick="searchHorizontally(1)">Search horizontally by one pixel</button><br>
+    	<button onclick="searchHorizontally(2)">Search horizontally by two pixels</button><br>
+    	<button onclick="searchHorizontally(3)">Search horizontally by three pixels</button><br>
 	<br>
 	<canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
 	<canvas class="crosshair" id="canvasresult" width="900" height="900"></canvas>
@@ -99,18 +101,23 @@
 		}
 	}
 	
-	function searchHorizontallyOne(){
-	        const canvas = document.getElementById("canvas");
+	function searchHorizontally(p){
+	        var spacing = p
+		const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
-		for (var i = 0; i < imageHeight; i ++){
-			console.log("Commencing row " + i);
-			var myImageData = ctx.getImageData(0, i, 1, 1);
-			previous = myImageData.data
-			for (var j = 1; j < imageWidth - 1; j ++){
-				var myImageData = ctx.getImageData(j, i, 1, 1);
+		const resultcanvas = document.getElementById("canvasresult");
+	        const resultctx = resultcanvas.getContext("2d");
+		console.log(resultctx)
+		for (var j = 0; j < imageHeight; j ++){
+			console.log("Commencing row " + j);
+			for (var i = spacing; i < imageWidth - spacing; i ++){
+				var myImageData = ctx.getImageData(i - spacing, j, 1, 1);
+				previous = myImageData.data
+				myImageData = ctx.getImageData(i, j, 1, 1);
 				var current = myImageData.data
-				var nextImageData = ctx.getImageData(j, i+1, 1, 1);
+				var nextImageData = ctx.getImageData(i+spacing, j, 1, 1);
 				var next = nextImageData.data
+				//console.log("comparing " + next[0] + ", " + current[0] + ", and " + previous[0])
 				if (current[0] < previous[0] && current[0] < next[0]){
 					var thisPixel =  ctx.createImageData(1,1);
 					var values = thisPixel.data
@@ -118,16 +125,18 @@
 					values[1] = 255
 					values[2] = 255
 					values[3] = 255
-					ctx.putImageData(thisPixel, j, i);
+					resultctx.putImageData(thisPixel, i, j);
 					}
 				else {
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 0
-					values[1] = 0
-					values[2] = 0
-					values[3] = 255
-					ctx.putImageData(thisPixel, j, i);
+					if (pass == 0) {
+						var thisPixel =  ctx.createImageData(1,1);
+						var values = thisPixel.data
+						values[0] = 0
+						values[1] = 0
+						values[2] = 0
+						values[3] = 255
+						resultctx.putImageData(thisPixel, i, j);
+					}
 				}
 			previous = current
 			}
