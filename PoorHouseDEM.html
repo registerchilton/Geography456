@@ -60,7 +60,8 @@
 	        const ctx = canvas.getContext("2d");
 		const resultcanvas = document.getElementById("canvasresult");
 	        const resultctx = resultcanvas.getContext("2d");
-		for (var i = 0; i < imageWidth; i ++){
+		console.log(resultcanvas)
+		for (var i = 0; i < 3; i ++){
 			console.log("Commencing column " + i);
 			var myImageData = ctx.getImageData(i, 0, 1, 1);
 			previous = myImageData.data
