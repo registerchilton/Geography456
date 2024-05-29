@@ -94,9 +94,9 @@
 	        const ctx = canvas.getContext("2d");
 		for (var i = 0; i < imageWidth; i ++){
 			console.log("Commencing column " + i);
-			var myImageData = ctx.getImageData(i, 0, 1, 1);
-			previous = myImageData.data
 			for (var j = 2; j < imageHeight - 2; j ++){
+				var myImageData = ctx.getImageData(i, j-2, 1, 1);
+				previous = myImageData.data
 				var myImageData = ctx.getImageData(i, j, 1, 1);
 				var current = myImageData.data
 				var nextImageData = ctx.getImageData(i, j+2, 1, 1);
@@ -119,7 +119,6 @@
 					values[3] = 255
 					ctx.putImageData(thisPixel, i, j);
 				}
-			previous = current
 			}
 		}
 	}
