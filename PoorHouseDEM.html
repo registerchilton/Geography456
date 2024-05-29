@@ -14,9 +14,9 @@
 	<h3 id="instructions"></h3>
 	<br>
 	<button onclick="dimensions()">Load the image</button><br>
-    	<button onclick="searchVerticallyOne(1)">Search vertically by one pixel</button><br>
-    	<button onclick="searchVerticallyTwo()">Search vertically by two pixels</button><br>
-    	<button onclick="searchVerticallyThree()">Search vertically by three pixels</button><br>
+    	<button onclick="searchVertically(1)">Search vertically by one pixel</button><br>
+    	<button onclick="searchVertically(2)">Search vertically by two pixels</button><br>
+    	<button onclick="searchVertically(3)">Search vertically by three pixels</button><br>
     	<button onclick="searchHorizontallyOne()">Search horizontally by one pixel</button><br>
 	<br>
 	<canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
@@ -55,7 +55,7 @@
 		document.getElementById("output").src = dataURL
 	}
 
-	function searchVerticallyOne(p){
+	function searchVertically(p){
 	        var spacing = p
 		const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
@@ -95,75 +95,6 @@
 		}
 	}
 	
-	function searchVerticallyTwo(){
-	        const canvas = document.getElementById("canvas");
-	        const ctx = canvas.getContext("2d");
-		for (var i = 0; i < imageWidth; i ++){
-			console.log("Commencing column " + i);
-			for (var j = 2; j < imageHeight - 2; j ++){
-				var myImageData = ctx.getImageData(i, j-2, 1, 1);
-				previous = myImageData.data
-				var myImageData = ctx.getImageData(i, j, 1, 1);
-				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i, j+2, 1, 1);
-				var next = nextImageData.data
-				if (current[0] < previous[0] && current[0] < next[0]){
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
-					values[3] = 255
-					ctx.putImageData(thisPixel, i, j);
-					}
-				else {
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 0
-					values[1] = 0
-					values[2] = 0
-					values[3] = 255
-					ctx.putImageData(thisPixel, i, j);
-				}
-			}
-		}
-	}
-	
-	function searchVerticallyThree(){
-	        const canvas = document.getElementById("canvas");
-	        const ctx = canvas.getContext("2d");
-		for (var i = 0; i < imageWidth; i ++){
-			console.log("Commencing column " + i);
-			var myImageData = ctx.getImageData(i, 0, 1, 1);
-			previous = myImageData.data
-			for (var j = 3; j < imageHeight - 3; j ++){
-				var myImageData = ctx.getImageData(i, j, 1, 1);
-				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i, j + 3, 1, 1);
-				var next = nextImageData.data
-				if (current[0] < previous[0] && current[0] < next[0]){
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
-					values[3] = 255
-					ctx.putImageData(thisPixel, i, j);
-					}
-				else {
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 0
-					values[1] = 0
-					values[2] = 0
-					values[3] = 255
-					ctx.putImageData(thisPixel, i, j);
-				}
-			previous = current
-			}
-		}
-	}
-
 	function searchHorizontallyOne(){
 	        const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
