@@ -14,13 +14,7 @@
 	<h3 id="instructions"></h3>
 	<br>
 	<button onclick="dimensions()">Load the image</button><br>
-    	<button onclick="searchVertically(16)">Search vertically by one foot</button><br>
-    	<button onclick="searchHorizontally(16)">Search horizontally by one foot</button><br>
-    	<button onclick="searchDiagonallySW(16)">Search diagonally NE to SW by one foot</button><br>
-    	<button onclick="searchDiagonallySE(16)">Search diagonally NW to SE by one foot</button><br>
-	<button onclick="searchKnightRight(16)">Search by Knight move right by one foot</button><br>
-	<button onclick="searchKnightLeft(16)">Search by Knight move left by one foot</button><br>
-	<br>
+    	<button onclick="searchVertically()">Make it color</button><br>
 	<canvas class="crosshair" id="canvas" width="900" height="900"></canvas>
 	<canvas class="crosshair" id="canvasresult" width="900" height="900"></canvas>
 	<br>
@@ -58,264 +52,25 @@
 		document.getElementById("output").src = dataURL
 	}
 
-	function searchVertically(p){
-		pass = pass + 1
-	        var spacing = p
+	function searchVertically(){
 		const canvas = document.getElementById("canvas");
 	        const ctx = canvas.getContext("2d");
 		const resultcanvas = document.getElementById("canvasresult");
 	        const resultctx = resultcanvas.getContext("2d");
-		console.log(resultctx)
 		for (var i = 0; i < imageWidth; i ++){
 			console.log("Commencing column " + i);
-			for (var j = spacing; j < imageHeight - spacing; j ++){
-				var myImageData = ctx.getImageData(i, j-spacing, 1, 1);
-				previous = myImageData.data
-				myImageData = ctx.getImageData(i, j, 1, 1);
+			for (var j = 0; j < imageHeight; j ++){
+				var myImageData = ctx.getImageData(i, j, 1, 1);
 				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i, j+spacing, 1, 1);
-				var next = nextImageData.data
-				//console.log("comparing " + next[0] + ", " + current[0] + ", and " + previous[0])
-				if (current[0] < previous[0] && current[0] < next[0]){
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
-					values[3] = 255
-					resultctx.putImageData(thisPixel, i, j);
-					}
-				else {
-					if (pass == 0) {
-						var thisPixel =  ctx.createImageData(1,1);
-						var values = thisPixel.data
-						values[0] = 0
-						values[1] = 0
-						values[2] = 0
-						values[3] = 255
-						resultctx.putImageData(thisPixel, i, j);
-					}
-				}
-			previous = current
+				var thisPixel =  ctx.createImageData(1,1);
+				var values = thisPixel.data
+				values[0] = current[0]
+				values[1] = 255 - current[0]
+				values[2] = 0
+				values[3] = 255
+				resultctx.putImageData(thisPixel, i, j);
 			}
 		}
-	}
-	
-	function searchHorizontally(p){
-		pass = pass + 1
-	        var spacing = p
-		const canvas = document.getElementById("canvas");
-	        const ctx = canvas.getContext("2d");
-		const resultcanvas = document.getElementById("canvasresult");
-	        const resultctx = resultcanvas.getContext("2d");
-		console.log(resultctx)
-		for (var j = 0; j < imageHeight; j ++){
-			console.log("Commencing row " + j);
-			for (var i = spacing; i < imageWidth - spacing; i ++){
-				var myImageData = ctx.getImageData(i - spacing, j, 1, 1);
-				previous = myImageData.data
-				myImageData = ctx.getImageData(i, j, 1, 1);
-				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i+spacing, j, 1, 1);
-				var next = nextImageData.data
-				//console.log("comparing " + next[0] + ", " + current[0] + ", and " + previous[0])
-				if (current[0] < previous[0] && current[0] < next[0]){
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
-					values[3] = 255
-					resultctx.putImageData(thisPixel, i, j);
-					}
-				else {
-					if (pass == 0) {
-						var thisPixel =  ctx.createImageData(1,1);
-						var values = thisPixel.data
-						values[0] = 0
-						values[1] = 0
-						values[2] = 0
-						values[3] = 255
-						resultctx.putImageData(thisPixel, i, j);
-					}
-				}
-			previous = current
-			}
-		}
-	}
-
-	function searchDiagonallySW(p){
-		pass = pass + 1
-	        var spacing = p
-		const canvas = document.getElementById("canvas");
-	        const ctx = canvas.getContext("2d");
-		const resultcanvas = document.getElementById("canvasresult");
-	        const resultctx = resultcanvas.getContext("2d");
-		console.log(resultctx)
-		for (var j = spacing; j < imageHeight - spacing; j ++){
-			console.log("Commencing row " + j);
-			for (var i = spacing; i < imageWidth - spacing; i ++){
-				var myImageData = ctx.getImageData(i - spacing, j + spacing, 1, 1);
-				previous = myImageData.data
-				myImageData = ctx.getImageData(i, j, 1, 1);
-				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i + spacing, j - spacing, 1, 1);
-				var next = nextImageData.data
-				//console.log("comparing " + next[0] + ", " + current[0] + ", and " + previous[0])
-				if (current[0] < previous[0] && current[0] < next[0]){
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
-					values[3] = 255
-					resultctx.putImageData(thisPixel, i, j);
-					}
-				else {
-					if (pass == 0) {
-						var thisPixel =  ctx.createImageData(1,1);
-						var values = thisPixel.data
-						values[0] = 0
-						values[1] = 0
-						values[2] = 0
-						values[3] = 255
-						resultctx.putImageData(thisPixel, i, j);
-					}
-				}
-			previous = current
-			}
-		}
-	}
-
-	function searchDiagonallySE(p){
-		pass = pass + 1
-	        var spacing = p
-		const canvas = document.getElementById("canvas");
-	        const ctx = canvas.getContext("2d");
-		const resultcanvas = document.getElementById("canvasresult");
-	        const resultctx = resultcanvas.getContext("2d");
-		console.log(resultctx)
-		for (var j = spacing; j < imageHeight - spacing; j ++){
-			console.log("Commencing row " + j);
-			for (var i = spacing; i < imageWidth - spacing; i ++){
-				var myImageData = ctx.getImageData(i - spacing, j - spacing, 1, 1);
-				previous = myImageData.data
-				myImageData = ctx.getImageData(i, j, 1, 1);
-				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i + spacing, j + spacing, 1, 1);
-				var next = nextImageData.data
-				//console.log("comparing " + next[0] + ", " + current[0] + ", and " + previous[0])
-				if (current[0] < previous[0] && current[0] < next[0]){
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
-					values[3] = 255
-					resultctx.putImageData(thisPixel, i, j);
-					}
-				else {
-					if (pass == 0) {
-						var thisPixel =  ctx.createImageData(1,1);
-						var values = thisPixel.data
-						values[0] = 0
-						values[1] = 0
-						values[2] = 0
-						values[3] = 255
-						resultctx.putImageData(thisPixel, i, j);
-					}
-				}
-			previous = current
-			}
-		}
-	}
-
-	
-	function searchKnightLeft(p){
-		pass = pass + 1
-	        var spacing = p
-		const canvas = document.getElementById("canvas");
-	        const ctx = canvas.getContext("2d");
-		const resultcanvas = document.getElementById("canvasresult");
-	        const resultctx = resultcanvas.getContext("2d");
-		console.log(resultctx)
-		for (var j = spacing; j < imageHeight - spacing; j ++){
-			console.log("Commencing row " + j);
-			for (var i = spacing; i < imageWidth - spacing; i ++){
-				var myImageData = ctx.getImageData(i - spacing, j, 1, 1);
-				previous = myImageData.data
-				myImageData = ctx.getImageData(i, j, 1, 1);
-				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i + spacing, j - spacing, 1, 1);
-				var next = nextImageData.data
-				//console.log("comparing " + next[0] + ", " + current[0] + ", and " + previous[0])
-				if (current[0] < previous[0] && current[0] < next[0]){
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
-					values[3] = 255
-					resultctx.putImageData(thisPixel, i, j);
-					}
-				else {
-					if (pass == 0) {
-						var thisPixel =  ctx.createImageData(1,1);
-						var values = thisPixel.data
-						values[0] = 0
-						values[1] = 0
-						values[2] = 0
-						values[3] = 255
-						resultctx.putImageData(thisPixel, i, j);
-					}
-				}
-			previous = current
-			}
-		}
-	}
-
-	function searchKnightRight(p){
-		pass = pass + 1
-	        var spacing = p
-		const canvas = document.getElementById("canvas");
-	        const ctx = canvas.getContext("2d");
-		const resultcanvas = document.getElementById("canvasresult");
-	        const resultctx = resultcanvas.getContext("2d");
-		console.log(resultctx)
-		for (var j = spacing; j < imageHeight - spacing; j ++){
-			console.log("Commencing row " + j);
-			for (var i = spacing; i < imageWidth - spacing; i ++){
-				var myImageData = ctx.getImageData(i - spacing, j, 1, 1);
-				previous = myImageData.data
-				myImageData = ctx.getImageData(i, j, 1, 1);
-				var current = myImageData.data
-				var nextImageData = ctx.getImageData(i + spacing, j + spacing, 1, 1);
-				var next = nextImageData.data
-				//console.log("comparing " + next[0] + ", " + current[0] + ", and " + previous[0])
-				if (current[0] < previous[0] && current[0] < next[0]){
-					var thisPixel =  ctx.createImageData(1,1);
-					var values = thisPixel.data
-					values[0] = 255
-					values[1] = 255
-					values[2] = 255
-					values[3] = 255
-					resultctx.putImageData(thisPixel, i, j);
-					}
-				else {
-					if (pass == 0) {
-						var thisPixel =  ctx.createImageData(1,1);
-						var values = thisPixel.data
-						values[0] = 0
-						values[1] = 0
-						values[2] = 0
-						values[3] = 255
-						resultctx.putImageData(thisPixel, i, j);
-					}
-				}
-			previous = current
-			}
-		}
-	}
 	
     function dimensions() {
         imageWidth = document.getElementById("theMap").naturalWidth;
