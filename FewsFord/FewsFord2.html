@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fews Ford Area - trails & abandoned per LiDAR</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="./LidarTiles.js"></script>
+<script src="./roadsERSP.js"></script>
+
+
+<style>
+    #myfirstmap { height: 800px; width: 100pct}
+    .crosshair {cursor: crosshair;}
+    .slider-container {
+    margin-right: 20px;
+    display: flex;
+    align-items: left;
+    flex-direction: column;
+    }
+    .slider {
+    width: 545px; 
+}
+.tick-container {
+    display: flex;
+    justify-content: space-between;
+    width: 550px;
+    margin-top: 5px;
+}
+
+.tick {
+    font-size: 12px; 
+    color: #888; 
+}
+
+</style>
+
+<body>
+    <button onclick="oldRoads()">Show trails & abandoned roads</button>
+    <button onclick="soilMap()">Switch between LiDAR and 1918 Soil Map</button>
+    <!-- <button onclick="MakeMarker()">Place markers</button> -->
+    <div id="instruction">You can fade the LiDAR out with the slider below to look at the base map.</div>
+    <div class="slider-container">
+        <input type="range" min="0" max="100" value="100" class="slider" id="opacitySlider" oninput='display()'>
+          <div class="tick-container">
+            <span class="tick">0</span>
+            <span class="tick">10</span>
+            <span class="tick">20</span>
+            <span class="tick">30</span>
+            <span class="tick">40</span>
+            <span class="tick">50</span>
+            <span class="tick">60</span>
+            <span class="tick">70</span>
+            <span class="tick">80</span>
+            <span class="tick">90</span>
+            <span class="tick">100</span>
+    </div>    
+    <div class="crosshair", id="myfirstmap"></div>
+    <div id="array"></div>
+    <div id="theMap" src=""></div>
+    <table id="mytable">
+        <tr>
+            <th></th>
+        </tr>
+    </table>
+
+</body>
+
+<script>
+var mymap = L.map('myfirstmap').setView([36.08042466816128,-79.02221202850343], 14);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 17,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+var maplayer = L.layerGroup().addTo(mymap);
+var templayer = L.layerGroup().addTo(mymap);
+var currentRoad = -1
+var imageBounds = [[35.8517180601949,-79.2702255956471],[36.2502053273529,-78.9493810126470]]
+var imageURL = "./OCDEM.jpg"
+var Opacity = 1
+var selectedTile = -1
+var mode = 0
+var theTable = document.getElementById('mytable')
+var roads = []
+var selectedCorner = -1
+var roadInMotion
+var cornerInMotion
+var ERSPFewsFord = [[36.048075372804256,-79.01124715805055],[36.04831825888424,-79.0090584754944],[36.04882137766597,-79.00978803634644],[36.04974086230347,-79.00948762893678],[36.04977555962666,-79.00959491729738],[36.05294162599631,-79.00872588157655],[36.05480650959943,-79.00766372680665],[36.05463303391901,-79.00858640670778],[36.05566520858653,-79.0086615085602],[36.05568255594429,-79.01069998741151],[36.05797237359995,-79.01086091995239],[36.057833598668964,-79.00943398475647],[36.059837137995935,-79.00828599929811],[36.060426914745946,-79.00812506675722],[36.06046160735828,-79.00865077972414],[36.06100801398496,-79.00847911834718],[36.06174522326171,-79.00857567787172],[36.06197939417473,-79.00887608528139],[36.06351449734453,-79.00778174400331],[36.06344511479668,-79.01026010513307],[36.06533576734184,-79.01053905487062],[36.065361785179206,-79.00918722152711],[36.065483201639786,-79.00917649269105],[36.0656219630796,-79.00803923606873],[36.06826705622423,-79.00816798210145],[36.06828440080378,-79.00532484054567],[36.06929037987521,-79.00639772415163],[36.06981938094958,-79.00721311569215],[36.06981070882949,-79.00787830352785],[36.07216949025243,-79.00543212890626],[36.072516363907305,-79.0040695667267],[36.073314167507874,-79.00403738021852],[36.07328815230073,-79.00256752967836],[36.07446749971127,-79.0025568008423],[36.07470163275497,-79.00177359580994],[36.07481436323112,-79.00067925453187],[36.07830892784222,-79.00179505348206],[36.07849969364866,-79.00200963020326],[36.078525707131845,-79.00263190269472],[36.078491022485665,-79.00314688682558],[36.0783262702074,-79.00359749794008],[36.07811816157302,-79.00405883789064],[36.07839563962978,-79.00405883789064],[36.07864710327298,-79.00337219238283],[36.07864710327298,-79.0039086341858],[36.08011251333357,-79.00387644767761],[36.08022523605318,-79.00346875190736],[36.08099694879347,-79.00351166725159],[36.08100561968011,-79.00249242782593],[36.082063460675236,-79.00247097015381],[36.08202877758961,-79.0009903907776],[36.082523010115686,-79.00092601776124],[36.090785770907544,-79.00066852569581],[36.090863799136216,-79.00696635246278],[36.091297287884835,-79.00677323341371],[36.09178279244491,-79.00627970695497],[36.092233615422465,-79.00639772415163],[36.0926844358141,-79.00654792785646],[36.093013879849565,-79.00676250457765],[36.0934126786764,-79.00674104690553],[36.09380280600539,-79.00663375854494],[36.094097567591824,-79.00626897811891],[36.09428829508805,-79.00634407997133],[36.09477378117155,-79.0061402320862],[36.09477378117155,-79.00599002838136],[36.095155232418854,-79.00617241859437],[36.09584877539767,-79.00593638420106],[36.09623022142701,-79.00537848472597],[36.09663767309499,-79.00539994239809],[36.09740922472074,-79.005024433136],[36.09772997990884,-79.00506734848024],[36.0977733251041,-79.00812506675722],[36.101682963371566,-79.0081036090851],[36.10171763778519,-79.01021718978883],[36.10011393014208,-79.01023864746095],[36.10011393014208,-79.01691198349],[36.09762595134265,-79.01691198349],[36.09759994417958,-79.01735186576845],[36.091938846845174,-79.01766300201417],[36.09195618620386,-79.02011990547182],[36.093906839632744,-79.02003407478334],[36.09388083123882,-79.02613878250123],[36.091141232210745,-79.02611732482912],[36.091106553129976,-79.02611732482912],[36.09114990197855,-79.02974367141725],[36.08808074442586,-79.02979731559755],[36.0886356292421,-79.03216838836671],[36.08544498805798,-79.0330481529236],[36.08529759117822,-79.03345584869386],[36.0847686942171,-79.0339493751526],[36.084352510500196,-79.03388500213623],[36.08422245263682,-79.0340030193329],[36.08411840619123,-79.03429269790651],[36.08412707673361,-79.03456091880798],[36.084161758893615,-79.03483986854555],[36.08419644103833,-79.0351188182831],[36.084161758893615,-79.03534412384035],[36.089025780283194,-79.03377771377565],[36.08919918012431,-79.03432488441469],[36.08847089822108,-79.03431415557863],[36.08779463041194,-79.03468966484071],[36.08797670308673,-79.03548359870912],[36.084369851532365,-79.03687834739686],[36.08519354615553,-79.03752207756044],[36.08610393543513,-79.03828382492067],[36.08671085576436,-79.03895974159242],[36.087196388654014,-79.03917431831361],[36.08769058869413,-79.03973221778871],[36.08775127971292,-79.04013991355896],[36.088618289150865,-79.0395498275757],[36.08874833974177,-79.04016137123108],[36.08779463041194,-79.04071927070619],[36.087959362850164,-79.04180288314821],[36.08800271343443,-79.04216766357423],[36.08798537320358,-79.04221057891847],[36.087699258842555,-79.04221057891847],[36.08704032483796,-79.04167413711549],[36.08690160118581,-79.04160976409914],[36.08673686653091,-79.04136300086977],[36.0864767584782,-79.04123425483705],[36.08632936353298,-79.04127717018129],[36.08612127608097,-79.04156684875488],[36.08607792445916,-79.0418565273285],[36.08575712171462,-79.04521465301515],[36.08566174767326,-79.04570817947389],[36.085748451352,-79.04611587524414],[36.08605191347459,-79.04710292816164],[36.08609526511076,-79.04732823371889],[36.08606058380375,-79.0475642681122],[36.08581781422617,-79.0479075908661],[36.08472534184938,-79.04903411865236],[36.08449990915189,-79.04957056045532],[36.08455193213946,-79.05030012130737],[36.08470800089558,-79.05113697052003],[36.08489875117679,-79.05195236206056],[36.08502013747838,-79.05214548110963],[36.083424759701565,-79.05220985412599],[36.08347678340059,-79.05148029327394],[36.08042466816128,-79.05094385147096],[36.08023390702493,-79.05287504196168],[36.081950740590955,-79.05317544937135],[36.081881374304906,-79.054012298584],[36.0796963049689,-79.05418395996095],[36.079644278768406,-79.05315399169923],[36.07936680511778,-79.05274629592896],[36.0796963049689,-79.05208110809328],[36.08007782938731,-79.049870967865],[36.080563403242486,-79.04999971389772],[36.0805807451104,-79.04950618743898],[36.0816732750796,-79.04813289642335],[36.08318198198435,-79.04697418212892],[36.08463863704222,-79.04738187789918],[36.084777364687746,-79.04474258422853],[36.08254035155143,-79.04431343078615],[36.08264440008545,-79.04309034347536],[36.0831126167846,-79.0413522720337],[36.080303274764425,-79.04143810272218],[36.08026859090234,-79.04369115829469],[36.07891590834716,-79.04369115829469],[36.07246433295659,-79.04298305511476],[36.07253370754987,-79.04169559478761],[36.073036671521216,-79.04057979583742],[36.073695722890896,-79.04070854187013],[36.073921186565336,-79.0404510498047],[36.07451085773493,-79.0406656265259],[36.074996465966606,-79.04017210006714],[36.075620815001415,-79.04002189636232],[36.07610641637938,-79.04006481170656],[36.076089073524656,-79.03774738311769],[36.07822221595904,-79.03774738311769],[36.07834361256873,-79.03654575347902],[36.07723369373251,-79.03508663177492],[36.0764012443245,-79.03515100479127],[36.07525661200016,-79.03549432754518],[36.07489240731224,-79.0333914756775],[36.072793861729735,-79.03386354446411],[36.070452443132815,-79.03330564498903],[36.070070872015926,-79.03088092803956],[36.06958523337188,-79.03055906295778],[36.069116936125575,-79.03064489364625],[36.06842315730265,-79.0259885787964],[36.069168969290594,-79.02474403381349],[36.069966806844626,-79.02450799942018],[36.068960836423905,-79.01723384857179],[36.067729372360816,-79.01796340942384],[36.06765999353009,-79.01849985122682],[36.06587346756542,-79.01811361312868],[36.065925502875864,-79.01725530624391],[36.06344511479668,-79.01560306549074],[36.0608085326404,-79.0150022506714],[36.06113811024161,-79.01311397552492],[36.05900450447035,-79.01300668716432],[36.058952464582475,-79.01279211044313],[36.05702696453724,-79.01347875595094],[36.05733921098842,-79.01418685913087],[36.058067781223045,-79.0148949623108],[36.05631573188472,-79.01598930358888],[36.05614225953098,-79.01588201522829],[36.05659328685535,-79.01341438293458],[36.055274892026596,-79.01249170303346],[36.053973822846196,-79.01206254959108],[36.05291560405206,-79.01184797286989],[36.05190941560976,-79.01204109191896],[36.05083382063726,-79.01191234588623],[36.04974086230347,-79.01180505752565],[36.04927244694339,-79.01169776916505],[36.04892547080554,-79.01165485382081],[36.04876933104456,-79.0115475654602]]
+var ERSP = L.polygon(ERSPFewsFord, {color:'purple', fillOpacity:0}).addTo(mymap)
+var roadToggle = 0
+var mapmode = 0
+mymap.on('mousemove', onMouseMove);
+mymap.on('click', affix);
+//L.imageOverlay(imageURL, imageBounds, {opacity:Opacity}).addTo(maplayer);
+LIDAR();
+oldRoads();
+
+function display(){
+    maplayer.clearLayers();
+    var sliderValue = document.getElementById('opacitySlider').value
+    Opacity = sliderValue/100
+//    L.imageOverlay(imageURL, imageBounds, {opacity:Opacity}).addTo(maplayer);
+    LIDAR();
+}
+    
+function LIDAR(){
+    console.log(mapmode)
+    if (mapmode/2 == Math.floor(mapmode/2)){
+        for (var i = 0; i <LidarTiles.features.length; i++){
+            if (LidarTiles.features[i].tileName == "P11.png" || LidarTiles.features[i].tileName == "P12.png" || LidarTiles.features[i].tileName == "P13.png" || LidarTiles.features[i].tileName == "P14.png" || LidarTiles.features[i].tileName == "P15.png" || LidarTiles.features[i].tileName == "O12.png" || LidarTiles.features[i].tileName == "O13.png" || LidarTiles.features[i].tileName == "O14.png" || LidarTiles.features[i].tileName == "N12.png" || LidarTiles.features[i].tileName == "N13.png" || LidarTiles.features[i].tileName == "M13.png"){
+                var image = LidarTiles.features[i].tileName
+                var imageUrl = "./" + image
+                var tileBounds = LidarTiles.features[i].tileAddress
+                L.imageOverlay(imageUrl, tileBounds, {opacity:Opacity}).addTo(maplayer);
+            }
+            else{}
+        }
+        // for (var i = 0; i <LidarTiles.features.length; i++){
+        //     var marker = L.marker(LidarTiles.features[i].tileAddress[0]).addTo(maplayer)
+        //         .bindPopup("SW corner of " + LidarTiles.features[i].tileName + "<button onclick='selectTile(" + i+ ")'>select</button>");
+        // }
+    }
+    else{
+        var SWcornerLat = 36.022558405829336
+        var SWcornerLong = -79.07261143730052
+        var NEcornerLat = 36.135558405829336
+        var NEcornerLong = -78.96511143730052
+        var SMimageBounds = [[SWcornerLat,SWcornerLong],[NEcornerLat,NEcornerLong]]
+        var SMimageURL = "./StMarysTWP.png"
+        var sliderValue = document.getElementById('opacitySlider').value
+        Opacity = sliderValue/100
+        L.imageOverlay(SMimageURL, SMimageBounds, {opacity:Opacity}).addTo(maplayer);
+    }
+}
+
+function selectTile(i,x){
+    selectedTile = i
+    selectedCorner = x
+    console.log(selectedTile)
+    mode = 1
+    maplayer.clearLayers();
+    for (var i = 0; i <LidarTiles.features.length; i++){
+        var image = LidarTiles.features[i].tileName
+        var imageUrl = "./" + image
+        var tileBounds = LidarTiles.features[i].tileAddress
+        if (i != selectedTile) {L.imageOverlay(imageUrl, tileBounds, {opacity:Opacity}).addTo(maplayer)}
+    }
+}
+
+function onMouseMove(e){
+    if (mode == 1 & selectedCorner == 1){
+        mouseLat = e.latlng['lat'] 
+        mouseLong = e.latlng['lng']
+        maplayer.clearLayers();
+        templayer.clearLayers();
+        var image = LidarTiles.features[selectedTile].tileName
+        var imageUrl = "./" + image
+        var tileBounds = [[mouseLat,mouseLong],LidarTiles.features[selectedTile].tileAddress[1]]
+        L.imageOverlay(imageUrl, tileBounds, {opacity:Opacity}).addTo(templayer)
+    }
+    if (mode == 1 & selectedCorner == 0){
+        mouseLat = e.latlng['lat'] 
+        mouseLong = e.latlng['lng']
+        maplayer.clearLayers();
+        templayer.clearLayers();
+        var image = LidarTiles.features[selectedTile].tileName
+        var imageUrl = "./" + image
+        var tileBounds = [LidarTiles.features[selectedTile].tileAddress[0],[mouseLat,mouseLong]]
+        L.imageOverlay(imageUrl, tileBounds, {opacity:Opacity}).addTo(templayer)
+    }
+}
+
+function affix(e){
+    clickLat = e.latlng['lat'] 
+    clickLong = e.latlng['lng']
+    if (mode == 0){
+        console.log("[" + clickLat + "," + clickLong + "]");
+    }
+    if (mode == 1 & selectedCorner == 1){
+        templayer.clearLayers
+        LidarTiles.features[selectedTile].tileAddress[0][0] = clickLat
+        LidarTiles.features[selectedTile].tileAddress[0][1] = clickLong
+        mode = 0
+        selectedTile = -1
+        selectedCorner = -1
+        templayer.clearLayers();
+        updateTable();
+        LIDAR();
+    }
+    if (mode == 1 & selectedCorner == 0){
+        templayer.clearLayers
+        LidarTiles.features[selectedTile].tileAddress[1][0] = clickLat
+        LidarTiles.features[selectedTile].tileAddress[1][1] = clickLong
+        mode = 0
+        selectedTile = -1
+        selectedCorner = -1
+        templayer.clearLayers();
+        updateTable();
+        LIDAR();
+    }
+    if (mode==2){
+        console.log(roads.length)
+        if (roads[currentRoad].length < 2) {
+            L.marker([clickLat,clickLong]).addTo(templayer)
+        }
+        if (roads[currentRoad].length >= 2){
+            console.log(roads[currentRoad][roads[currentRoad].length-1])
+            L.polyline([roads[currentRoad][roads[currentRoad].length-1],[clickLat,clickLong]], {color:'yellow',weight:5}).addTo(templayer)
+        }
+        roads[currentRoad].push([clickLat,clickLong])
+    }
+    if (mode == 3) {
+        var clickLat = e.latlng['lat'] 
+        var clickLong = e.latlng['lng']
+        soilRoads.features[roadInMotion].coords[cornerInMotion][0] = clickLat
+        soilRoads.features[roadInMotion].coords[cornerInMotion][1] = clickLong
+        mode = 0
+        templayer.clearLayers();
+        oldRoads();
+    }
+}
+
+
+function updateTable(){
+    theTable.innerHTML=""
+    var myNewRow = document.createElement('tr');
+    var myNewCell1 = document.createElement('td');
+    myNewCell1.innerText = "var LidarTiles = {'features':["
+    myNewRow.append(myNewCell1)
+    theTable.append(myNewRow);
+    for (var j = 0; j < LidarTiles.features.length; j = j + 1){
+        myNewRow = document.createElement('tr');
+        myNewCell1 =document.createElement('td');
+        myNewCell1.innerText = '{"tileName":"' + LidarTiles.features[j].tileName +'","tileAddress":[['+LidarTiles.features[j].tileAddress[0][0]+','+LidarTiles.features[j].tileAddress[0][1]+'],['+LidarTiles.features[j].tileAddress[1][0]+","+LidarTiles.features[j].tileAddress[1][1]+"]]},"
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+    }
+    console.log("Table loop ended")
+    myNewRow = document.createElement('tr');
+    myNewCell1 = document.createElement('td');
+    myNewCell1.innerText = "]}"
+    myNewRow.append(myNewCell1)
+    theTable.append(myNewRow);
+}
+
+function MakeMarker(){
+    mode = 2
+    var roadString = '{"coords":[['
+    try {
+        for (var j = 0; j < roads[currentRoad].length; j = j + 1){
+            roadString = roadString + roads[currentRoad][j]
+            console.log(roadString) 
+            if (j != roads[currentRoad].length - 1) {roadString = roadString + "],["}
+        }
+    }
+    catch{}
+    roadString = roadString + "]]},"
+//    if (roadString != '{"coords":[[]]},'){
+        myNewRow = document.createElement('tr');
+        myNewCell1 =document.createElement('td');
+        myNewCell1.innerText = roadString
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+        currentRoad = currentRoad + 1
+        roads.push([]);
+//    }
+}
+
+function oldRoads(){
+    roadToggle = roadToggle + 1
+    if (roadToggle/2 == Math.floor(roadToggle/2)) {
+        for (var i = 0; i < ERSProads.features.length; i++){
+            var road = L.polyline(ERSProads.features[i].coords, {color:'yellow', weight: 5}).addTo(templayer)
+            // for (var j = 0; j < soilRoads.features[i].coords.length; j = j + 1){
+            //     var buttonText = "<button onclick='moveRoadCorner("+i+","+j+")'>move?</button>"
+            //     var marker = L.marker(soilRoads.features[i].coords[j]).addTo(templayer).bindPopup(buttonText)
+            // }
+        }
+    }
+    else{templayer.clearLayers();}
+}
+
+function moveRoadCorner(i,j){
+    console.log("moving road corner")
+    roadInMotion = i
+    cornerInMotion = j
+    mode = 3
+}
+
+function soilMap(){
+    maplayer.clearLayers();
+    mapmode = mapmode+1
+    LIDAR();
+}
+
+</script>
+</html>
