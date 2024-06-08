@@ -117,27 +117,21 @@ function display(){
 function LIDAR(){
     console.log(mapmode)
     if (mapmode/2 == Math.floor(mapmode/2)){
-        for (var i = 0; i <LidarTiles.features.length; i++){
-            if (LidarTiles.features[i].tileName == "P11.png" || LidarTiles.features[i].tileName == "P12.png" || LidarTiles.features[i].tileName == "P13.png" || LidarTiles.features[i].tileName == "P14.png" || LidarTiles.features[i].tileName == "P15.png" || LidarTiles.features[i].tileName == "O12.png" || LidarTiles.features[i].tileName == "O13.png" || LidarTiles.features[i].tileName == "O14.png" || LidarTiles.features[i].tileName == "N12.png" || LidarTiles.features[i].tileName == "N13.png" || LidarTiles.features[i].tileName == "M13.png"){
-                var image = LidarTiles.features[i].tileName
-                var imageUrl = "./" + image
-                var tileBounds = LidarTiles.features[i].tileAddress
-                L.imageOverlay(imageUrl, tileBounds, {opacity:Opacity}).addTo(maplayer);
-            }
-            else{}
-        }
-        // for (var i = 0; i <LidarTiles.features.length; i++){
-        //     var marker = L.marker(LidarTiles.features[i].tileAddress[0]).addTo(maplayer)
-        //         .bindPopup("SW corner of " + LidarTiles.features[i].tileName + "<button onclick='selectTile(" + i+ ")'>select</button>");
-        // }
+        var SWcornerLat = 36.057871618010935
+        var SWcornerLong = -79.0503716500798
+        var NEcornerLat = 36.099171618010935
+        var NEcornerLong = -79.0000716500798
+        var imageBounds = [[SWcornerLat,SWcornerLong],[NEcornerLat,NEcornerLong]]
+        var imageUrl = "./FewsFordLiDAR.png"
+        L.imageOverlay(imageUrl, imageBounds, {opacity:Opacity}).addTo(maplayer);
     }
     else{
         var SWcornerLat = 36.022558405829336
-        var SWcornerLong = -79.07261143730052
+        var SWcornerLong = -79.07261143730052 + 0.001
         var NEcornerLat = 36.135558405829336
-        var NEcornerLong = -78.96511143730052
+        var NEcornerLong = -78.96511143730052 + 0.001
         var SMimageBounds = [[SWcornerLat,SWcornerLong],[NEcornerLat,NEcornerLong]]
-        var SMimageURL = "./StMarysTwp.png"
+        var SMimageURL = "./StMarysTWP.png"
         var sliderValue = document.getElementById('opacitySlider').value
         Opacity = sliderValue/100
         L.imageOverlay(SMimageURL, SMimageBounds, {opacity:Opacity}).addTo(maplayer);
