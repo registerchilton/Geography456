@@ -18,6 +18,9 @@
 
 <script src="./LidarTiles.js"></script>
 <script src="./roadsERSP.js"></script>
+<script src="./greybeardsTrails.js"></script>
+<script src="./lidarTrails.js"></script>
+<script src="./culturalSitesFewsFord.js"></script>
 
 
 <style>
@@ -49,7 +52,7 @@
 <body>
     <button onclick="oldRoads()">Show trails & abandoned roads</button>
     <button onclick="soilMap()">Switch between LiDAR and 1918 Soil Map</button>
-    <!-- <button onclick="MakeMarker()">Place markers</button> -->
+    <button onclick="MakeMarker()">Place markers</button>
     <div id="instruction">You can fade the LiDAR out with the slider below to look at the base map.</div>
     <div class="slider-container">
         <input type="range" min="0" max="100" value="100" class="slider" id="opacitySlider" oninput='display()'>
@@ -80,7 +83,7 @@
 <script>
 var mymap = L.map('myfirstmap').setView([36.08042466816128,-79.02221202850343], 14);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 17,
+    maxZoom: 22,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(mymap);
 var maplayer = L.layerGroup().addTo(mymap);
@@ -105,6 +108,8 @@ mymap.on('click', affix);
 //L.imageOverlay(imageURL, imageBounds, {opacity:Opacity}).addTo(maplayer);
 LIDAR();
 oldRoads();
+culturalSites();
+
 
 function display(){
     maplayer.clearLayers();
@@ -113,19 +118,41 @@ function display(){
 //    L.imageOverlay(imageURL, imageBounds, {opacity:Opacity}).addTo(maplayer);
     LIDAR();
 }
-    
+
+function culturalSites(){
+    console.log("cultural features");
+    console.log(cultural)
+    for (var i = 0; i < cultural.features.length; i = i + 1){
+        console.log(cultural.features[i].coords)
+        var marker = L.marker(cultural.features[i].coords).addTo(mymap).bindTooltip(cultural.features[i].name + i)
+    }
+}
+
 function LIDAR(){
     console.log(mapmode)
-    if (mapmode/2 == Math.floor(mapmode/2)){
-        var SWcornerLat = 36.057871618010935
-        var SWcornerLong = -79.0503716500798
-        var NEcornerLat = 36.099171618010935
-        var NEcornerLong = -79.0000716500798
+    maplayer.clearLayers();
+    if (mapmode/3 == Math.floor(mapmode/3)){
+        console.log("condition one")
+        var LidarSWcornerLat = 36.057871618010935
+        var LidarSWcornerLong = -79.0503716500798
+        var LidarNEcornerLat = 36.099171618010935
+        var LidarNEcornerLong = -79.0000716500798
+        var LidarimageBounds = [[LidarSWcornerLat,LidarSWcornerLong],[LidarNEcornerLat,LidarNEcornerLong]]
+        var LidarimageUrl = "./FewsFordLiDAR.png"
+        L.imageOverlay(LidarimageUrl, LidarimageBounds, {opacity:Opacity}).addTo(maplayer);
+    }
+    if ((mapmode+1)/3 == Math.floor((mapmode+1)/3)){
+        console.log("condition two")
+        var SWcornerLat = 36.06739458525751
+        var SWcornerLong = -79.03828154003921
+        var NEcornerLat = 36.11069458525751
+        var NEcornerLong = -78.99908154003921
         var imageBounds = [[SWcornerLat,SWcornerLong],[NEcornerLat,NEcornerLong]]
-        var imageUrl = "./FewsFordLiDAR.png"
+        var imageUrl = "./map-cox.jpg"
         L.imageOverlay(imageUrl, imageBounds, {opacity:Opacity}).addTo(maplayer);
     }
-    else{
+    if ((mapmode+2)/3 == Math.floor((mapmode+2)/3)){
+        console.log("condition three")
         var SWcornerLat = 36.022558405829336
         var SWcornerLong = -79.07261143730052 + 0.001
         var NEcornerLat = 36.135558405829336
@@ -274,12 +301,11 @@ function MakeMarker(){
 function oldRoads(){
     roadToggle = roadToggle + 1
     if (roadToggle/2 == Math.floor(roadToggle/2)) {
-        for (var i = 0; i < ERSProads.features.length; i++){
-            var road = L.polyline(ERSProads.features[i].coords, {color:'yellow', weight: 5}).addTo(templayer)
-            // for (var j = 0; j < soilRoads.features[i].coords.length; j = j + 1){
-            //     var buttonText = "<button onclick='moveRoadCorner("+i+","+j+")'>move?</button>"
-            //     var marker = L.marker(soilRoads.features[i].coords[j]).addTo(templayer).bindPopup(buttonText)
-            // }
+        for (var i = 0; i < greybeard.features.length; i++){
+            var road = L.polyline(greybeard.features[i].coords, {color:'blue', weight: 5}).addTo(templayer)
+        }
+        for (var i = 0; i < fred.features.length; i++){
+            var road = L.polyline(fred.features[i].coords, {color:'yellow', weight: 5}).addTo(templayer)
         }
     }
     else{templayer.clearLayers();}
@@ -297,6 +323,7 @@ function soilMap(){
     mapmode = mapmode+1
     LIDAR();
 }
+
 
 </script>
 </html>
