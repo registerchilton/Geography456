@@ -131,7 +131,7 @@ function LIDAR(){
         var NEcornerLat = 36.135558405829336
         var NEcornerLong = -78.96511143730052 + 0.001
         var SMimageBounds = [[SWcornerLat,SWcornerLong],[NEcornerLat,NEcornerLong]]
-        var SMimageURL = "./StMarysTWP.png"
+        var SMimageURL = "./StMarysTwp.png"
         var sliderValue = document.getElementById('opacitySlider').value
         Opacity = sliderValue/100
         L.imageOverlay(SMimageURL, SMimageBounds, {opacity:Opacity}).addTo(maplayer);
