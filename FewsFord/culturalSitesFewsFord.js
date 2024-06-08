@@ -25,6 +25,11 @@ var cultural = {'features':[{"name":"Homestead remnant per Greybeard","coords":[
 {"name":"K unidentified building on 1918 Soil Map","coords":[36.0755687861045,-79.00122642517091]},
 {"name":"L unidentified building on 1918 Soil Map","coords":[36.09124526936123,-79.00877952575685]},
 {"name":"M unidentified building on 1918 Soil Map","coords":[36.094470352720826,-79.00654792785646]},
+{"number":175,"name":"Piper Cemetery","coords":[36.07444444444,-79.00722222222]},
+{"number":105,"name":"William Cabe Cemetery (1828)","coords":[36.06386111111,-79.00941666667]},
+{"number":258,"name":"Cemetery of people enslaved by William Cabe","coords":[36.06291666667,-79.00963888889]},
+{"number":187,"name":"Riley Cemetery","coords":[36.06086111111,-79.02366666667]},
+{"number":134,"name":"Hicks Cemetery","coords":[36.080095171362345,-79.03049468994142]},
 
 
 ]}
