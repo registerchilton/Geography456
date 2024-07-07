@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Land Grants JSON</title>
+
+</head>
+
+<script src="./AllGrants.js"></script>
+<script src="./GrantsAndDeeds.js"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap {height: 400px; width: 750px}
+
+    .div-img{
+        justify-content: center;
+        align-items: center;
+        display:flex;
+        padding-top:0%;
+    }
+    img:hover{
+        transform:scale(1.0);
+    }
+
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+</head>
+
+<body>
+    <button onclick="LandGrantTable()" id = "button1">Show Land Grants</button>
+    <button onclick="exportTable()" id = "button2">Export view</button>
+    <button onclick="dataEntry()" id = "button3">Data Entry Mode</button>
+    <button onclick="mapMode()" id = "mapButton">Mapping Mode</button>
+    <input type="text" placeholder = "Search term?" id="searchInput" style="width: 100px" onchange="search()"> 
+    <input type="text" placeholder = "Ofile search" id="ofile" style="width: 100px" onchange="OfileSearch()"> 
+    <input type="text" placeholder = "Enter formatted legal description" id="description" style="width: 800px" onchange="newLegal()"> 
+    <div id="myfirstmap"></div>
+    <div id="selected"></div>
+    <form>
+        <select id="countyDropDown" onchange="assignSearch()">
+            <option value=""></option>
+            <option value="Orange">Orange</option>
+            <option value="Alamance">Alamance</option>
+            <option value="Durham">Durham</option>
+            <option value="Chatham">Chatham</option>
+            <option value="Caswell/Person">Caswell/Person</option>
+            <option value="Guilford">Guilford</option>
+            <option value="Rockingham">Rockingham</option>
+            <option value="Randolph">Randolph</option>
+            <option value="unknown">unknown</option>
+        </select>
+    </form>
+    <div class="div-img">
+        <img src="" id ="currentImage" width=600px>
+    </div>
+    
+    <table id="mytable">
+        <tr>
+            <th></th>
+        </tr>
+    </table>
+</body>
+
+<script>
+    var mymap = L.map('myfirstmap').setView([36.224666838850524,-79.15906906127931], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mymap);
+    var tempLayer = L.layerGroup().addTo(mymap);
+    var grantLayer = L.layerGroup().addTo(mymap);
+    mymap.on('mousemove', onMouseMove);
+    mymap.on('click', affix);
+
+    var theTable = document.getElementById('mytable')
+    var searchResult = []
+    var mode = "data"
+    var selection = -1
+    var mouseLat
+    var mouseLong
+    var clickLat
+    var clickLong
+    var directions = []
+    var distances = []
+    var corners = []
+    var convertedDistances = []
+    var tempCorners = []
+    var tempArray = []
+    var NSscaling = 0.000180923
+    var EWscaling = 0.000223644
+    var inPlacement = - 1
+    setup();
+
+
+    function LandGrantTable(){
+        searchResult = []
+        document.getElementById('searchInput').value = ""
+        console.log("firing Land Grant Table function")
+        theTable.innerHTML=""
+        var counter = 0
+        for (var j = 970; j < fred.features.length; j = j + 1){
+            if (fred.features[j].county.length <= 2){
+                counter = counter + 1
+                var myNewRow = document.createElement('tr');
+                var myNewCell1 = document.createElement('td');
+                var myNewCell2 = document.createElement('td');
+                var myNewCell3 = document.createElement('td');
+                var myNewCell4 = document.createElement('td');
+                var myNewCell5 = document.createElement('td');
+                var myNewCell6 = document.createElement('td');
+                myNewCell1.innerText = fred.features[j].shortRef
+                myNewCell2.innerText = fred.features[j].grantee
+                myNewCell3.innerText = fred.features[j].date
+                myNewCell4.innerText = fred.features[j].brief
+                myNewCell5.innerHTML = "<a href='" + fred.features[j].link +"'>link</a>"
+                myNewCell6.innerHTML = '<form><select id="countyChoice" onchange="assignCounty(' + j + ')"><option value=""></option><option value="Orange">Orange</option><option value="Alamance">Alamance</option><option value="Durham">Durham</option><option value="Chatham">Chatham</option><option value="Caswell/Person">Caswell/Person</option><option value="Guilford">Guilford</option><option value="Rockingham">Rockingham</option><option value="Randolph">Randolph</option><option value="unknown">unknown</option></select></form>'
+                myNewRow.append(myNewCell6)
+                myNewRow.append(myNewCell1)
+                myNewRow.append(myNewCell2)
+                myNewRow.append(myNewCell3)
+                myNewRow.append(myNewCell4)
+                myNewRow.append(myNewCell5)
+                theTable.append(myNewRow);
+                myNewRow = document.createElement('tr');
+                if (counter == 20) {j = fred.features.length}
+            }
+        }
+    }
+
+    function assignCounty(x){
+        var grantChosen = x
+        var choice = document.getElementById('countyChoice').value
+        fred.features[grantChosen].county = choice
+        LandGrantTable();
+    }
+
+    function exportTable(){
+        document.getElementById("button1").style.visibility = "hidden";
+        document.getElementById("button2").style.visibility = "hidden";
+        document.getElementById("button3").style.visibility = "hidden";
+        document.getElementById("mapButton").style.visibility = "hidden";
+        document.getElementById("countyDropDown").style.visibility = "hidden";
+        document.getElementById("searchInput").style.visibility = "hidden";
+        document.getElementById("ofile").style.display = "none";
+        document.getElementById("description").style.display = "none";
+        document.getElementById("myfirstmap").style.display = "none";
+        document.getElementById("selected").innerText =""
+        document.getElementById("currentImage").src = ""
+        theTable.innerHTML=""
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerText = "var fred = {'features':["
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+        for (var j = 0; j < fred.features.length; j = j + 1){
+            myNewRow = document.createElement('tr');
+            myNewCell1 = document.createElement('td');
+            var tableText = '{"type":"grant"'
+            tableText = tableText + ',"citations":"' + fred.features[j].citations + '"'
+            tableText = tableText + ',"grantor":"' + fred.features[j].grantor + '"'
+            tableText = tableText + ',"grantee":"' + fred.features[j].grantee + '"'
+            tableText = tableText + ',"date":"' + fred.features[j].date + '"'
+            tableText = tableText + ',"brief":"' + fred.features[j].brief + '"'
+            tableText = tableText + ',"SCC":"' + fred.features[j].SCC + '"'
+            tableText = tableText + ',"surveyed":"' + fred.features[j].surveyed + '"'
+            tableText = tableText + ',"shortRef":"' + fred.features[j].shortRef + '"'
+            tableText = tableText + ',"link":"' + fred.features[j].link + '"'
+            tableText = tableText + ',"caption":"' + fred.features[j].caption + '"'
+            tableText = tableText + ',"legal":"' + fred.features[j].legal + '"'
+            
+            // corners array subloop
+            tableText = tableText + ',"corners":['
+                for (var i = 0; i < fred.features[j].corners.length; i++){
+                    tableText = tableText + "'" + fred.features[j].corners[i] + "'"
+                    if (i + 1 < fred.features[j].corners.length){
+                        tableText = tableText + ","
+                    }
+                }
+            tableText = tableText + "]"
+
+            // coords array subloop
+            tableText = tableText + ',"coords":['
+                for (var i = 0; i < fred.features[j].coords.length; i++){
+                    if (i==0){
+                        tableText = tableText + "["
+                    }
+                    var nextLat = fred.features[j].coords[i][0]
+                    var nextLong = fred.features[j].coords[i][1]
+                    tableText = tableText + nextLat + "," + nextLong + "]"
+                    if (i + 1 < fred.features[j].coords.length){
+                        tableText = tableText + ",["
+                    }
+                }
+
+            tableText = tableText + "]"
+            tableText = tableText + ',"county":"'+ fred.features[j].county + '"},' 
+            myNewCell1.innerText = tableText
+            myNewRow.append(myNewCell1)
+            theTable.append(myNewRow);
+        }
+        myNewRow = document.createElement('tr');
+        myNewCell1 = document.createElement('td');
+        myNewCell1.innerText = "]}"
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+
+    }
+
+function search(){
+    searchResult = []
+    var searchTerm = document.getElementById('searchInput').value
+    console.log("firing search function for " + searchTerm)
+    for (var i = 0; i < fred.features.length; i++){
+        var thisSearch = fred.features[i].brief
+        if (thisSearch.includes(searchTerm) && fred.features[i].legal.length <= 2){
+            searchResult.push(i)
+        }
+    }
+    console.log(searchResult)
+    searchResultTable()
+}
+
+function OfileSearch(){
+    document.getElementById("myfirstmap").style.display = "none";
+    searchResult = []
+    var searchTerm = "Ofile " + document.getElementById('ofile').value
+    console.log("firing search function for " + searchTerm)
+    for (var i = 0; i < fred.features.length; i++){
+        var thisSearch = fred.features[i].shortRef
+        if (thisSearch == searchTerm){
+            searchResult.push(i)
+        }
+    }
+    var display = fred.features[searchResult[0]].caption + " " + fred.features[searchResult[0]].legal
+    document.getElementById('selected').innerText = display
+
+    selection = searchResult[0]
+    document.getElementById("currentImage").style.display = "inline";
+    var imageFileName = "./OCSLGs/"
+    var fileNumber = fred.features[selection].shortRef
+    var fnum = fileNumber.split(' ')
+    imageFileName = imageFileName + "F" + fnum[1] + ".jpg"
+    document.getElementById('currentImage').src = imageFileName     
+}
+
+function assignSearch(){
+    var selection = document.getElementById('countyDropDown').value
+    for (var j = 0; j < searchResult.length; j++){
+        fred.features[searchResult[j]].county = selection
+    }
+}
+
+function dataEntry(){
+    mode = "data"
+    searchResultTable();
+}
+
+function searchResultTable(){
+    console.log("Search Result Table Function")
+    if (mode == "data"){
+        document.getElementById("button1").style.visibility = "hidden";
+        document.getElementById("button2").style.visibility = "visible";
+        document.getElementById("countyDropDown").style.visibility = "hidden";
+    }
+    theTable.innerHTML=""
+    console.log(" search Result is now of length " + searchResult.length)
+    for (var j = 0; j < searchResult.length; j++){
+        console.log(j)
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        if (mode == "data"){
+            console.log("data")
+            myNewCell1.innerHTML = '<button onclick="showSurvey(' + searchResult[j] + ')" id = "button">select</button>'
+        }
+        if (mode == "county"){
+            myNewCell1.innerHTML = '<form><select id="countyChoice" onchange="assignCounty(' + searchResult[j] + ')"><option value=""></option><option value="Orange">Orange</option><option value="Alamance">Alamance</option><option value="Durham">Durham</option><option value="Chatham">Chatham</option><option value="Caswell/Person">Caswell/Person</option><option value="Guilford">Guilford</option><option value="Rockingham">Rockingham</option><option value="Randolph">Randolph</option><option value="unknown">unknown</option></select></form>'
+        }
+        if (mode == "map"){
+            myNewCell1.innerHTML = '<button onclick="placeSurvey(' + searchResult[j] + ')" id = "button">select</button>'
+        }
+        myNewRow.append(myNewCell1)
+        var myNewCell2 = document.createElement('td');
+        myNewCell2.innerText = fred.features[searchResult[j]].shortRef
+        myNewRow.append(myNewCell2)
+        var myNewCell3 = document.createElement('td');
+        myNewCell3.innerText = fred.features[searchResult[j]].grantee
+        myNewRow.append(myNewCell3)
+        var myNewCell4 = document.createElement('td');
+        myNewCell4.innerText = fred.features[searchResult[j]].date
+        myNewRow.append(myNewCell4)
+        var myNewCell5 = document.createElement('td');
+        myNewCell5.innerText = fred.features[searchResult[j]].brief
+        var myNewCell6 = document.createElement('td');
+        myNewRow.append(myNewCell5)
+        myNewCell6.innerHTML = "<a href='" + fred.features[searchResult[j]].link +"'>link</a>"
+        myNewRow.append(myNewCell6)
+        console.log(myNewRow)
+        theTable.append(myNewRow);
+    }
+}
+
+function showSurvey(j){
+    selection = j
+    document.getElementById("currentImage").style.display = "inline";
+    var imageFileName = "./OCSLGs/"
+    if (fred.features[selection].grantor=="NC"){
+        var fileNumber = fred.features[selection].shortRef
+        var fnum = fileNumber.split(' ')
+        imageFileName = imageFileName + "F" + fnum[1] + ".jpg"
+    }
+    console.log(imageFileName)
+    document.getElementById('currentImage').src = imageFileName 
+    document.getElementById('currentImage').innerText = fred.features[j].brief 
+    window.scrollTo(0,0)
+    searchResultTable();
+}
+
+function newLegal(){
+    var newDescription = document.getElementById('description').value
+    fred.features[selection].legal = newDescription
+    document.getElementById("currentImage").style.display = "none";
+}
+
+function mapMode(){
+    mode = "map"
+    document.getElementById("button1").style.visibility = "hidden";
+    document.getElementById("button2").style.visibility = "visible";
+    document.getElementById("button3").style.visibility = "hidden";
+    document.getElementById("countyDropDown").style.visibility = "hidden";
+    document.getElementById("searchInput").style.visibility = "hidden";
+    document.getElementById("ofile").style.display ="inline";
+    document.getElementById("description").style.display = "block";
+    document.getElementById("currentImage").src = ""
+    document.getElementById("myfirstmap").style.display = "block";
+    searchResult = []
+    for (var i = 0; i < fred.features.length; i++){
+        if (fred.features[i].legal.length > 2 && fred.features[i].coords.length < 2){
+            searchResult.push(i)
+        }
+    }
+    searchResultTable();
+
+}
+
+function placeSurvey(j){
+    inPlacement = j
+    var display = fred.features[inPlacement].caption + " " + fred.features[inPlacement].legal
+    console.log(display)
+    document.getElementById("selected").innerText = display
+    parse(inPlacement)
+}
+
+function onMouseMove(e){
+    mouseLat = e.latlng['lat'] 
+    mouseLong = e.latlng['lng']
+    if (mode=="map" && inPlacement > -1){
+        tempLayer.clearLayers();
+        if (fred.features[inPlacement].coords[0][0] == 0){
+            for (var i = 0; i < fred.features[inPlacement].coords.length - 1; i++){
+                var thisLat = fred.features[inPlacement].coords[i][0] + mouseLat
+                var thisLong = fred.features[inPlacement].coords[i][1] + mouseLong
+                var nextLat = fred.features[inPlacement].coords[i+1][0] + mouseLat
+                var nextLong = fred.features[inPlacement].coords[i+1][1] + mouseLong
+                
+                var line = L.polyline([[thisLat,thisLong],[nextLat,nextLong]], {color:"red"}).addTo(tempLayer)
+            }
+        }
+    }
+}
+
+function affix(e){
+    clickLat = e.latlng['lat'] 
+    clickLong = e.latlng['lng']
+    if (mode=="map" && fred.features[inPlacement].coords[0][0] == 0){
+        tempLayer.clearLayers();
+        for (var i = 0; i - 0 < fred.features[inPlacement].coords.length; i++){
+            var nextLat = fred.features[inPlacement].coords[i][0] + mouseLat
+            var nextLong = fred.features[inPlacement].coords[i][1] + mouseLong
+            tempArray.push([nextLat,nextLong])
+        }
+        fred.features[inPlacement].coords = tempArray
+        var buttonText = fred.features[inPlacement].caption + fred.features[inPlacement].legal + "<button onclick='remove(" + inPlacement + ")'>remove?<button>"
+        L.polygon(fred.features[inPlacement].coords, {color:"red"}).addTo(grantLayer)
+            .bindPopup(buttonText)
+        directions = []
+        distances = []
+        corners = []
+        convertedDistances = []
+        tempCorners = []
+        tempArray = []
+        inPlacement = -1
+    }
+    console.log(clickLat+","+clickLong)
+}
+
+function parse(j){
+    window.scrollTo(0,0)
+    output = [] 
+    var typedinput = fred.features[inPlacement].legal
+    var splitbycomma = []
+    splitbycomma = typedinput.split(',');
+    var firstCorner = splitbycomma.shift()
+    legals = [[firstCorner]]
+    var lengthTotal = splitbycomma.length
+    var divy
+    for (i = 0; i < lengthTotal; i = i + 1){
+        var reassembly = ''
+        var splitbyspace = splitbycomma[i].split(' ');
+        console.log("splitbyspace = " + splitbyspace)
+        directions.push(splitbyspace[1])
+        distances.push(splitbyspace[2])
+        for (k = 4; k < splitbyspace.length; k = k + 1) {
+            reassembly = reassembly + splitbyspace[k] + ' '
+        }
+        console.log('reassembly = ' + reassembly)
+        corners.push(reassembly)
+    }
+    var divisor
+    if (splitbycomma[1].includes('ch')) {
+        divisor = 1
+        units = "ch"}
+    if (splitbycomma[1].includes('po')) {
+        divisor = 4
+        units = "po"
+    }
+    if (splitbycomma[1].includes('feet')) {
+        divisor = 66
+        units="feet"
+    }
+    for (var i = 0; i < lengthTotal; i = i + 1) {
+        var nextDirection = directions[i]
+        var nextDistance = distances[i]
+        var convertedDistance = nextDistance/divisor
+        convertedDistances.push(convertedDistance)
+        var nextCorner = corners[i]
+        nextDirection = "'"+ nextDirection + "'"
+        legals[0].push(nextDirection)
+        legals[0].push(convertedDistance)
+        nextCorner = "'" + nextCorner + "'"
+        legals[0].push(nextCorner)
+    }
+    console.log(legals)
+
+    output = [[0,0]] //output is going to be the array of ghost coordinates for the tract we are now processing
+    var nextCoord = 1
+    for (i = 0; i < directions.length; i = i + 1){
+        console.log('output is now  ' + output)
+        if (directions[i].length > 1) { //ANGLES
+            console.log('Angles!')
+            var partsArray = directions[i].split('');
+                console.log(partsArray)
+                direction1 = partsArray[0]
+                direction2 = partsArray[partsArray.length - 1]
+                console.log(direction2)
+                var theta = ""
+                for (var j = 1; j < partsArray.length -1; j = j + 1) {
+                    theta = theta.concat(partsArray[j]);
+                    }
+                var hypChains = convertedDistances[i]
+                theta = (90-theta)*3.14159265359/180 //convert to complimentary angle in radians
+                console.log('theta is ' + theta)
+                var oppChains = hypChains * Math.sin(theta)
+                var adjChains = hypChains * Math.cos(theta)
+                if (direction1 == "N") {newLat = output[nextCoord-1][0] + oppChains * NSscaling}
+                if (direction1 == "S") {newLat = output[nextCoord-1][0] - oppChains * NSscaling}
+                if (direction2 == "E") {newLong = output[nextCoord-1][1] + adjChains * EWscaling}
+                if (direction2 == "W") {newLong = output[nextCoord-1][1] - adjChains * EWscaling}
+                if (newLat != NaN && newLong !=NaN) {output.push([newLat, newLong])}
+        }
+        if (directions[i] == "N") {
+            output.push([convertedDistances[i] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+        if (directions[i] == "S" ) {
+            output.push([- convertedDistances[i] * NSscaling + output[nextCoord-1][0], output[nextCoord-1][1]])}
+        if (directions[i] == "E") {
+            output.push([output[nextCoord-1][0], convertedDistances[i] * EWscaling + output[nextCoord-1][1]])}
+        if (directions[i] == "W") {
+            output.push([output[nextCoord-1][0], - convertedDistances[i] * EWscaling + output[nextCoord-1][1]])}
+        var nextCoord = nextCoord + 1
+        console.log('next coord = ' + nextCoord)
+        }
+        fred.features[inPlacement].coords = output
+        mapMode();
+}
+
+function setup(){
+    for (var i = 0; i < fred.features.length; i++){
+        if (fred.features[i].coords.length > 0){
+            if (fred.features[i].coords[0][0] != 0){
+                var buttonText = fred.features[i].caption + fred.features[i].legal + "<button onclick='remove(" + i + ")'>remove?<button>"
+                L.polygon(fred.features[i].coords, {color:"red"}).addTo(grantLayer)
+                .bindPopup(buttonText)
+            }
+            // for (var j = 0; j < fred.features[i].corners; j++){
+            //     consol.log("firing Markers")
+            //     L.marker(fred.features[i].coords[j]).addTo(mymap)
+            //     .bindTooltip(fred.features[i].corners[j])
+            // }
+        }
+    }
+}
+
+function remove(n){
+    var removing = n
+    fred.features[removing].coords = []
+    // var originLat =
+    // var originLong = 
+    // for (var i = 0; i < fred.features[removing].coords.length; i++)
+    grantLayer.clearLayers();
+    setup();
+    mapMode();
+}
+</script>
+</html>
