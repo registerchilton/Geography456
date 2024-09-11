@@ -102,6 +102,7 @@ function showVoters(){
     console.log("firing showVoters")
     for (var i = 0; i < voters.features.length; i++){
         var buttonText = "<b>" + voters.features[i].name + "</b><br>" + voters.features[i].address + "<br>voted on " + voters.features[i].votedDate
+        console.log(buttonText)
         var marker = L.circle(voters.features[i].coords,{color:"purple",radius:10}).addTo(mapLayer).bindTooltip(buttonText)
     }
 }
