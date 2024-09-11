@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrboro Early Voters - May '22</title>
+</head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="./MOADplusVoters.js"></script>
+
+<style>
+    #myfirstmap {height: 600px; width: 1000px}
+    .crosshair {cursor: crosshair;}
+</style>
+
+<body>
+    <!-- <button onclick="showVoters()" id = "button1">showVoters</button> -->
+    <button onclick="exportTable()" id = "button2">show me the JSON</button>
+    <div id="instruction"></div>
+    <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
+    <table id="mytable">
+        <tr>
+        </tr>
+    </table>
+    
+</body>
+
+<script>
+var mymap = L.map('myfirstmap').setView([35.931038712429704,-79.11563873291017], 13);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 22,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+var roadArray = []
+var currentLine
+var mapLayer = L.layerGroup().addTo(mymap);
+var tempLayer = L.layerGroup().addTo(mymap);
+var theTable = document.getElementById('mytable')
+var editMode = 1
+var markerInMotion = -1
+var adjustmode = 0
+var mode = 0
+var firstCorrectedLocation = []
+var markerMode = 0
+// L.imageOverlay(MBTAmap, MBTAmapCoords, {opacity: 1}).addTo(mapLayer);
+var templayer = L.layerGroup().addTo(mymap);
+var upordown = 0
+var image
+var Toggle = 0
+mymap.on('mousemove', onMouseMove);
+mymap.on('click', clicked);
+showVoters();
+
+
+function clicked(e) {
+    var clickLat = e.latlng['lat'] 
+    var clickLong = e.latlng['lng']
+    if (mode == 0){
+        console.log("[" + clickLat + "," + clickLong + "]")
+    }
+    if (mode == 1){
+        voters.features[markerInMotion].coords = [clickLat,clickLong]
+        mode = 0
+        mapLayer.clearLayers();
+        tempLayer.clearLayers();
+        showVoters();
+    }
+}
+
+function moveMarker(a){
+    markerInMotion = a
+    mode = 1
+    mapLayer.clearLayers();
+    for (var i = 0; i < a; i ++ ){
+        var popupText = voters.features[i].address
+        var marker = L.circle(voters.features[i].coords,{color:"purple",radius:10}).addTo(mapLayer).bindTooltip(popupText)
+    }
+    for (var i = a+1; i < voters.features.length; i ++ ){
+        var popupText = voters.features[i].address
+        var marker = L.circle(voters.features[i].coords,{color:"purple",radius:10}).addTo(mapLayer).bindTooltip(popupText)
+    }
+}
+
+function onMouseMove(e){
+    if (mode == 1){
+        templayer.clearLayers();
+        var mouseLat = e.latlng['lat'] 
+        var mouseLong = e.latlng['lng']
+        var marker = L.circle([mouseLat,mouseLong],{color:"purple",radius:10}).addTo(templayer)
+    }
+}
+
+function showVoters(){
+    console.log("firing showVoters")
+    for (var i = 0; i < voters.features.length; i++){
+        var buttonText = "<b>" + voters.features[i].name + "</b><br>" + voters.features[i].address
+        var marker = L.circle(voters.features[i].coords,{color:"purple",radius:10}).addTo(mapLayer).bindTooltip(buttonText)
+    }
+}
+
+function exportTable(){
+        console.log("Firing export table")
+        document.getElementById("button2").style.display = "none";
+        document.getElementById("myfirstmap").style.display = "none";
+        theTable.innerHTML=""
+        var myNewRow = document.createElement('tr');
+        var myNewCell = document.createElement('td');
+        myNewCell.innerText = "var voters = {'features':["
+        myNewRow.append(myNewCell)
+        theTable.append(myNewRow);
+        for (var j = 0; j < voters.features.length; j = j + 1){
+            try{ if (voters.features[j].name.length > 0){
+                myNewRow = document.createElement('tr');
+                myNewCell1 = document.createElement('td');
+                var tableText = '{"name":"' + voters.features[j].name + '"'
+                tableText = tableText + ',"votedDate":"' + voters.features[j].votedDate + '"'
+                tableText = tableText + ',"address":"' + voters.features[j].address + '"'
+                tableText = tableText + ',"VRN":' + voters.features[j].VRN
+                tableText = tableText + ',"regPrecinct":"' + voters.features[j].regPrecinct + '"'
+                tableText = tableText + ',"affiliation":"' + voters.features[j].affiliation + '"'
+                if (voters.features[j].coords.length > 0){
+                    tableText = tableText + ',"coords":[' + voters.features[j].coords[0] + ',' + voters.features[j].coords[1] + "]"
+                }
+                else {
+                    tableText = tableText + ',"coords":[]'
+                }
+                tableText = tableText + '},'
+                myNewCell1.innerText = tableText
+                myNewRow.append(myNewCell1)
+                theTable.append(myNewRow);
+                }
+            }
+            catch{}
+        }
+    myNewRow = document.createElement('tr');
+    myNewCell1 = document.createElement('td');    
+    myNewCell1.innerText = "]}"
+    myNewRow.append(myNewCell1)
+    theTable.append(myNewRow);
+
+    }
+
+
+</script>
+</html>
