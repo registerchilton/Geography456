@@ -23,7 +23,7 @@
 
 <body>
     <!-- <button onclick="showVoters()" id = "button1">showVoters</button> -->
-    <button onclick="exportTable()" id = "button1">show me the JSON</button>
+    <button onclick="exportTable()" id = "button2">show me the JSON</button>
     <!-- <button onclick="modeZero()" id = "button4">modeZero</button>
     <button onclick="modeOne()" id = "button2">modeOne</button>
     <button onclick="modeTwo()" id = "button3">show popups w/buttons</button> -->
@@ -128,12 +128,11 @@ function exportTable(){
         myNewRow.append(myNewCell)
         theTable.append(myNewRow);
         for (var j = 0; j < voters.features.length; j = j + 1){
-            try{ if (voters.features[j].name.length > 0){
                 myNewRow = document.createElement('tr');
                 myNewCell1 = document.createElement('td');
-                var tableText = '{"name":"' + voters.features[j].name + '"'
+                var tableText = '{"gender":"' + voters.features[j].gender + '"'
+                tableText = tableText + ',"race":"' + voters.features[j].race + '"'
                 tableText = tableText + ',"votedDate":"' + voters.features[j].votedDate + '"'
-                tableText = tableText + ',"address":"' + voters.features[j].address + '"'
                 tableText = tableText + ',"VRN":' + voters.features[j].VRN
                 tableText = tableText + ',"regPrecinct":"' + voters.features[j].regPrecinct + '"'
                 tableText = tableText + ',"affiliation":"' + voters.features[j].affiliation + '"'
@@ -147,10 +146,7 @@ function exportTable(){
                 myNewCell1.innerText = tableText
                 myNewRow.append(myNewCell1)
                 theTable.append(myNewRow);
-                }
             }
-            catch{}
-        }
     myNewRow = document.createElement('tr');
     myNewCell1 = document.createElement('td');    
     myNewCell1.innerText = "]}"
