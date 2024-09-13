@@ -23,7 +23,10 @@
 
 <body>
     <!-- <button onclick="showVoters()" id = "button1">showVoters</button> -->
-    <button onclick="exportTable()" id = "button2">show me the JSON</button>
+    <button onclick="exportTable()" id = "button1">show me the JSON</button>
+    <!-- <button onclick="modeZero()" id = "button4">modeZero</button>
+    <button onclick="modeOne()" id = "button2">modeOne</button>
+    <button onclick="modeTwo()" id = "button3">show popups w/buttons</button> -->
     <div id="instruction"></div>
     <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
     <table id="mytable">
@@ -66,7 +69,7 @@ function clicked(e) {
     if (mode == 0){
         console.log("[" + clickLat + "," + clickLong + "]")
     }
-    if (mode == 1){
+    if (mode == 1 || mode == 2){
         voters.features[markerInMotion].coords = [clickLat,clickLong]
         mode = 0
         mapLayer.clearLayers();
@@ -100,10 +103,17 @@ function onMouseMove(e){
 
 function showVoters(){
     console.log("firing showVoters")
+    tempLayer.clearLayers();
+    mapLayer.clearLayers();
     for (var i = 0; i < voters.features.length; i++){
-        var buttonText = "<b>" + voters.features[i].name + "</b><br>" + voters.features[i].address + "<br>voted on " + voters.features[i].votedDate
-        console.log(buttonText)
-        var marker = L.circle(voters.features[i].coords,{color:"purple",radius:10}).addTo(mapLayer).bindTooltip(buttonText)
+        var buttonText = voters.features[i].AgeAtYearEnd +" year old " + voters.features[i].race + " " + voters.features[i].gender + " voted on " + voters.features[i].votedDate
+        if (mode == 2){
+            console.log("path one")
+            var marker = L.circle(voters.features[i].coords,{color:"purple",radius:10}).addTo(mapLayer).bindPopup(buttonText)
+        }
+        else{
+            var marker = L.circle(voters.features[i].coords,{color:"purple",radius:10}).addTo(mapLayer).bindTooltip(buttonText)
+        }
     }
 }
 
@@ -149,6 +159,20 @@ function exportTable(){
 
     }
 
+function modeZero(){
+    mode = 0
+    showVoters();
+}
+
+function modeOne(){
+    mode = 1
+    showVoters();
+}
+
+function modeTwo(){
+    mode = 2
+    showVoters();
+}
 
 </script>
 </html>
