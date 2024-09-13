@@ -15,6 +15,8 @@
      crossorigin=""></script>
 
 <script src="./MOADplusVoters.js"></script>
+<script src="./OCcensusAreas.js"></script>
+<script src="./codedToCBG.js"></script>
 
 <style>
     #myfirstmap {height: 600px; width: 1000px}
@@ -24,6 +26,7 @@
 <body>
     <!-- <button onclick="showVoters()" id = "button1">showVoters</button> -->
     <button onclick="exportTable()" id = "button2">show me the JSON</button>
+    <!-- <button onclick="showCSV()" id = "button2">showCSV</button> -->
     <!-- <button onclick="modeZero()" id = "button4">modeZero</button>
     <button onclick="modeOne()" id = "button2">modeOne</button>
     <button onclick="modeTwo()" id = "button3">show popups w/buttons</button> -->
@@ -37,7 +40,7 @@
 </body>
 
 <script>
-var mymap = L.map('myfirstmap').setView([35.931038712429704,-79.11563873291017], 13);
+var mymap = L.map('myfirstmap').setView([35.931038712429704,-79.11563873291017], 12);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 22,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -54,12 +57,12 @@ var mode = 0
 var firstCorrectedLocation = []
 var markerMode = 0
 // L.imageOverlay(MBTAmap, MBTAmapCoords, {opacity: 1}).addTo(mapLayer);
-var templayer = L.layerGroup().addTo(mymap);
 var upordown = 0
 var image
 var Toggle = 0
 mymap.on('mousemove', onMouseMove);
 mymap.on('click', clicked);
+census();
 showVoters();
 
 
@@ -94,10 +97,10 @@ function moveMarker(a){
 
 function onMouseMove(e){
     if (mode == 1){
-        templayer.clearLayers();
+        tempLayer.clearLayers();
         var mouseLat = e.latlng['lat'] 
         var mouseLong = e.latlng['lng']
-        var marker = L.circle([mouseLat,mouseLong],{color:"purple",radius:10}).addTo(templayer)
+        var marker = L.circle([mouseLat,mouseLong],{color:"purple",radius:10}).addTo(tempLayer)
     }
 }
 
@@ -106,7 +109,7 @@ function showVoters(){
     tempLayer.clearLayers();
     mapLayer.clearLayers();
     for (var i = 0; i < voters.features.length; i++){
-        var buttonText = voters.features[i].AgeAtYearEnd +" year old " + voters.features[i].race + " " + voters.features[i].gender + " voted on " + voters.features[i].votedDate
+        var buttonText = voters.features[i].AgeAtYearEnd +" year old " + voters.features[i].race + " " + voters.features[i].gender + " in block " + voters.features[i].censusBlock + " voted on " + voters.features[i].votedDate
         if (mode == 2){
             console.log("path one")
             var marker = L.circle(voters.features[i].coords,{color:"purple",radius:10}).addTo(mapLayer).bindPopup(buttonText)
@@ -132,6 +135,7 @@ function exportTable(){
                 myNewCell1 = document.createElement('td');
                 var tableText = '{"gender":"' + voters.features[j].gender + '"'
                 tableText = tableText + ',"race":"' + voters.features[j].race + '"'
+                tableText = tableText + ',"AgeAtYearEnd":' + voters.features[j].AgeAtYearEnd
                 tableText = tableText + ',"votedDate":"' + voters.features[j].votedDate + '"'
                 tableText = tableText + ',"VRN":' + voters.features[j].VRN
                 tableText = tableText + ',"regPrecinct":"' + voters.features[j].regPrecinct + '"'
@@ -142,6 +146,7 @@ function exportTable(){
                 else {
                     tableText = tableText + ',"coords":[]'
                 }
+                tableText = tableText + ',"censusBlock":' + voters.features[j].censusBlock
                 tableText = tableText + '},'
                 myNewCell1.innerText = tableText
                 myNewRow.append(myNewCell1)
@@ -168,6 +173,30 @@ function modeOne(){
 function modeTwo(){
     mode = 2
     showVoters();
+}
+
+function census(){
+    console.log("firing census tracts")
+    for (var i =0; i < OCcensus.features.length; i++){
+        for (var j = 0; j < OCcensus.features[i].geometry.rings[0].length; j ++){
+            var temp = OCcensus.features[i].geometry.rings[0][j][0]
+            OCcensus.features[i].geometry.rings[0][j][0] = OCcensus.features[i].geometry.rings[0][j][1]
+            OCcensus.features[i].geometry.rings[0][j][1] = temp
+        }        
+        var CBG = L.polygon(OCcensus.features[i].geometry.rings[0],{color:"yellow",fillOpacity:0}).addTo(mymap)
+        .bindPopup(OCcensus.features[i].attributes.BLOCKID10)
+    }
+}
+
+function getCBG(){
+    for (var i = 0; i < withCBGs.features.length; i++){
+        for (var j = 0; j < voters.features.length; j++){
+            if (voters.features[j].VRN == withCBGs.features[i].attributes.VRN){
+                console.log("found one!")
+                voters.features[j].censusBlock = withCBGs.features[i].attributes.BLOCKID10
+            }
+        }
+    }
 }
 
 </script>
