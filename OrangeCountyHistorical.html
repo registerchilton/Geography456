@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OC Land Grant Map</title>
+</head>
+
+<script src="./ModernOrange2.js"></script>
+<script src="./exportable2.js"></script>
+<script src="./parser2.js"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap {height: 600px; width: 1000px}
+    .div-img{justify-content: center; align-items: center; display:flex; padding-top:0%;}
+    img:hover{transform:scale(1.0);}
+    .crosshair {cursor: crosshair;}
+    .slider-container {margin-right: 20px; display: flex; align-items: left; flex-direction: column;}
+    .slider {width: 545px;}
+    .tick-container {display: flex; justify-content: space-between; width: 550px; margin-top: 5px;}
+    .tick {font-size: 12px; color: #888;}
+
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+</head>
+
+<body>
+        <div id="sliderStuff" class="slider-container">
+            <div id="instruction">Filter by time</div>
+            <input type="range" min="1725" max="1850" value="1850" class="slider" id="yearSlider" oninput='timeSlider()'>
+            <div class="tick-container">
+                <span class="tick">1725</span>
+                <span class="tick">1750</span>
+                <span class="tick">1775</span>
+                <span class="tick">1800</span>
+                <span class="tick">1825</span>
+                <span class="tick">1850</span>
+            </div>
+        </div>
+    <button onclick="Export()" id = "button2">Export view</button>
+    <button onclick="clearSearchLayer()" id = "button1">clear highlights</button>
+    <input type="text" placeholder = "keyword search" id="searchInput2" style="width: 100px" onchange="search(2)">
+    <div id="selected"></div>
+    <div class="crosshair", id="myfirstmap"></div>
+    <table id="mytable">
+        <tr>
+            <th></th>
+        </tr>
+    </table>
+    <div class="div-img"><img src="" id ="currentImage" width=1000px></div>
+</body>
+
+<script>
+    // var mostRecent = [36.039445, -79.119208]
+    var mymap = L.map('myfirstmap').setView(recentPlacement, 11);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mymap);
+    var searchLayer = L.layerGroup().addTo(mymap);
+    var grantLayer = L.layerGroup().addTo(mymap);
+    var deedLayer = L.layerGroup().addTo(mymap);
+    var tempLayer = L.layerGroup().addTo(mymap);
+    mymap.on('mousemove', onMouseMove);
+    mymap.on('click', affix);
+    mymap.on('zoom', timeSlider);
+    mymap.on('drag', timeSlider);
+
+    var ODBSearchResult = []
+    var theTable = document.getElementById('mytable')
+    var searchResult = []
+    var ODBSearchResult = []
+    var mode = "map"
+    var selection = -1
+    // var recentPlacement = [36.03903600798149,-79.20069694519043]
+    var mouseLat
+    var mouseLong
+    var clickLat
+    var clickLong
+    var directions = []
+    var distances = []
+    var corners = []
+    var convertedDistances = []
+    var tempCorners = []
+    var tempArray = []
+    var NSscaling = 0.000180923
+    var EWscaling = 0.000223644
+    var inPlacement = - 1
+    var inEditting = -1
+    var movingCorner = -1
+    var target = -1
+    var functionName = "nearbySearch"
+    var functionCaption = "show related items"
+    var searchResultScore = []
+    var SCORE = []
+    var problem = "no"
+    var historyToggle = 1
+    var historyInsertionChoice = -1
+    var historyEditChoice = -1
+    var andNext = 0
+    var centerOfView = mymap.getCenter();
+    var geographicScope = [[0,0],[0,0]]
+    var currentZoom = mymap.getZoom();
+    timeSlider();
+
+function search(j){
+    var year = document.getElementById("yearSlider").value
+    document.getElementById("instruction").innerText = year
+    searchResult = []
+    if (j==1){
+        var searchTerm = document.getElementById('searchInput1').value
+        console.log("firing search function for " + searchTerm)
+        for (var i = 0; i < ODB.features.length; i++){
+            for (var j = 0; j < ODB.features[i].history.length; j++)
+                var thisSearch = ODB.features[i].history[j][0]
+                if (thisSearch.includes(searchTerm)){
+                    searchResult.push(i)
+                }
+            }
+        console.log(searchResult)
+        searchResultTable()
+    }
+    else{
+        var searchTerm = document.getElementById('searchInput2').value
+        console.log("firing search function for " + searchTerm)
+        for (var i = 0; i < ODB.features.length; i++){
+            var titleHistory = JSON.stringify(ODB.features[i].history);
+            var thisSearch = ODB.features[i].caption + ODB.features[i].brief + ODB.features[i].legal + titleHistory 
+            if (thisSearch.includes(searchTerm)){
+                searchResult.push(i)
+            }
+        }
+        console.log(searchResult)
+        if (searchResult.length > 0){
+            searchResultTable()
+        }
+        else{
+            var year = document.getElementById("yearSlider").value
+            document.getElementById("instruction").innerText = "" + year + " NO SEARCH RESULT"
+        }
+    }
+}
+
+function searchResultTable(){
+    console.log("firing Search Result Table Function")
+
+    //Let's start by figuring out the geographic scope of our search result
+    var maxLat = -90
+    var minLat = 90
+    var maxLong = -90
+    var minLong = 90
+    for (var i = 0; i < searchResult.length; i++){
+        if (ODB.features[searchResult[i]].coords.length != 0){
+            if (ODB.features[searchResult[i]].coords[0][0] != 0){
+                for (var j = 0; j < ODB.features[searchResult[i]].coords.length; j++){
+                    if (ODB.features[searchResult[i]].coords[j][0] > maxLat){maxLat = ODB.features[searchResult[i]].coords[j][0]}
+                    if (ODB.features[searchResult[i]].coords[j][0] < minLat){minLat = ODB.features[searchResult[i]].coords[j][0]}
+                    if (ODB.features[searchResult[i]].coords[j][1] > maxLong){maxLong = ODB.features[searchResult[i]].coords[j][1]}
+                    if (ODB.features[searchResult[i]].coords[j][1] < minLong){minLong = ODB.features[searchResult[i]].coords[j][1]}
+                }
+            }
+        }
+    }
+    geographicScope = [[maxLat,maxLong],[minLat,minLong]]
+    geoScopeTheMap();
+
+    searchLayer.clearLayers();
+
+    theTable.innerHTML=""
+    for (var j = 0; j < searchResult.length; j++){
+        //First lets only show searchResults that have not been deleted
+        if (ODB.features[searchResult[j]].type != "delete"){
+            if (ODB.features[searchResult[j]].coords.length == 0 && ODB.features[searchResult[j]].caption != ""){
+                //Here's how to handle items in the table without coordinates
+                var myNewRow = document.createElement('tr');
+                var myNewCell1 = document.createElement('td');
+                myNewCell1.innerHTML = '<button onclick="placeSurvey(' + searchResult[j] + ')" id = "button">select</button>'
+                myNewRow.append(myNewCell1)
+                var myNewCell3 = document.createElement('td');
+                myNewCell3.innerText = ODB.features[searchResult[j]].history
+                myNewRow.append(myNewCell3)
+                var myNewCell4 = document.createElement('td');
+                myNewCell4.innerText = ODB.features[searchResult[j]].date
+                myNewRow.append(myNewCell4)
+                var myNewCell5 = document.createElement('td');
+                myNewCell5.innerText = ODB.features[searchResult[j]].brief
+                myNewRow.append(myNewCell5)
+                if (searchResultScore.length == searchResult.length){
+                    var myNewCell6 = document.createElement('td');
+                    myNewCell6.innerText = "score " + searchResultScore[j]
+                    myNewRow.append(myNewCell6)
+                }
+                var myNewCell7 = document.createElement('td');
+                myNewCell7.innerText = "item " + searchResult[j]
+                myNewRow.append(myNewCell7)
+                theTable.append(myNewRow);
+            }
+            else{ //Display items in the table that have coordinates
+                var myNewRow = document.createElement('tr');
+                var myNewCell1 = document.createElement('td');
+                myNewCell1.innerHTML = '<button onclick="placeSurvey(' + searchResult[j] + ')" id = "button">select</button>'
+                myNewRow.append(myNewCell1)
+                var myNewCell3 = document.createElement('td');
+                myNewCell3.innerHTML = "<b>" + ODB.features[searchResult[j]].history + "</b>"
+                myNewRow.append(myNewCell3)
+                var myNewCell4 = document.createElement('td');
+                myNewCell4.innerHTML = "<b>" + ODB.features[searchResult[j]].date + "</b>"
+                myNewRow.append(myNewCell4)
+                var myNewCell5 = document.createElement('td');
+                myNewCell5.innerHTML = "<b>" + ODB.features[searchResult[j]].brief + "</b>"
+                myNewRow.append(myNewCell5)
+                var myNewCell6 = document.createElement('td');
+                if (ODB.features[searchResult[j]].coords.length > 0){
+                    if (ODB.features[searchResult[j]].coords[0][0] < 30){
+                        myNewCell6.innerHTML = 'floating'
+                }
+                else{
+                    myNewCell6.innerHTML = '<button onclick="zoomToThis(' + searchResult[j] + ')" id = "button">zoom</button>'
+                }
+            }
+                myNewRow.append(myNewCell6)
+                theTable.append(myNewRow);
+            }
+        }
+    }
+
+    //Now highlight the searchResult ploygons that have coordinates
+
+    for (var i = 0; i < searchResult.length; i ++){
+        if (ODB.features[searchResult[i]].coords.length > 0){
+            var popupText = ""
+            for (var j = 0; j < ODB.features[searchResult[i]].history.length - 1; j ++){
+                popupText = popupText + "<b>" + ODB.features[searchResult[i]].history[j][0] + " "  + ODB.features[searchResult[i]].history[j][1] + "</b><br>"
+            }
+            buttonText = ""
+            buttonText = buttonText + searchResult[i] + " <button onclick='" + functionName + "(" + searchResult[i] + ")'>"+ functionCaption + "</button>"
+            popupText = popupText + ODB.features[searchResult[i]].brief + "<br>" + ODB.features[searchResult[i]].legal
+            popupText = popupText + buttonText
+            L.polygon(ODB.features[searchResult[i]].coords, {color:'orange',fillColor:'orange',fillOpacity:1}).addTo(searchLayer)
+            .bindPopup(popupText)
+            // mymap.flyTo(ODB.features[searchResult[i]].coords[0], 12);
+        }
+    }
+}
+
+function mapMode(){ //In map mode, we are working on editing the map or a parcel on the map
+    mode = "map" 
+    document.getElementById("button2").style.visibility = "visible";
+    document.getElementById("ofile").style.display ="inline";
+    document.getElementById("description").style.display = "block";
+    document.getElementById("currentImage").src = "" // if we were looking at a scanned survey, then hide that
+    document.getElementById("myfirstmap").style.display = "block";
+    searchResult = []
+    grantLayer.clearLayers(); //clear the old map
+    deedLayer.clearLayers();
+    setup();
+}
+
+function onMouseMove(e){ //fired whenever we move the mouse over the map
+    mouseLat = e.latlng['lat'] 
+    mouseLong = e.latlng['lng']
+    if (mode=="map" && inPlacement > -1 && ODB.features[inPlacement].legal.length > 3){ //if placing a parcel, then show it as though it starts at current mouse location
+        tempLayer.clearLayers(); //erase previous temporary location
+        if (ODB.features[inPlacement].coords[0][0] == 0){
+            for (var i = 0; i < ODB.features[inPlacement].coords.length - 1; i++){
+                var thisLat = ODB.features[inPlacement].coords[i][0] + mouseLat
+                var thisLong = ODB.features[inPlacement].coords[i][1] + mouseLong
+                var nextLat = ODB.features[inPlacement].coords[i+1][0] + mouseLat
+                var nextLong = ODB.features[inPlacement].coords[i+1][1] + mouseLong
+                var line = L.polyline([[thisLat,thisLong],[nextLat,nextLong]], {color:"red"}).addTo(tempLayer)
+            } //note that we show this as a series of lines, not a polygon, so if description doesn't close then we won't
+            //see the last side, but when placed the last side of the polygon will be filled in automatically
+        }
+    }
+    if (mode == "parcel" && movingCorner > -1){ // if we are moving a corner, show the latest candidate location
+        tempLayer.clearLayers();
+        ODB.features[inEditting].coords[movingCorner] = [mouseLat,mouseLong]
+        L.polygon(ODB.features[inEditting].coords).addTo(tempLayer)
+    }
+}
+
+function affix(e){ //fired when you click on the map
+    clickLat = e.latlng['lat'] 
+    clickLong = e.latlng['lng']
+    recentPlacement = [clickLat,clickLong]
+    centerOfView = mymap.getCenter()
+    currentZoom = mymap.getZoom()
+    //regardless of what we are doing, show the latest click coords in the console
+    console.log("["+clickLat+","+clickLong+"]")
+}
+
+function Export(){ 
+    document.getElementById("sliderStuff").style.display = "none";
+    document.getElementById("button1").style.display = "none";
+    document.getElementById("button2").style.display = "none";
+    document.getElementById("myfirstmap").style.display = "none";
+    document.getElementById("searchInput2").style.display = "none";
+    document.getElementById("selected").style.display = "none";
+    exportTable()
+}
+
+function zoomToThis(x){
+    var avgLat = 0
+    var avgLong = 0
+    for (var i = 0; i < ODB.features[x].coords.length; i++){
+        avgLat = avgLat + ODB.features[x].coords[i][0]
+        avgLong = avgLong + ODB.features[x].coords[i][1]
+    }
+    avgLat = avgLat / (ODB.features[x].coords.length)
+    avgLong = avgLong / (ODB.features[x].coords.length)
+    recentPlacement = [avgLat,avgLong]
+    window.scrollTo(0,0)
+    mymap.flyTo([avgLat,avgLong], 14)
+    
+    for (var i = 0; i < ODB.features[x].coords.length; i++){
+        L.circle(ODB.features[x].coords[i], {color:'red',radius:30}).addTo(searchLayer)
+    }
+    buttonText = buttonText + "<br>"+ "<button onclick='" + functionName + "(" + i + ")'>" + functionCaption + "</button>"
+    L.polygon(ODB.features[x].coords, {color:'red',fillColor:'red'}).addTo(searchLayer)
+        .bindPopup(buttonText);
+}
+
+function clearSearchLayer(){
+    searchLayer.clearLayers();
+}
+
+function timeSlider(){
+    centerOfView = mymap.getCenter()
+    currentZoom = mymap.getZoom()
+    var viewableDistance = 73728000/(2**currentZoom)
+    var yearShown = document.getElementById("yearSlider").value
+    searchResult = []
+    for (var i = 0; i < ODB.features.length; i++){
+        if (mymap.distance(centerOfView,ODB.features[i].centroid) < viewableDistance){
+            searchResult.push(i)
+        }
+    }
+    document.getElementById("instruction").innerText = yearShown
+    grantLayer.clearLayers();
+    for (var i = 0; i < searchResult.length; i++){
+        var endHistory = ODB.features[searchResult[i]].history.length - 1
+        if (ODB.features[searchResult[i]].coords.length > 1 && ODB.features[searchResult[i]].history[0][2] <= yearShown){
+            var historyPosition = 0
+            var tooltipText = ""
+            for (var j = 0; j < ODB.features[searchResult[i]].history.length - 1; j++){
+                if (ODB.features[searchResult[i]].history[j][2] < yearShown){historyPosition = j}
+                tooltipText = tooltipText + ODB.features[searchResult[i]].history[j][0] + " " + ODB.features[searchResult[i]].history[j][1] +" "
+                if (j == 0){
+                    tooltipText = tooltipText + "<a href='" + ODB.features[searchResult[i]].link + "'>link</a><br>"
+                }
+                if (ODB.features[searchResult[i]].history[j][0].includes("ODB") && j != 0){
+                    var hyperlink = linkify(ODB.features[searchResult[i]].history[j][0])
+                    tooltipText = tooltipText + " " + hyperlink + " <br>"
+                }
+            }
+            tooltipText = tooltipText + "<br>" + ODB.features[searchResult[i]].brief
+            L.polygon(ODB.features[searchResult[i]].coords,{color:"blue",weight:1,fillColor:"blue",fillOpacity:0}).addTo(grantLayer)
+            .bindPopup(tooltipText, {autoClose: false});
+
+            if(currentZoom > 13){
+                var nameLabel = ODB.features[searchResult[i]].history[historyPosition][0]
+                if (nameLabel =="end"){
+                    var nameLabel = ODB.features[searchResult[i]].history[historyPosition - 1][0]
+                }
+                nameLabel = nameLabel.split(" to ")
+                var ownerAtTime = nameLabel[1]
+
+                // if grantee is trustee, then let's put together grantor name and show that
+                if (ownerAtTime.includes("trustee")){
+                    ownerAtTime = nameLabel[0]
+                    ownerAtTimeArray = ownerAtTime.split(" ")
+                    ownerAtTime = ""
+                    for (var k = 2; k < ownerAtTimeArray.length; k++){
+                        ownerAtTime = ownerAtTime + ownerAtTimeArray[k] + " "
+                    }
+                }
+                L.circle(ODB.features[searchResult[i]].centroid,{color:"blue",radius:1}).addTo(grantLayer)
+                .bindTooltip(ownerAtTime + " " + ODB.features[searchResult[i]].history[historyPosition][1], {autoClose: false}).openTooltip();
+            }
+        }
+    }
+}
+
+function linkify(x){
+    var bookPage = x.split(" ")
+    var bookPage = bookPage[1]
+    bookPage = bookPage.split("/")
+    var link = "<a href='https://rod.orangecountync.gov/orangencnw/application.asp?cmd=image_link&image_link_book=" + bookPage[0] + "&image_link_page=" + bookPage[1] + "&image_link_booktype=Records%20Book&tif2pdf=true'>link</a>"
+    return link
+}
+
+function geoScopeTheMap(){
+    console.log(diagonal)
+    var diagonal = mymap.distance(geographicScope[0],geographicScope[1])
+    console.log("NE corner is " + geographicScope[0] + " & SW corner is " + geographicScope[1])
+    var avgLat = (geographicScope[0][0] + geographicScope[1][0])/2
+    var avgLong = (geographicScope[0][1] + geographicScope[1][1])/2
+    console.log(avgLat,avgLong)
+    newCenter = [avgLat,avgLong]
+    console.log("newCenter = " + newCenter)
+    zoomLevel = Math.floor(Math.log2(73728000/diagonal))
+    if (zoomLevel < 11){zoomLevel = 11}
+    console.log(zoomLevel)
+    mymap.flyTo(newCenter, zoomLevel);
+}
+
+</script>
+</html>
