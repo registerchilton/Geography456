@@ -59,6 +59,7 @@ function cleanTheText(){
     concordancer()
 }
 function resort(){
+    console.log("firing re-sort function");
     concordance.features.sort((a, b) => (a.counter > b.counter ? 1 : -1));
     output();
 }
@@ -96,6 +97,7 @@ function concordancer(){
     output();
 }
     function output(){
+    theTable.innerHTML=""
     //now lay concordance out in a table
     for (var i = 0; i < concordance.features.length; i++){
         var myNewRow = document.createElement('tr');
