@@ -60,7 +60,7 @@ function cleanTheText(){
 }
 function resort(){
     console.log("firing re-sort function");
-    concordance.features.sort((a, b) => (a.counter > b.counter ? 1 : -1));
+    concordance.features.sort((a, b) => (a.counter < b.counter ? 1 : -1));
     output();
 }
 function concordancer(){
