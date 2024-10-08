@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OC Land Grant Map</title>
+    <title>GPS position test</title>
 </head>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
 
+<script src="./myCensusBlock.js"></script>
+
 <style>
-    #myfirstmap {height: 600px; width: 400px}
+    #myfirstmap {height: 600px; width: 1000px}
     .div-img{justify-content: center; align-items: center; display:flex; padding-top:0%;}
     img:hover{transform:scale(1.0);}
     .crosshair {cursor: crosshair;}
@@ -28,7 +30,7 @@
 </head>
 
 <body>
-    <button onclick="getLocation()">Try It</button>
+    <button id="detectButton" onclick="getLocation()">Try It</button>
     <div id="demo"></div>
     <div class="crosshair", id="myfirstmap"></div>
     <table id="mytable">
@@ -47,7 +49,8 @@
         }).addTo(mymap);
     var currentLat
     var currentLong
-
+    const button = document.getElementById('detectButton');
+//    button.addEventListener('pointerup', function(event) {detect()});
     const x = document.getElementById("demo");
     
     function getLocation() {
@@ -60,13 +63,28 @@
     }
     
     function showPosition(position) {
-      x.innerHTML = "Latitude: " + position.coords.latitude +
-      "<br>Longitude: " + position.coords.longitude;
-      console.log(position);
+    console.log(position);
     currentLat = position.coords.latitude
     currentLong = position.coords.longitude
     mymap.flyTo([currentLat,currentLong]);
     L.marker([currentLat,currentLong]).addTo(mymap);
+    var nearest = 1000000
+    var nearestNumber = -1
+    for (var i = 0; i < CensusBlock.features.length; i++){
+        distance = mymap.distance(CensusBlock.features[i].coords,[currentLat,currentLong])
+        if (distance < nearest) {
+            nearest = distance
+            nearestNumber = i
+        }
     }
+    console.log("nearest is " + nearestNumber)
+    if (nearestNumber < 0) {x.innerHTML = "no plates logged"}
+    else{x.innerHTML = "near plates: " + CensusBlock.features[nearestNumber].plates}
+    }
+
+    // function detect(){
+    //     navigator.bluetooth.requestDevice({acceptAllDevices: true})
+    //     .then(device => {console.log(device.id)})
+    // }
 </script>
 </html>
