@@ -59,7 +59,7 @@ function cleanTheText(){
     concordancer()
 }
 function resort(){
-    concordance.features.sort((a, b) => (a.counter > b.counter ? 1 : -1));
+    concordance.features.sort((a, b) => (a.counter < b.counter ? 1 : -1));
     concordancer();
 }
 function concordancer(){
