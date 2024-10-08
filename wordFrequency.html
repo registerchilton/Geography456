@@ -60,7 +60,7 @@ function cleanTheText(){
 }
 function resort(){
     concordance.features.sort((a, b) => (a.counter < b.counter ? 1 : -1));
-    concordancer();
+    output();
 }
 function concordancer(){
     theTable.innerHTML=""
@@ -93,7 +93,9 @@ function concordancer(){
 
     //now sort the concordance by word 
     concordance.features.sort((a, b) => (a.word > b.word ? 1 : -1));
-
+    output();
+}
+    function output(){
     //now lay concordance out in a table
     for (var i = 0; i < concordance.features.length; i++){
         var myNewRow = document.createElement('tr');
