@@ -10,6 +10,7 @@
 </style>
 
 <body>
+    <button onclick="resort()" id = "button1"> switch sort order</button>
     <div id=instruction1>Paste your text into the box below, then press the tab button:</div>
     <textarea autofocus type="text" placeholder = "Paste text here" id="description" rows="12" cols="100" onchange="cleanTheText()"></textarea>
     <table id="mytable">
@@ -20,6 +21,7 @@
 </body>
 
 <script>
+document.getElementById("button1").style.display = "none";
 var theText
 var words = []
 var concordance = {"features":[]}
@@ -56,8 +58,12 @@ function cleanTheText(){
     console.log(theText)
     concordancer()
 }
-
+function resort(){
+    concordance.features.sort((a, b) => (a.counter > b.counter ? 1 : -1));
+    concordancer();
+}
 function concordancer(){
+    theTable.innerHTML=""
     document.getElementById("description").style.display = "none";
     //First make a wordlist - an array of words in theText
     words = theText.split(" ");
