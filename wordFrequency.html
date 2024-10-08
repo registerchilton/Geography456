@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concordancer!</title>
+</head>
+
+<style>
+</style>
+
+<body>
+    <div id=instruction1>Paste your text into the box below, then press the tab button:</div>
+    <textarea autofocus type="text" placeholder = "Paste text here" id="description" rows="12" cols="100" onchange="cleanTheText()"></textarea>
+    <table id="mytable">
+        <tr>
+            <th></th>
+        </tr>
+    </table>
+</body>
+
+<script>
+var theText
+var words = []
+var concordance = {"features":[]}
+var theTable = document.getElementById('mytable')
+var wordlist
+
+function cleanTheText(){
+    theText = document.getElementById('description').value
+    theText = theText.replaceAll(".","")
+    theText = theText.replaceAll(",","")
+    theText = theText.replaceAll(";","")
+    theText = theText.replaceAll(":","")
+    theText = theText.replaceAll("?","")
+    theText = theText.replaceAll("!","")
+    theText = theText.replaceAll("'","")
+    theText = theText.replaceAll("(","")
+    theText = theText.replaceAll(")","")
+    theText = theText.replaceAll("  "," ")
+    theText = theText.replaceAll("”","")
+    theText = theText.replaceAll("’s","")
+    theText = theText.replaceAll("’","")
+    theText = theText.replaceAll("…","")
+    theText = theText.replaceAll("‘","")
+    theText = theText.replaceAll("“","")
+    theText = theText.replaceAll("-"," ")
+    theText = theText.replaceAll("[","")
+    theText = theText.replaceAll("]","")
+    theText = theText.replaceAll("–"," ")
+    theText = theText.replaceAll('"','')
+    theText = theText.toUpperCase();
+    //Is there a way to make all characters caps?
+    console.log(theText)
+    concordancer()
+}
+
+function concordancer(){
+    //First make a wordlist - an array of words in theText
+    words = theText.split(" ");
+    var reassembly = ""
+    wordlist = []
+    for (var i = 0; i < words.length; i++){
+        try{reassembly = reassembly + " " + words[i-1]}
+        catch{}
+        console.log(reassembly)
+        if (reassembly.includes(words[i])){}
+        else{wordlist.push(words[i])}
+    }
+
+    //Now for each word in the wordlist, run through all the words to count how many times it comes up
+    for (var i = 0; i < wordlist.length; i++){
+        var counter = 0
+        var testWord = wordlist[i]
+        for (var j = 0; j < words.length; j++){
+            if (words[j] == testWord){
+                counter = counter + 1
+            }
+        }
+        var newObject = {"word":testWord,"counter":counter}
+        concordance.features.push(newObject);
+    }
+
+    //now sort the concordance by word 
+    concordance.features.sort((a, b) => (a.word > b.word ? 1 : -1));
+
+    //now lay concordance out in a table
+    for (var i = 0; i < concordance.features.length; i++){
+        var myNewRow = document.createElement('tr');
+        var myNewCell = document.createElement('td');
+        myNewCell.innerText = concordance.features[i].word
+        myNewRow.append(myNewCell)
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerText = concordance.features[i].counter
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+    }
+}
+
+</script>
+</html>
