@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluetooth Map</title>
+</head>
+
+<script src="./UUIDjson.js"></script>
+<script src="./myCensusBlock.js"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap {height: 600px; width: 400px}
+    .div-img{justify-content: center; align-items: center; display:flex; padding-top:0%;}
+    img:hover{transform:scale(1.0);}
+    .crosshair {cursor: crosshair;}
+    .slider-container {margin-right: 20px; display: flex; align-items: left; flex-direction: column;}
+    .slider {width: 545px;}
+    .tick-container {display: flex; justify-content: space-between; width: 550px; margin-top: 5px;}
+    .tick {font-size: 12px; color: #888;}
+
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+</head>
+
+<body>
+    <div id="sliderStuff" class="slider-container">
+        <div id="instruction">slide thru the data</div>
+        <input type="range" min="0" max="994" value="0" class="slider" id="deviceSlider" oninput='showSpecificUUID(-1)'>
+        <div class="tick-container">
+        </div>
+    </div>
+
+    <button onclick="exportTable()" id = "button1">Export view</button>
+    <button onclick="UUIDexportTable()" id = "button2">UUIDexportTable</button>
+    <button onclick="getLocation()" id = "button2">getLocation</button>
+    <div class="crosshair", id="myfirstmap"></div>
+    <table id="mytable">
+        <tr>
+            <th></th>
+        </tr>
+    </table>
+</body>
+
+<script>
+    var recentPlacement = [35.91994413118311,-79.08402085304262]
+    var mymap = L.map('myfirstmap').setView(recentPlacement, 17);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mymap);
+    var grantLayer = L.layerGroup().addTo(mymap);
+    var deedLayer = L.layerGroup().addTo(mymap);
+    var searchLayer = L.layerGroup().addTo(mymap);
+    var tempLayer = L.layerGroup().addTo(mymap);
+    var UUIDarray = []
+    var theTable = document.getElementById('mytable')
+
+
+    function getLocation() {
+        if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+        document.getElementById('instruction').innerHTML = "Geolocation is not supported by this browser.";
+        }
+        setTimeout(getLocation, 5000);
+    }
+    
+    function showPosition(position) {
+        console.log(position);
+        currentLat = position.coords.latitude
+        currentLong = position.coords.longitude
+        mymap.flyTo([currentLat,currentLong]);
+        L.marker([currentLat,currentLong]).addTo(mymap);
+        var nearest = 1000000
+        var nearestNumber = -1
+        for (var i = 0; i < CensusBlock.features.length; i++){
+            distance = mymap.distance(CensusBlock.features[i].coords,[currentLat,currentLong])
+            if (distance < nearest) {
+                nearest = distance
+                nearestNumber = i
+            }
+        }
+        console.log("nearest is " + nearestNumber)
+        if (nearestNumber < 0) {
+            document.getElementById('instruction').innerHTML = "no plates logged"}
+        else{
+            document.getElementById('instruction').innerHTML = "near plates: " + CensusBlock.features[nearestNumber].plates
+        }
+    }
+
+
+    function UUIDexportTable(){
+        document.getElementById("button1").style.display = "none";
+        document.getElementById("button2").style.display = "none";
+        document.getElementById("myfirstmap").style.display = "none";
+        document.getElementById("sliderStuff").style.display = "none";
+        theTable.innerHTML=""
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell = document.createElement('td');
+        myNewCell.innerText = "var UUIDJSON = {'features':["
+        myNewRow.append(myNewCell)
+        theTable.append(myNewRow);
+        
+        for (var i = 0; i < BLEpoints.features.length; i++){
+            var myNewRow = document.createElement('tr');
+            var myNewCell = document.createElement('td');
+            var tableText = '{"UUID":"' + UUIDJSON.features[i].UUID + '","coords":[' + UUIDJSON.features[i].coords + ']'
+            tableText = tableText + ',"iterations":' + UUIDJSON.features[i].iterations
+            tableText = tableText + ',"refsInBLEpoints":[' + UUIDJSON.features[i].refsInBLEpoints + ']'
+            tableText = tableText + ',"span":' + UUIDJSON.features[i].span
+            tableText = tableText + ',"times":[' + UUIDJSON.features[i].times + ']},'
+            myNewCell.innerText = tableText
+            myNewRow.append(myNewCell)
+            theTable.append(myNewRow);
+        }
+        var myNewRow = document.createElement('tr');
+        var myNewCell = document.createElement('td');
+        myNewCell.innerText = "]}"
+        myNewRow.append(myNewCell)
+        theTable.append(myNewRow);
+    }
+
+</script>
+</html>
