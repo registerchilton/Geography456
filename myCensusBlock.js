@@ -1,5 +1,5 @@
 var CensusBlock = {'features':[
-    {"address":"101 Hunter Place","coords":[35.9203698721019,-79.08372044563295],"plates":["CYW"],"makeModel":["gray Jeep Wrangler"],"owner":"MARK CHILTON & REBECCA CHILTON","inCBG":"yes","ownerOccupied":"yes"},
+    {"address":"101 Hunter Place","coords":[35.9203698721019,-79.08372044563295],"plates":["KCY-2279"],"makeModel":["gray Jeep Wrangler"],"owner":"MARK CHILTON & REBECCA CHILTON","inCBG":"yes","ownerOccupied":"yes"},
     {"address":"103 Hunter Place","coords":[35.92012876400585,-79.08392965793611],"plates":["JFB-8092"],"makeModel":["silver Toyota minivan"],"owner":"GUSTAVO LAZARINI DELGADO & NORMA MAITANE RESENDIZ SHARPE","inCBG":"yes","ownerOccupied":"yes"},
     {"address":"105 Hunter Place","coords":[35.91985507284396,-79.08407717943193],"plates":["RTQ-8649","DJV-6369","SYM-8421"],"makeModel":["","",""],"owner":"PAUL ROWE","inCBG":"yes","ownerOccupied":"no"},
     {"address":"104 Hunter Place","coords":[35.91986376146682,-79.08424347639085],"plates":["LCY-3724"],"makeModel":["dark blue SUV"],"owner":"BOBBY G ROBERTS JR","inCBG":"yes","ownerOccupied":"no"},
