@@ -70,15 +70,16 @@
         } else {
         document.getElementById('instruction').innerHTML = "Geolocation is not supported by this browser.";
         }
-        setTimeout(getLocation, 5000);
+        setTimeout(getLocation, 1000);
     }
     
     function showPosition(position) {
+        searchLayer.clearLayers();
         console.log(position);
         currentLat = position.coords.latitude
         currentLong = position.coords.longitude
         mymap.flyTo([currentLat,currentLong]);
-        L.marker([currentLat,currentLong]).addTo(mymap);
+        L.marker([currentLat,currentLong]).addTo(searchLayer);
         var nearest = 1000000
         var nearestNumber = -1
         for (var i = 0; i < CensusBlock.features.length; i++){
