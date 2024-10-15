@@ -7,6 +7,7 @@
 </head>
 <body>
     <button onclick="onButtonClick()" id = "button2">onButtonClick</button>    
+    <div id = "diveOne"></div>
 </body>
 <script>
     async function onButtonClick() {
@@ -26,6 +27,7 @@
             console.log('Advertisement received.');
             console.log('  Device Name: ' + event.device.name);
             console.log('  Device ID: ' + event.device.id);
+            document.getElementById("divOne").innerText = event.device.id
             console.log('  RSSI: ' + event.rssi);
             console.log('  TX Power: ' + event.txPower);
             console.log('  UUIDs: ' + event.uuids);
