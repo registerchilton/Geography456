@@ -13,6 +13,7 @@
     async function onButtonClick() {
         let filters = [];
         let options = {};
+        options.acceptAllAdvertisements = true;
         try {
             console.log('Requesting Bluetooth Scan with options: ' + JSON.stringify(options));
             const scan = await navigator.bluetooth.requestLEScan(options);
