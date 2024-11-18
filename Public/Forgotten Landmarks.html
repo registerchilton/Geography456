@@ -77,11 +77,14 @@
     <input type="text" placeholder = "narrower search" id="searchInput2" style="width: 100px" onchange="search(2)">
     <br>
     <div id="selected">You can enter a list of individuals to search for below - must be separated by comma & single space:</div>
-    <input type="text" placeholder = "comma seperated list" id="ofile" style="width: 1000px" onchange="petitionSearch()">
+    <input type="text" placeholder = "comma separated list" id="ofile" style="width: 1000px" onchange="petitionSearch()">
     <div id="spacer"></div>
-    <div id="instruction">Displaying grants prior to 1 Jan </div>
+    <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
+    <div class="crosshair", id="mysecondmap" style="display:inline-block;"></div>
+    <br>
+    <div id="instruction">Displaying grants prior to 1 Jan 1853</div>
     <div class="slider-container" id = "sliderStuff">
-        <input type="range" min="1752" max="1852" value="1727" class="slider" id="dateSlider" oninput='setDate()'>
+        <input type="range" min="1752" max="1852" value="1852" class="slider" id="dateSlider" oninput='setDate()'>
         <div class="tick-container">
             <span class="tick">1752</span>
             <span class="tick">1777</span>
@@ -90,9 +93,6 @@
             <span class="tick">1852</span>
         </div>
     </div>
-    <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
-    <div class="crosshair", id="mysecondmap" style="display:inline-block;"></div>
-    <br>
     <button onclick="newHopePresbyterian()" id = "button2">founders of New Hope Presbyterian</button>
     <button onclick="FPOC()" id = "button3">free landowners of color</button>
     <button onclick="clusterMe()" id = "button4">spatial distribution of slavery</button>
@@ -175,46 +175,12 @@
     var toggleParcels = 0
     var markers
     var thresholdDate = 1853
-    checkAllDates();
+    document.getElementById("instruction").style.display = "none";
+    document.getElementById("sliderStuff").style.display = "none";
     document.getElementById("searchInput1").style.display = "none";
     document.getElementById("searchInput2").style.display = "none";    
     document.getElementById("mysecondmap").style.display = "none";
     //    setup();
-
-    function LandGrantTable(){
-        searchResult = []
-        document.getElementById('searchInput').value = ""
-        console.log("firing Land Grant Table function")
-        theTable.innerHTML=""
-        var counter = 0
-        for (var j = 970; j < ODB.features.length; j = j + 1){
-            if (ODB.features[j].county.length <= 2){
-                counter = counter + 1
-                var myNewRow = document.createElement('tr');
-                var myNewCell1 = document.createElement('td');
-                var myNewCell2 = document.createElement('td');
-                var myNewCell3 = document.createElement('td');
-                var myNewCell4 = document.createElement('td');
-                var myNewCell5 = document.createElement('td');
-                var myNewCell6 = document.createElement('td');
-                myNewCell1.innerText = ODB.features[j].shortRef
-                myNewCell2.innerText = ODB.features[j].grantee
-                myNewCell3.innerText = ODB.features[j].date
-                myNewCell4.innerText = ODB.features[j].brief
-                myNewCell5.innerHTML = "<a href='" + ODB.features[j].link +"'>link</a>"
-                myNewCell6.innerHTML = '<form><select id="countyChoice" onchange="assignCounty(' + j + ')"><option value=""></option><option value="Orange">Orange</option><option value="Alamance">Alamance</option><option value="Durham">Durham</option><option value="Chatham">Chatham</option><option value="Caswell/Person">Caswell/Person</option><option value="Guilford">Guilford</option><option value="Rockingham">Rockingham</option><option value="Randolph">Randolph</option><option value="unknown">unknown</option></select></form>'
-                myNewRow.append(myNewCell6)
-                myNewRow.append(myNewCell1)
-                myNewRow.append(myNewCell2)
-                myNewRow.append(myNewCell3)
-                myNewRow.append(myNewCell4)
-                myNewRow.append(myNewCell5)
-                theTable.append(myNewRow);
-                myNewRow = document.createElement('tr');
-                if (counter == 20) {j = ODB.features.length}
-            }
-        }
-    }
 
     function search(j){
         searchResult = []
@@ -246,42 +212,6 @@
             }
             console.log(searchResult)
             searchResultTable()
-        }
-    }
-
-    function OfileSearch(){
-        document.getElementById("myfirstmap").style.display = "none";
-        document.getElementById("mysecondmap").style.display = "none";
-        document.getElementById('description').value= ""
-        searchResult = []
-        var searchTerm = "Ofile " + document.getElementById('ofile').value
-        console.log("firing search function for " + searchTerm)
-        for (var i = 0; i < ODB.features.length; i++){
-            var thisSearch = ODB.features[i].shortRef
-            if (thisSearch == searchTerm){
-                searchResult.push(i)
-            }
-        }
-        selection = searchResult[0]
-        if (ODB.features[selection].coords.length == 0) {
-            console.log("No coords so showing image...")
-            if (searchTerm.includes("Gv")){
-                var display = ODB.features[selection].caption + " " + ODB.features[selection].legal + "<a href='" + ODB.features[selection].link + "'>SEE IMAGE</a>"
-                document.getElementById('selected').innerHTML = display
-            }
-
-            document.getElementById("currentImage").style.display = "inline";
-            var imageFileName = "./OCSLGs/"
-            var fileNumber = ODB.features[selection].shortRef
-            var fnum = fileNumber.split(' ')
-            imageFileName = imageFileName + "F" + fnum[1] + ".jpg"
-            document.getElementById('currentImage').src = imageFileName     
-        }
-        else {
-            document.getElementById("myfirstmap").style.display = "display:inline-block";
-            document.getElementById("mysecondmap").style.display = "display:inline-block";
-            L.polygon(ODB.features[selection].coords, {color:'green'}).addTo(tempLayer)
-            mymap.flyTo(ODB.features[selection].coords[0], 12);
         }
     }
 
@@ -376,24 +306,30 @@
     }
 
     function getHyperlink(x){
-        var stepOne = x
-        var stepTwo = []
-        var stepThree
-        var stepFour
-        if (stepOne.includes("ODB")){
-            stepTwo = stepOne.split(" ")
-            for (var i = 0; i < stepTwo.length; i++){
-                if (stepTwo[i] == "ODB"){
-                    stepThree = stepTwo[i+1]
-                    i = stepTwo.length
-                }
-            }
-            stepFour = stepThree.split("/")
-        }
         try {
-            var hyperlink = "<a href='https://rod.orangecountync.gov/orangencnw/application.asp?cmd=image_link&image_link_book=" + stepFour[0] + "&image_link_page=" + stepFour[1] + "&image_link_booktype=Records%20Book&tif2pdf=true'>link</a>"
+            var stepOne = x
+            // console.log("stepOne is " + stepOne)
+            var stepTwo = []
+            var stepThree
+            var stepFour
+            if (stepOne.includes("ODB")){
+                stepTwo = stepOne.split(" ")
+                // console.log("stepTwo is [" + stepTwo + "]")
+                for (var i = 0; i < stepTwo.length; i++){
+                    if (stepTwo[i].includes("ODB")){
+                        stepThree = stepTwo[i+1]
+                        i = stepTwo.length
+                    }
+                }
+                // console.log("stepThree is " + stepThree)
+                stepFour = stepThree.split("/")
+            }
+            try{
+                var hyperlink = "<a href='https://rod.orangecountync.gov/orangencnw/application.asp?cmd=image_link&image_link_book=" + stepFour[0] + "&image_link_page=" + stepFour[1] + "&image_link_booktype=Records%20Book&tif2pdf=true'>link</a>"
+            }
+            catch {var hyperlink = "none"}
         }
-        catch {var hyperlink = ""}
+        catch {var hyperlink = "none"}
         return hyperlink
     }
 
@@ -454,7 +390,7 @@
         document.getElementById("ofile").style.display ="inline";
         document.getElementById("currentImage").src = "" // if we were looking at a scanned survey, then hide that
         document.getElementById("myfirstmap").style.display = "display:inline-block";
-        document.getElementById("mysecondmap").style.display = "display:inline-block";
+//        document.getElementById("mysecondmap").style.display = "display:inline-block";
         searchResult = []
         grantLayer.clearLayers(); //clear the old map
         deedLayer.clearLayers();
@@ -544,18 +480,33 @@
     //              if (ODB.features[i].coords[0][0] != 0 && ODB.features[i].lid == 0){
                     if (ODB.features[i].lid == 0){
                             var buttonText = ""
-                        for (var j = 0; j < ODB.features[i].history.length - 1; j = j + 1){
-                            buttonText = buttonText + "<b>" + ODB.features[i].history[j][0] + " " + ODB.features[i].history[j][1] + "</b><br>"
+                        for (var j = ODB.features[i].history.length - 1; j > 0 ; j = j - 1){
+                            // console.log("comparing " + thresholdDate + " to " + ODB.features[i].history[j][2])
+                            if (thresholdDate > ODB.features[i].history[j][2] && ODB.features[i].history[j][0] != "end"){
+                                // console.log("meets criteria " + ODB.features[i].history[j][1])
+                                buttonText = buttonText + "<b>" + ODB.features[i].history[j][0] + " " + ODB.features[i].history[j][1] + "</b><br>"
+                                j = 0
+                            }
+                            // else{console.log("rejecting " + ODB.features[i].history[j][1])}
                         }
+                        if (buttonText == "") {
+                            buttonText = ODB.features[i].caption
+                            // console.log("buttonText set by deafult " + ODB.features[i].type + " " + i)
+                        }
+                        var newLink = getHyperlink(buttonText)
+                        if (newLink == "none"){
+                            newLink = "<a href='" + ODB.features[i].link + "'>link</a>"
+                        }
+                        buttonText = buttonText + "<br>" + newLink 
                         if (ODB.features[i].type == "grant"){
-                            var Color = "blue"
+                            var Color = randomColor()
                             L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(grantLayer)
-                            .bindTooltip(buttonText)
+                            .bindPopup(buttonText)
                         }
                         else{
-                            Color = "red"
+                            Color = randomColor()
                             L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(deedLayer)
-                            .bindTooltip(buttonText)
+                            .bindPopup(buttonText)
                         }
                     }
                     if (ODB.features[i].lid == 1){
@@ -1527,19 +1478,24 @@
     }
     function slavesOff(){
         markerClusterGroup.removeLayers()
+        document.getElementById('selected').innerText = ""
     }
 
     function showAll(){
+        document.getElementById('selected').innerText = "Use the scroll bar to access polygons underneath other polygons."
         toggleParcels = toggleParcels + 1
         if (toggleParcels/2 == Math.floor(toggleParcels/2)){
             deedLayer.clearLayers();
             grantLayer.clearLayers();
             document.getElementById("button7").innerText = "show all parcels"
+            document.getElementById("instruction").style.display = "none";
             document.getElementById("sliderStuff").style.display = "none";
         }
         else{
             document.getElementById("button7").innerText = "hide all parcels"
+            document.getElementById("instruction").style.display = "block";
             document.getElementById("sliderStuff").style.display = "block";
+            document.getElementById("button1").style.visibility = "hidden"
             setup()
         }
 
@@ -1555,6 +1511,51 @@
         setup();
     }
 
+    function fixDates(){
+        console.log("firing fixDates")
+        for (var i = 0; i < ODB.features.length; i++){
+            console.log("one is " + ODB.features[i].date + " other is " + ODB.features[i].sortabledate)
+            if (ODB.features[i].date != "" && ODB.features[i].sortabledate == 0){
+                console.log("found one!")
+                var nextDateArray = ODB.features[i].date.split(" ")
+                if (nextDateArray.length == 1) {ODB.features[i].sortabledate = Number(ODB.features[i].date)}
+                if (nextDateArray.length == 3) {
+                    ODB.features[i].sortabledate = Number(nextDateArray[2]) + (nextDateArray[0]/10000)
+                    if (nextDateArray[1] == "Jan") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (1/100)}
+                    if (nextDateArray[1] == "Feb") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (2/100)}
+                    if (nextDateArray[1] == "Mar") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (3/100)}
+                    if (nextDateArray[1] == "Apr") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (4/100)}
+                    if (nextDateArray[1] == "May") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (5/100)}
+                    if (nextDateArray[1] == "Jun") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (6/100)}
+                    if (nextDateArray[1] == "Jul") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (7/100)}
+                    if (nextDateArray[1] == "Aug") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (8/100)}
+                    if (nextDateArray[1] == "Sep") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (9/100)}
+                    if (nextDateArray[1] == "Oct") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (10/100)}
+                    if (nextDateArray[1] == "Nov") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (11/100)}
+                    if (nextDateArray[1] == "Dec") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (12/100)}
+                }
+                if (nextDateArray.length == 2) {
+                    ODB.features[i].sortabledate = Number(nextDateArray[1])
+                    if (nextDateArray[0] == "Jan") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (1/100)}
+                    if (nextDateArray[0] == "Feb") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (2/100)}
+                    if (nextDateArray[0] == "Mar") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (3/100)}
+                    if (nextDateArray[0] == "Apr") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (4/100)}
+                    if (nextDateArray[0] == "May") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (5/100)}
+                    if (nextDateArray[0] == "Jun") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (6/100)}
+                    if (nextDateArray[0] == "Jul") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (7/100)}
+                    if (nextDateArray[0] == "Aug") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (8/100)}
+                    if (nextDateArray[0] == "Sep") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (9/100)}
+                    if (nextDateArray[0] == "Oct") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (10/100)}
+                    if (nextDateArray[0] == "Nov") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (11/100)}
+                    if (nextDateArray[0] == "Dec") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (12/100)}
+                }
+                var temp = Math.round(ODB.features[i].sortabledate * 10000)
+                temp = temp/10000
+                ODB.features[i].sortabledate = temp
+                console.log("fixed " + i + " so it is now " + ODB.features[i].sortabledate + " which was " + ODB.features[i].date)
+            }
+        }
+    }
 
 </script>
 </html>
