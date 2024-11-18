@@ -19,7 +19,7 @@
      crossorigin=""></script>
 
 <style>
-    #myfirstmap {height: 700px; width: 1200px}
+    #myfirstmap {height: 600px; width: 1200px}
     #mysecondmap {height: 500px; width: 550px}
 
     .div-img{
@@ -47,21 +47,25 @@
 </head>
 
 <body>
-    <button onclick="newHopePresbyterian()" id = "button2">founders of New Hope Presbyterian</button>
-    <button onclick="FPOC()" id = "button2">free landowners of color</button>
-    <button onclick="clusterMe()" id = "button2">spatial distribution of slavery</button>
-    <button onclick="Export()" id = "button2">export a JSON of deed data</button>
-    <button onclick="clearSearchLayer()" id = "button6">clearSearchLayer</button>
+    <audio id="explanation">
+        <source src="intro.mp3" type="audio/mpeg">
+    </audio>
+    <button onclick="intro()" id = "button1">Listen to one minute presentation</button>
     <br>
     <input type="text" placeholder = "wider search" id="searchInput1" style="width: 100px" onchange="search(1)">
     <input type="text" placeholder = "narrower search" id="searchInput2" style="width: 100px" onchange="search(2)">
-    <button onclick="mapMode()" id = "mapButton">submit search</button>
     <br>
     <div id="selected">You can enter a list of individuals to search for below - must be separated by comma & single space:</div>
     <input type="text" placeholder = "comma seperated list" id="ofile" style="width: 1000px" onchange="petitionSearch()">
     <div id="spacer"></div>
     <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
     <div class="crosshair", id="mysecondmap" style="display:inline-block;"></div>
+    <br>
+    <button onclick="newHopePresbyterian()" id = "button2">founders of New Hope Presbyterian</button>
+    <button onclick="FPOC()" id = "button3">free landowners of color</button>
+    <button onclick="clusterMe()" id = "button4">spatial distribution of slavery</button>
+    <button onclick="clearSearchLayer()" id = "button5">clear old searches</button>
+    <button onclick="Export()" id = "button6">export a JSON of deed data</button>
     <table id="mytable">
         <tr>
             <th></th>
@@ -133,8 +137,12 @@
     var enslaverNumber = -1
     var Color = "red"
     var movingMarker = -1
+    var x = document.getElementById("test"); 
+    var toggle = 0
+    var markers
     //    checkAllDates();
-    
+    document.getElementById("searchInput1").style.display = "none";
+    document.getElementById("searchInput2").style.display = "none";    
     document.getElementById("mysecondmap").style.display = "none";
     //    setup();
 
@@ -686,11 +694,13 @@
     }
 
     function Export(){
-        document.getElementById("button6").style.display = "none";
+        document.getElementById("button1").style.display = "none";
         document.getElementById("button2").style.display = "none";
         document.getElementById("button3").style.display = "none";
         document.getElementById("button4").style.display = "none";
-        document.getElementById("mapButton").style.display = "none";
+        document.getElementById("button5").style.display = "none";
+        document.getElementById("button6").style.display = "none";
+//        document.getElementById("mapButton").style.display = "none";
         document.getElementById("myfirstmap").style.display = "none";
         document.getElementById("mysecondmap").style.display = "none";
         document.getElementById("searchInput2").style.display = "none";
@@ -1394,18 +1404,27 @@
     }
 
     function clusterMe(){
-        mymap.flyTo([36.050764426908515,-79.09263610839845], 14);
-        var markers = L.markerClusterGroup();
-        for (var i = 0; i < enslavers.features.length; i++) {
-            for (var j = 0; j < enslavers.features[i].numberEnslaved; j++){
-                var a = enslavers.features[i].coords
-                var title = enslavers.features[i].enslaver + " enslaved " + enslavers.features[i].individuals[j] + "<input type='text' id = 'enslaver" + i + "enslaved" + j + "' style='width: 50px' onchange='changeName(" + i + "," + j + ")'>"
-                var marker = L.marker(new L.LatLng(a[0], a[1]), {title: title});
-                marker.bindPopup(title);
-                markers.addLayer(marker);
+        toggle = toggle + 1
+        if (toggle/2 == Math.floor(toggle/2)){
+            markers.clearLayers();
+            document.getElementById("button4").innerText = "spatial distribution of slavery"
+        }
+        else{
+            mymap.flyTo([36.01303988438674,-79.07220840454103], 14);
+            document.getElementById('selected').innerText = "Owing to the shortness of time, I have not yet included slave ownership in the Town of Hillsborough proper."
+            markers = L.markerClusterGroup();
+            for (var i = 0; i < enslavers.features.length; i++) {
+                for (var j = 0; j < enslavers.features[i].numberEnslaved; j++){
+                    var a = enslavers.features[i].coords
+                    var title = enslavers.features[i].enslaver + " enslaved " + enslavers.features[i].individuals[j] + "<input type='text' id = 'enslaver" + i + "enslaved" + j + "' style='width: 50px' onchange='changeName(" + i + "," + j + ")'>"
+                    var marker = L.marker(new L.LatLng(a[0], a[1]), {title: title});
+                    marker.bindPopup(title);
+                    markers.addLayer(marker);
+                }
             }
-		}
-        mymap.addLayer(markers);
+            mymap.addLayer(markers);
+            document.getElementById("button4").innerText = "turn of slavery cluster markers"
+        }
     }
 
     function changeName(i,j){
@@ -1442,8 +1461,37 @@
     }
 
     function FPOC(){
+        document.getElementById('selected').innerText = "I pulled the names of free people of color from census records, then searched for those names in deed books."
         document.getElementById('ofile').value = "Neverson Stewart, Robert B Corn, Drew Jeffers, Andrew Jeffers, David Haithcock, Willis Jeffers, Joshua Jeffers, Richardson Corn, Viney Guy, Dixon Corn"
         petitionSearch()        
+    }
+
+    function intro(){
+        x = document.getElementById("explanation");
+        x.play()
+        setTimeout(function(){setup()}, 4000)
+        setTimeout(function(){
+            grantLayer.clearLayers()
+            deedLayer.clearLayers()
+        }, 20000)
+        setTimeout(function(){
+            mymap.flyTo([36.02730584200934,-79.09117698669435], 14)
+            document.getElementById('ofile').value = "Joseph Marlett"
+            petitionSearch()
+        }, 20000)
+        setTimeout(function(){
+            FPOC()
+        }, 42000)
+        setTimeout(function(){
+            newHopePresbyterian()
+            mymap.flyTo([36.013065919508186,-79.07216548919679], 13)
+        }, 60000)
+        setTimeout(function(){
+            clusterMe()
+        }, 70000)
+    }
+    function slavesOff(){
+        markerClusterGroup.removeLayers()
     }
 
 </script>
