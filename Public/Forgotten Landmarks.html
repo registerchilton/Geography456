@@ -32,6 +32,27 @@
         transform:scale(1.0);
     }
     .crosshair {cursor: crosshair;}
+    .slider-container {
+        margin-right: 20px;
+        display: flex;
+        align-items: left;
+        flex-direction: column;
+    }
+
+    .slider {
+        width: 545px; 
+    }
+    .tick-container {
+        display: flex;
+        justify-content: space-between;
+        width: 550px;
+        margin-top: 5px;
+    }
+
+    .tick {
+        font-size: 12px; 
+        color: #888; 
+    }
 
 </style>
 
@@ -58,6 +79,17 @@
     <div id="selected">You can enter a list of individuals to search for below - must be separated by comma & single space:</div>
     <input type="text" placeholder = "comma seperated list" id="ofile" style="width: 1000px" onchange="petitionSearch()">
     <div id="spacer"></div>
+    <div id="instruction">Displaying grants prior to 1 Jan </div>
+    <div class="slider-container" id = "sliderStuff">
+        <input type="range" min="1752" max="1852" value="1727" class="slider" id="dateSlider" oninput='setDate()'>
+        <div class="tick-container">
+            <span class="tick">1752</span>
+            <span class="tick">1777</span>
+            <span class="tick">1802</span>
+            <span class="tick">1827</span>
+            <span class="tick">1852</span>
+        </div>
+    </div>
     <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
     <div class="crosshair", id="mysecondmap" style="display:inline-block;"></div>
     <br>
@@ -66,6 +98,7 @@
     <button onclick="clusterMe()" id = "button4">spatial distribution of slavery</button>
     <button onclick="clearSearchLayer()" id = "button5">clear old searches</button>
     <button onclick="Export()" id = "button6">export a JSON of deed data</button>
+    <button onclick="showAll()" id = "button7">show all parcels</button>
     <table id="mytable">
         <tr>
             <th></th>
@@ -139,8 +172,10 @@
     var movingMarker = -1
     var x = document.getElementById("test"); 
     var toggle = 0
+    var toggleParcels = 0
     var markers
-    //    checkAllDates();
+    var thresholdDate = 1853
+    checkAllDates();
     document.getElementById("searchInput1").style.display = "none";
     document.getElementById("searchInput2").style.display = "none";    
     document.getElementById("mysecondmap").style.display = "none";
@@ -504,7 +539,7 @@
         secondLayer.clearLayers();
         console.log("firing setup function & functionName is " + functionName)    
         for (var i = 0; i < ODB.features.length; i++){
-                if (ODB.features[i].coords.length > 0){
+                if (ODB.features[i].coords.length > 0 && ODB.features[i].sortabledate < thresholdDate){
                     console.log(i)
     //              if (ODB.features[i].coords[0][0] != 0 && ODB.features[i].lid == 0){
                     if (ODB.features[i].lid == 0){
@@ -1423,7 +1458,7 @@
                 }
             }
             mymap.addLayer(markers);
-            document.getElementById("button4").innerText = "turn of slavery cluster markers"
+            document.getElementById("button4").innerText = "turn off slavery cluster markers"
         }
     }
 
@@ -1493,6 +1528,33 @@
     function slavesOff(){
         markerClusterGroup.removeLayers()
     }
+
+    function showAll(){
+        toggleParcels = toggleParcels + 1
+        if (toggleParcels/2 == Math.floor(toggleParcels/2)){
+            deedLayer.clearLayers();
+            grantLayer.clearLayers();
+            document.getElementById("button7").innerText = "show all parcels"
+            document.getElementById("sliderStuff").style.display = "none";
+        }
+        else{
+            document.getElementById("button7").innerText = "hide all parcels"
+            document.getElementById("sliderStuff").style.display = "block";
+            setup()
+        }
+
+    }
+
+    function setDate(){
+        mode = "date"
+        var sliderValue = document.getElementById("dateSlider").value
+        thresholdDate = sliderValue
+        deedLayer.clearLayers();
+        grantLayer.clearLayers();
+        document.getElementById("instruction").innerText = "Displaying records prior to " + thresholdDate + "."
+        setup();
+    }
+
 
 </script>
 </html>
