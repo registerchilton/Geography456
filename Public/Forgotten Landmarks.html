@@ -47,18 +47,17 @@
 </head>
 
 <body>
-    <button onclick="clusterMe()" id = "button2">clusterMe</button>
-    <button onclick="Export()" id = "button2">Export view</button>
+    <button onclick="newHopePresbyterian()" id = "button2">founders of New Hope Presbyterian</button>
+    <button onclick="FPOC()" id = "button2">free landowners of color</button>
+    <button onclick="clusterMe()" id = "button2">spatial distribution of slavery</button>
+    <button onclick="Export()" id = "button2">export a JSON of deed data</button>
     <button onclick="clearSearchLayer()" id = "button6">clearSearchLayer</button>
-    <button onclick="mapMode()" id = "mapButton">Mapping Mode</button>
-    <button onclick="nextEnslaver()" id = "button3">nextEnslaver</button>
-    <button onclick="enslaverOutput()" id = "button4">enslaverOutput</button>
-    <button onclick="showEnslavers()" id = "enslaversButton">showEnslavers</button>
-    <input type="text" placeholder = "show enslaver" id="searchInput3" style="width: 100px" onchange="enslaverSearch()">
+    <br>
     <input type="text" placeholder = "wider search" id="searchInput1" style="width: 100px" onchange="search(1)">
     <input type="text" placeholder = "narrower search" id="searchInput2" style="width: 100px" onchange="search(2)">
-    <button onclick="returnToRecent()" id = "recentButton">returnToRecent</button>
-    <div id="selected"></div>
+    <button onclick="mapMode()" id = "mapButton">submit search</button>
+    <br>
+    <div id="selected">You can enter a list of individuals to search for below - must be separated by comma & single space:</div>
     <input type="text" placeholder = "comma seperated list" id="ofile" style="width: 1000px" onchange="petitionSearch()">
     <div id="spacer"></div>
     <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
@@ -1395,6 +1394,7 @@
     }
 
     function clusterMe(){
+        mymap.flyTo([36.050764426908515,-79.09263610839845], 14);
         var markers = L.markerClusterGroup();
         for (var i = 0; i < enslavers.features.length; i++) {
             for (var j = 0; j < enslavers.features[i].numberEnslaved; j++){
@@ -1433,6 +1433,17 @@
             console.log(hexColor)
             Color = "#" + hexColor
             return Color
+    }
+
+    function newHopePresbyterian(){
+        document.getElementById('selected').innerText = "David I Craig's Historical Sketch of New Hope Church (1898) gives us a list of founders of New Hope Presbyterian church."
+        document.getElementById('ofile').value = "Gilbert Strayhorn, Samuel Strayhorn, William Blackwood, Andrew Mitchell, William Craig, James Freeland, Joseph Kirkland, Hugh Currie, William Burns"
+        petitionSearch()
+    }
+
+    function FPOC(){
+        document.getElementById('ofile').value = "Neverson Stewart, Robert B Corn, Drew Jeffers, Andrew Jeffers, David Haithcock, Willis Jeffers, Joshua Jeffers, Richardson Corn, Viney Guy, Dixon Corn"
+        petitionSearch()        
     }
 
 </script>
