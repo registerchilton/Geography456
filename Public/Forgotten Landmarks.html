@@ -84,8 +84,9 @@
     <br>
     <div id="instruction">Displaying grants prior to 1 Jan 1853</div>
     <div class="slider-container" id = "sliderStuff">
-        <input type="range" min="1752" max="1853" value="1853" class="slider" id="dateSlider" oninput='setDate()'>
+        <input type="range" min="1752" max="1853" value="1853" class="slider" id="dateSlider" oninput='sliderMove()'>
         <button onclick="nearbyPopups()" id = "button8" style="display:inline-block;"">open popups</button>
+        <button onclick="hoverLabels()" id = "button9" style="display:inline-block;"">hover labels on</button>
         <div class="tick-container">
             <span class="tick">1752</span>
             <span class="tick">1777</span>
@@ -124,6 +125,7 @@
     var deedLayer = L.layerGroup().addTo(mymap);
     var searchLayer = L.layerGroup().addTo(mymap);
     var tempLayer = L.layerGroup().addTo(mymap);
+    var nearestLayer = L.layerGroup().addTo(mymap);
     var enslavedLayer = L.layerGroup().addTo(mymap);
     var secondLayer = L.layerGroup().addTo(secondmap);
     var secondTempLayer = L.layerGroup().addTo(secondmap);
@@ -132,7 +134,7 @@
     var zoomNow = mymap.getZoom()
     mymap.on('click', affix);
     // mymap.on('zoom', secondZoom)
-    //mymap.on('drag', nearbyPopups)
+    // mymap.on('drag', setup)
     secondmap.on('zoom', firstZoom)
     secondmap.on('drag', firstZoom)
     secondmap.on('mousemove', showOnSecond)
@@ -146,6 +148,7 @@
     // var recentPlacement = [36.03903600798149,-79.20069694519043]
     var mouseLat
     var mouseLong
+    var hoverMode = false
     var clickLat
     var clickLong
     var directions = []
@@ -180,6 +183,8 @@
     var thresholdDate = 1853
     var randomColorMode = "yes"
     var openAll = "no"
+    var detailLevel = 1
+    var closestPolygon = - 1
     document.getElementById("instruction").style.display = "none";
     document.getElementById("sliderStuff").style.display = "none";
     document.getElementById("searchInput1").style.display = "none";
@@ -412,7 +417,6 @@
         mouseLat = e.latlng['lat'] 
         mouseLong = e.latlng['lng']
         if (mode=="map" && inPlacement > -1 && ODB.features[inPlacement].legal.length > 3){ //if placing a parcel, then show it as though it starts at current mouse location
-            tempLayer.clearLayers(); //erase previous temporary location
             if (ODB.features[inPlacement].coords[0][0] == 0){
                 for (var i = 0; i < ODB.features[inPlacement].coords.length - 1; i++){
                     var thisLat = ODB.features[inPlacement].coords[i][0] + mouseLat
@@ -425,9 +429,29 @@
             }
         }
         if (mode == "marker" && movingMarker > -1){
-            tempLayer.clearLayers();
             enslavers.features[movingMarker].coords = [mouseLat,mouseLong]
             L.marker(enslavers.features[movingMarker].coords).addTo(tempLayer)
+        }
+        var nearestCorner = 10_000_000
+        for (var i = 0; i < ODB.features.length; i++){
+            var testPoint = [mouseLat,mouseLong]
+            var latestDistance = 0
+            try{latestDistance = mymap.distance(ODB.features[i].centroid,testPoint)}
+            catch {latestDistance = 5000}
+            if (latestDistance < nearestCorner && ODB.features[i].lid == 0){
+                nearestCorner = latestDistance
+                closestPolygon = i
+            }
+        }
+        nearestLayer.clearLayers();
+        console.log(closestPolygon)
+        // L.polygon(ODB.features[closestPolygon].coords,{color:"red"}).addTo(tempLayer)
+        // .bindPopup(ODB.features[closestPolygon].caption,{closeOnClick:false, autoClose:false}).openPopup();
+        if (hoverMode == true){
+            try {
+            var popup = L.popup(ODB.features[closestPolygon].centroid, {content: ODB.features[closestPolygon].caption}).addTo(nearestLayer);
+            }
+            catch{ODB.features[closestPolygon].caption + " is nearest"}
         }
     }
 
@@ -477,6 +501,8 @@
     }
 
     function setup(){  //This function draws or re-draws the map
+        grantLayer.clearLayers();
+        deedLayer.clearLayers();
         secondLayer.clearLayers();
         console.log("firing setup function & functionName is " + functionName)    
         for (var i = 0; i < ODB.features.length; i++){
@@ -494,7 +520,7 @@
                             // else{console.log("rejecting " + ODB.features[i].history[j][1])}
                         }
                         if (buttonText == "") {
-                            buttonText = ODB.features[i].caption + " " + ODB.features[i].date
+                            buttonText = "<b>" + ODB.features[i].caption + "</b> " + ODB.features[i].date
                             // console.log("buttonText set by deafult " + ODB.features[i].type + " " + i)
                         }
                         var newLink = getHyperlink(buttonText)
@@ -502,19 +528,22 @@
                             newLink = "<a href='" + ODB.features[i].link + "'>link</a>"
                         }
                         buttonText = buttonText + "<br>" + newLink 
-                        var Color = "blue"
-                        if (randomColorMode == "yes"){Color = randomColor();}
-
-
-
+                        if (detailLevel == 1){
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>more</button>"
+                        }
+                        if (detailLevel == 2){
+                            buttonText = buttonText + ODB.features[i].brief
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>less</button>"
+                        }
+                        var Color = "red"
+                        if (i != closestPolygon){Color = randomColor();}
                         var center = mymap.getCenter()
                         var testPoint = [center.lat,center.lng]
                         var latestDistance = 0
                         try{latestDistance = mymap.distance(ODB.features[i].coords[0],testPoint)}
                         catch {latestDistance = 5000}
-                        if (openAll == "yes" && latestDistance < 1500){
+                        if (i == closestPolygon || (openAll == "yes" && latestDistance < 1500)){
                             if (ODB.features[i].type == "grant"){
-                                console.log(ODB.features[i].caption)
                                 L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(grantLayer)
                                 .bindPopup(buttonText,{closeOnClick:false, autoClose:false}).openPopup();
                             }
@@ -1271,7 +1300,7 @@
         for (var i = 0; i < petitionArray.length; i++){
             console.log("Trip " + i + " through the petition array")
             document.getElementById('searchInput2').value = petitionArray[i]
-            var randoColor = randomColor()
+            Color = randomColor()
             search(2)
         }
         for (var i = 0; i < searchResult.length; i++){
@@ -1400,8 +1429,8 @@
 
     function showExtent(i){
         document.getElementById('searchInput2').value = enslavers.features[i].enslaver
-            var randoColor = Math.floor(Math.random() * 1677216)
-            var hexColor = randoColor.toString(16).toUpperCase()
+            var randomNumber = Math.floor(Math.random() * 1677216)
+            var hexColor = randomNumber.toString(16).toUpperCase()
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
@@ -1409,7 +1438,7 @@
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             console.log(hexColor)
             Color = "#" + hexColor
-            search(2) 
+            search(2)
     }
 
     function returnToRecent(){
@@ -1456,14 +1485,15 @@
     }
 
     function randomColor(){
-        var randoColor = Math.floor(Math.random() * 1677216)
-            var hexColor = randoColor.toString(16).toUpperCase()
+        var randomNumber = Math.floor(Math.random() * 16_777_216) // 16_777_216 is the max
+            var hexColor = randomNumber.toString(16).toUpperCase()
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             Color = "#" + hexColor
+            console.log(Color)
             return Color
     }
 
@@ -1503,6 +1533,7 @@
             searchLayer.clearLayers();
             clusterMe()
         }, 70000)
+        setTimeout(function(){setup()}, 80000)
     }
     function slavesOff(){
         markerClusterGroup.removeLayers()
@@ -1529,7 +1560,7 @@
 
     }
 
-    function setDate(){
+    function sliderMove(){
         mode = "date"
         randomColorMode = "yes"
         var sliderValue = document.getElementById("dateSlider").value
@@ -1586,7 +1617,7 @@
         }
     }
 
-    function nearbyPopups(){ //WHAT IF THIS JUST CHANGED openAll = "yes" and get sent here by setDate
+    function nearbyPopups(){
         popupToggle = popupToggle + 1
         if (popupToggle/2 == Math.floor(popupToggle/2)){
             tempLayer.clearLayers();
@@ -1599,10 +1630,29 @@
         else{
             openAll = "yes"
             document.getElementById("button8").innerText = "close popups"
-            grantLayer.clearLayers();
-            deedLayer.clearLayers();
             setup()
         }
+    }
+
+    function detail(i){
+        if (detailLevel == 2){detailLevel = 1}
+        else{detailLevel = 2}
+        grantLayer.clearLayers();
+        deedLayer.clearLayers();
+        closestPolygon = i
+        setup()
+    }
+
+    function hoverLabels(){
+        if (hoverMode == true){
+            hoverMode = false
+            document.getElementById("button9").innerText = "hover labels off"
+        }
+        else{
+            hoverMode = true
+            document.getElementById("button9").innerText = "hover labels on"
+        }
+        console.log ("hover mode is now " + hoverMode)
     }
 
 </script>
