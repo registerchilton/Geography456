@@ -432,24 +432,22 @@
             enslavers.features[movingMarker].coords = [mouseLat,mouseLong]
             L.marker(enslavers.features[movingMarker].coords).addTo(tempLayer)
         }
-        var nearestCorner = 10_000_000
-        for (var i = 0; i < ODB.features.length; i++){
-            var testPoint = [mouseLat,mouseLong]
-            var latestDistance = 0
-            try{latestDistance = mymap.distance(ODB.features[i].centroid,testPoint)}
-            catch {latestDistance = 5000}
-            if (latestDistance < nearestCorner && ODB.features[i].lid == 0){
-                nearestCorner = latestDistance
-                closestPolygon = i
-            }
-        }
-        nearestLayer.clearLayers();
-        console.log(closestPolygon)
-        // L.polygon(ODB.features[closestPolygon].coords,{color:"red"}).addTo(tempLayer)
-        // .bindPopup(ODB.features[closestPolygon].caption,{closeOnClick:false, autoClose:false}).openPopup();
         if (hoverMode == true){
+            var nearestCorner = 10_000_000
+            for (var i = 0; i < ODB.features.length; i++){
+                var testPoint = [mouseLat,mouseLong]
+                var latestDistance = 0
+                try{latestDistance = mymap.distance(ODB.features[i].centroid,testPoint)}
+                catch {latestDistance = 5000}
+                if (latestDistance < nearestCorner && ODB.features[i].lid == 0){
+                    nearestCorner = latestDistance
+                    closestPolygon = i
+                }
+            }
+            nearestLayer.clearLayers();
             try {
-            var popup = L.popup(ODB.features[closestPolygon].centroid, {content: ODB.features[closestPolygon].caption}).addTo(nearestLayer);
+                var Content = ODB.features[closestPolygon].caption + " " + closestPolygon
+                var popup = L.popup(ODB.features[closestPolygon].centroid, {content:Content}).addTo(nearestLayer);
             }
             catch{ODB.features[closestPolygon].caption + " is nearest"}
         }
@@ -529,10 +527,23 @@
                         }
                         buttonText = buttonText + "<br>" + newLink 
                         if (detailLevel == 1){
-                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>more</button>"
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>abstract</button>"
                         }
                         if (detailLevel == 2){
                             buttonText = buttonText + ODB.features[i].brief
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>legal description</button>"
+                        }
+                        if (detailLevel == 3){
+                            buttonText = buttonText + ODB.features[i].legal
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>title history</button>"
+                        }
+                        if (detailLevel == 4){
+                            buttonText = ""
+                            for (var k = 0; k < ODB.features[i].history.length; k++){
+                                if (ODB.features[i].history[k][0] != "end"){
+                                    buttonText = buttonText + "<b>" + ODB.features[i].history[k][0] + "</b> " + ODB.features[i].history[k][1] + "<br>"
+                                }                                
+                            }
                             buttonText = buttonText + "<button onclick='detail(" + i + ")'>less</button>"
                         }
                         var Color = "red"
@@ -1493,7 +1504,6 @@
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             Color = "#" + hexColor
-            console.log(Color)
             return Color
     }
 
@@ -1563,6 +1573,9 @@
     function sliderMove(){
         mode = "date"
         randomColorMode = "yes"
+        hoverMode = false
+        detailLevel = 1
+        closestPolygon = -1
         var sliderValue = document.getElementById("dateSlider").value
         thresholdDate = sliderValue
         deedLayer.clearLayers();
@@ -1622,6 +1635,7 @@
         if (popupToggle/2 == Math.floor(popupToggle/2)){
             tempLayer.clearLayers();
             openAll = "no"
+            closestPolygon = - 1
             document.getElementById("button8").innerText = "open popups"
             grantLayer.clearLayers();
             deedLayer.clearLayers();
@@ -1629,14 +1643,18 @@
         }
         else{
             openAll = "yes"
+            hoverMode = false
             document.getElementById("button8").innerText = "close popups"
+            closestPolygon = -1
+            hoverMode = false
             setup()
         }
     }
 
     function detail(i){
-        if (detailLevel == 2){detailLevel = 1}
-        else{detailLevel = 2}
+        detailLevel = detailLevel + 1
+        if (detailLevel > 4){detailLevel = detailLevel - 4}
+        console.log("detailLevel is " + detailLevel)
         grantLayer.clearLayers();
         deedLayer.clearLayers();
         closestPolygon = i
