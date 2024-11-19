@@ -287,7 +287,7 @@
                 for (var j = 0; j < ODB.features[searchResult[i]].history.length - 1; j ++){
                     popupText = popupText + "<b>" + ODB.features[searchResult[i]].history[j][0] + "</b> ~ " + ODB.features[searchResult[i]].history[j][1] + " "
                     var myLink = getHyperlink(ODB.features[searchResult[i]].history[j][0])
-                    if (myLink.length == 0) {myLink = "<a href='" + ODB.features[searchResult[i]].link + "'>link</a><br>"}
+                    if (myLink == "none"){myLink = "<a href='" + ODB.features[searchResult[i]].link + "'>link</a><br>"}
                     popupText = popupText + " ~ " + myLink + "<br>"
                 }
     //            popupText = popupText + "<a href='" + ODB.features[searchResult[i]].link + "'>original</a><br>" + Color
@@ -490,7 +490,7 @@
                             // else{console.log("rejecting " + ODB.features[i].history[j][1])}
                         }
                         if (buttonText == "") {
-                            buttonText = ODB.features[i].caption
+                            buttonText = ODB.features[i].caption + " " + ODB.features[i].date
                             // console.log("buttonText set by deafult " + ODB.features[i].type + " " + i)
                         }
                         var newLink = getHyperlink(buttonText)
@@ -686,7 +686,9 @@
         document.getElementById("button4").style.display = "none";
         document.getElementById("button5").style.display = "none";
         document.getElementById("button6").style.display = "none";
+        document.getElementById("button7").style.display = "none";
 //        document.getElementById("mapButton").style.display = "none";
+        document.getElementById("sliderStuff").style.display = "none";
         document.getElementById("myfirstmap").style.display = "none";
         document.getElementById("mysecondmap").style.display = "none";
         document.getElementById("searchInput2").style.display = "none";
