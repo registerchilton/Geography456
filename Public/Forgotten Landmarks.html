@@ -76,7 +76,7 @@
     <input type="text" placeholder = "wider search" id="searchInput1" style="width: 100px" onchange="search(1)">
     <input type="text" placeholder = "narrower search" id="searchInput2" style="width: 100px" onchange="search(2)">
     <br>
-    <div id="selected">You can enter a list of individuals to search for below - must be separated by comma & single space:</div>
+    <div id="selected">Enter a name like Joseph Marlett or just Marlett. Or you can enter a comma-space separated list of search terms:</div>
     <input type="text" placeholder = "comma separated list" id="ofile" style="width: 1000px" onchange="petitionSearch()">
     <div id="spacer"></div>
     <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
@@ -84,7 +84,8 @@
     <br>
     <div id="instruction">Displaying grants prior to 1 Jan 1853</div>
     <div class="slider-container" id = "sliderStuff">
-        <input type="range" min="1752" max="1852" value="1852" class="slider" id="dateSlider" oninput='setDate()'>
+        <input type="range" min="1752" max="1853" value="1853" class="slider" id="dateSlider" oninput='setDate()'>
+        <button onclick="nearbyPopups()" id = "button8" style="display:inline-block;"">open popups</button>
         <div class="tick-container">
             <span class="tick">1752</span>
             <span class="tick">1777</span>
@@ -128,9 +129,10 @@
     var secondTempLayer = L.layerGroup().addTo(secondmap);
     var secondSearchLayer = L.layerGroup().addTo(secondmap);
     mymap.on('mousemove', onMouseMove);
+    var zoomNow = mymap.getZoom()
     mymap.on('click', affix);
     // mymap.on('zoom', secondZoom)
-    // mymap.on('drag', secondZoom)
+    //mymap.on('drag', nearbyPopups)
     secondmap.on('zoom', firstZoom)
     secondmap.on('drag', firstZoom)
     secondmap.on('mousemove', showOnSecond)
@@ -172,9 +174,12 @@
     var movingMarker = -1
     var x = document.getElementById("test"); 
     var toggle = 0
+    var popupToggle = 0
     var toggleParcels = 0
     var markers
     var thresholdDate = 1853
+    var randomColorMode = "yes"
+    var openAll = "no"
     document.getElementById("instruction").style.display = "none";
     document.getElementById("sliderStuff").style.display = "none";
     document.getElementById("searchInput1").style.display = "none";
@@ -476,7 +481,6 @@
         console.log("firing setup function & functionName is " + functionName)    
         for (var i = 0; i < ODB.features.length; i++){
                 if (ODB.features[i].coords.length > 0 && ODB.features[i].sortabledate < thresholdDate){
-                    console.log(i)
     //              if (ODB.features[i].coords[0][0] != 0 && ODB.features[i].lid == 0){
                     if (ODB.features[i].lid == 0){
                             var buttonText = ""
@@ -498,15 +502,36 @@
                             newLink = "<a href='" + ODB.features[i].link + "'>link</a>"
                         }
                         buttonText = buttonText + "<br>" + newLink 
-                        if (ODB.features[i].type == "grant"){
-                            var Color = randomColor()
-                            L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(grantLayer)
-                            .bindPopup(buttonText)
+                        var Color = "blue"
+                        if (randomColorMode == "yes"){Color = randomColor();}
+
+
+
+                        var center = mymap.getCenter()
+                        var testPoint = [center.lat,center.lng]
+                        var latestDistance = 0
+                        try{latestDistance = mymap.distance(ODB.features[i].coords[0],testPoint)}
+                        catch {latestDistance = 5000}
+                        if (openAll == "yes" && latestDistance < 1500){
+                            if (ODB.features[i].type == "grant"){
+                                console.log(ODB.features[i].caption)
+                                L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(grantLayer)
+                                .bindPopup(buttonText,{closeOnClick:false, autoClose:false}).openPopup();
+                            }
+                            else{
+                                L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(deedLayer)
+                                .bindPopup(buttonText,{closeOnClick:false, autoClose:false}).openPopup();
+                            }
                         }
                         else{
-                            Color = randomColor()
-                            L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(deedLayer)
-                            .bindPopup(buttonText)
+                            if (ODB.features[i].type == "grant"){
+                                L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(grantLayer)
+                                .bindPopup(buttonText)
+                            }
+                            else{
+                                L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(deedLayer)
+                                .bindPopup(buttonText)
+                            }
                         }
                     }
                     if (ODB.features[i].lid == 1){
@@ -1404,9 +1429,10 @@
             for (var i = 0; i < enslavers.features.length; i++) {
                 for (var j = 0; j < enslavers.features[i].numberEnslaved; j++){
                     var a = enslavers.features[i].coords
-                    var title = enslavers.features[i].enslaver + " enslaved " + enslavers.features[i].individuals[j] + "<input type='text' id = 'enslaver" + i + "enslaved" + j + "' style='width: 50px' onchange='changeName(" + i + "," + j + ")'>"
+                    //var title = enslavers.features[i].enslaver + " enslaved " + enslavers.features[i].individuals[j] + "<input type='text' id = 'enslaver" + i + "enslaved" + j + "' style='width: 50px' onchange='changeName(" + i + "," + j + ")'>"
+                    var title = "person enslaved by " + enslavers.features[i].enslaver
                     var marker = L.marker(new L.LatLng(a[0], a[1]), {title: title});
-                    marker.bindPopup(title);
+                    marker.bindTooltip(title);
                     markers.addLayer(marker);
                 }
             }
@@ -1437,7 +1463,6 @@
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
             if (hexColor.length < 6) {hexColor = "0" + hexColor}
-            console.log(hexColor)
             Color = "#" + hexColor
             return Color
     }
@@ -1475,6 +1500,7 @@
             mymap.flyTo([36.013065919508186,-79.07216548919679], 13)
         }, 60000)
         setTimeout(function(){
+            searchLayer.clearLayers();
             clusterMe()
         }, 70000)
     }
@@ -1484,7 +1510,7 @@
     }
 
     function showAll(){
-        document.getElementById('selected').innerText = "Use the scroll bar to access polygons underneath other polygons."
+        document.getElementById('instruction').innerText = "Use the slider to lower the date restriction & make some areas easier to understand."
         toggleParcels = toggleParcels + 1
         if (toggleParcels/2 == Math.floor(toggleParcels/2)){
             deedLayer.clearLayers();
@@ -1505,6 +1531,7 @@
 
     function setDate(){
         mode = "date"
+        randomColorMode = "yes"
         var sliderValue = document.getElementById("dateSlider").value
         thresholdDate = sliderValue
         deedLayer.clearLayers();
@@ -1556,6 +1583,25 @@
                 ODB.features[i].sortabledate = temp
                 console.log("fixed " + i + " so it is now " + ODB.features[i].sortabledate + " which was " + ODB.features[i].date)
             }
+        }
+    }
+
+    function nearbyPopups(){ //WHAT IF THIS JUST CHANGED openAll = "yes" and get sent here by setDate
+        popupToggle = popupToggle + 1
+        if (popupToggle/2 == Math.floor(popupToggle/2)){
+            tempLayer.clearLayers();
+            openAll = "no"
+            document.getElementById("button8").innerText = "open popups"
+            grantLayer.clearLayers();
+            deedLayer.clearLayers();
+            setup()
+        }
+        else{
+            openAll = "yes"
+            document.getElementById("button8").innerText = "close popups"
+            grantLayer.clearLayers();
+            deedLayer.clearLayers();
+            setup()
         }
     }
 
