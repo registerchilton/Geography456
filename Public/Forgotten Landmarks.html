@@ -31,7 +31,10 @@
     img:hover{
         transform:scale(1.0);
     }
-    .crosshair {cursor: crosshair;}
+    .crosshair {
+        cursor: crosshair;
+        background: #000
+    }
     .slider-container {
         margin-right: 20px;
         display: flex;
@@ -52,6 +55,13 @@
     .tick {
         font-size: 12px; 
         color: #888; 
+    }
+
+    .leaflet-layer,
+    .leaflet-control-zoom-in,
+    .leaflet-control-zoom-out,
+    .leaflet-control-attribution {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }
 
 </style>
@@ -87,6 +97,7 @@
         <input type="range" min="1752" max="1853" value="1853" class="slider" id="dateSlider" oninput='sliderMove()'>
         <button onclick="nearbyPopups()" id = "button8" style="display:inline-block;"">open popups</button>
         <button onclick="hoverLabels()" id = "button9" style="display:inline-block;"">hover labels on</button>
+        <button onclick="unhide()" id = "button10" style="display:inline-block;"">restore hidden polygons</button>
         <div class="tick-container">
             <span class="tick">1752</span>
             <span class="tick">1777</span>
@@ -143,6 +154,7 @@
     var theTable = document.getElementById('mytable')
     var searchResult = []
     var ODBSearchResult = []
+    var hiddenPolygons = []
     var mode = "map"
     var selection = -1
     // var recentPlacement = [36.03903600798149,-79.20069694519043]
@@ -190,7 +202,6 @@
     document.getElementById("searchInput1").style.display = "none";
     document.getElementById("searchInput2").style.display = "none";    
     document.getElementById("mysecondmap").style.display = "none";
-    //    setup();
 
     function search(j){
         searchResult = []
@@ -504,6 +515,8 @@
         secondLayer.clearLayers();
         console.log("firing setup function & functionName is " + functionName)    
         for (var i = 0; i < ODB.features.length; i++){
+            if (hiddenPolygons.includes(i)){}
+            else{
                 if (ODB.features[i].coords.length > 0 && ODB.features[i].sortabledate < thresholdDate){
     //              if (ODB.features[i].coords[0][0] != 0 && ODB.features[i].lid == 0){
                     if (ODB.features[i].lid == 0){
@@ -544,8 +557,9 @@
                                     buttonText = buttonText + "<b>" + ODB.features[i].history[k][0] + "</b> " + ODB.features[i].history[k][1] + "<br>"
                                 }                                
                             }
-                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>less</button>"
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>simple captionless</button>"
                         }
+                        buttonText = buttonText + " <button onclick='hide(" + i + ")'>hide this tract</button>"
                         var Color = "red"
                         if (i != closestPolygon){Color = randomColor();}
                         var center = mymap.getCenter()
@@ -596,6 +610,7 @@
                 }
             }
         }
+    }
 
     function remove(n){ //remove the specified parcel from the map - invoked from popup button
         var removing = n
@@ -1671,6 +1686,16 @@
             document.getElementById("button9").innerText = "hover labels on"
         }
         console.log ("hover mode is now " + hoverMode)
+    }
+
+    function hide(i){
+        hiddenPolygons.push(i)
+        setup();
+    }
+
+    function unhide(){
+        hiddenPolygons = []
+        setup();
     }
 
 </script>
