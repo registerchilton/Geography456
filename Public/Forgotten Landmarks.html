@@ -98,6 +98,8 @@
         <button onclick="nearbyPopups()" id = "button8" style="display:inline-block;"">open popups</button>
         <button onclick="hoverLabels()" id = "button9" style="display:inline-block;"">hover labels on</button>
         <button onclick="unhide()" id = "button10" style="display:inline-block;"">restore hidden polygons</button>
+        <button onclick="clearSearchLayer()" id = "button12">clear old searches</button>
+        <button onclick="showAll()" id = "button11">show all parcels</button>
         <div class="tick-container">
             <span class="tick">1752</span>
             <span class="tick">1777</span>
@@ -106,6 +108,7 @@
             <span class="tick">1852</span>
         </div>
     </div>
+    <button onclick="Counter()" id = "button2">Counter</button>
     <button onclick="newHopePresbyterian()" id = "button2">founders of New Hope Presbyterian</button>
     <button onclick="FPOC()" id = "button3">free landowners of color</button>
     <button onclick="clusterMe()" id = "button4">spatial distribution of slavery</button>
@@ -202,6 +205,8 @@
     document.getElementById("searchInput1").style.display = "none";
     document.getElementById("searchInput2").style.display = "none";    
     document.getElementById("mysecondmap").style.display = "none";
+    ODB.features.sort((a, b) => (a.sortabledate > b.sortabledate ? 1 : -1));
+    showAll();
 
     function search(j){
         searchResult = []
@@ -218,10 +223,8 @@
                         searchResult.push(i)
                 }
             }
-            console.log(searchResult)
-            searchResultTable()
         }
-        else{
+        if (j=2){
             var searchTerm = document.getElementById('searchInput2').value
             console.log("firing narrower search function for " + searchTerm)
             for (var i = 0; i < ODB.features.length; i++){
@@ -231,9 +234,9 @@
                     searchResult.push(i)
                 }
             }
-            console.log(searchResult)
-            searchResultTable()
         }
+        console.log(searchResult)
+        searchResultTable()
     }
 
     function searchResultTable(){
@@ -314,7 +317,7 @@
     //            popupText = popupText + "<a href='" + ODB.features[searchResult[i]].link + "'>original</a><br>" + Color
     //            popupText = popupText + "<br><button onclick='placeHere(" + searchResult[i] + ")'>placeHere?</button>"
                 if (ODB.features[searchResult[i]].lid == 0){// put some tracts on the main map
-                    L.polygon(ODB.features[searchResult[i]].coords, {color:Color,opacity:0.5,fillColor:Color,fillOpacity:0.5}).addTo(searchLayer)
+                    L.polygon(ODB.features[searchResult[i]].coords, {color:Color,opacity:1,fillColor:Color,fillOpacity:0.5}).addTo(searchLayer)
                     .bindPopup(popupText)
                 }
                 if (ODB.features[searchResult[i]].lid == 1){// but put others in the box lid
@@ -326,33 +329,6 @@
         //setTimeout(function(){searchLayer.clearLayers();},5000);
     }
 
-    function getHyperlink(x){
-        try {
-            var stepOne = x
-            // console.log("stepOne is " + stepOne)
-            var stepTwo = []
-            var stepThree
-            var stepFour
-            if (stepOne.includes("ODB")){
-                stepTwo = stepOne.split(" ")
-                // console.log("stepTwo is [" + stepTwo + "]")
-                for (var i = 0; i < stepTwo.length; i++){
-                    if (stepTwo[i].includes("ODB")){
-                        stepThree = stepTwo[i+1]
-                        i = stepTwo.length
-                    }
-                }
-                // console.log("stepThree is " + stepThree)
-                stepFour = stepThree.split("/")
-            }
-            try{
-                var hyperlink = "<a href='https://rod.orangecountync.gov/orangencnw/application.asp?cmd=image_link&image_link_book=" + stepFour[0] + "&image_link_page=" + stepFour[1] + "&image_link_booktype=Records%20Book&tif2pdf=true'>link</a>"
-            }
-            catch {var hyperlink = "none"}
-        }
-        catch {var hyperlink = "none"}
-        return hyperlink
-    }
 
 
     function showSurvey(j){ //display the digital image of the survey
@@ -510,6 +486,7 @@
     }
 
     function setup(){  //This function draws or re-draws the map
+        zoomNow = mymap.getZoom()
         grantLayer.clearLayers();
         deedLayer.clearLayers();
         secondLayer.clearLayers();
@@ -518,48 +495,49 @@
             if (hiddenPolygons.includes(i)){}
             else{
                 if (ODB.features[i].coords.length > 0 && ODB.features[i].sortabledate < thresholdDate){
-    //              if (ODB.features[i].coords[0][0] != 0 && ODB.features[i].lid == 0){
                     if (ODB.features[i].lid == 0){
-                            var buttonText = ""
+                        // We need to build up the buton text & here is where we start
+                        var buttonText = ""
+                        // use the title history feature to select a label
                         for (var j = ODB.features[i].history.length - 1; j > 0 ; j = j - 1){
-                            // console.log("comparing " + thresholdDate + " to " + ODB.features[i].history[j][2])
                             if (thresholdDate > ODB.features[i].history[j][2] && ODB.features[i].history[j][0] != "end"){
-                                // console.log("meets criteria " + ODB.features[i].history[j][1])
-                                buttonText = buttonText + "<b>" + ODB.features[i].history[j][0] + " " + ODB.features[i].history[j][1] + "</b><br>"
+                                buttonText = buttonText + "<b>" + ODB.features[i].history[j][0] + "</b><br>&emsp;" + ODB.features[i].history[j][1] + "<br>"
                                 j = 0
                             }
-                            // else{console.log("rejecting " + ODB.features[i].history[j][1])}
                         }
+                        // if that fails then just use the caption
                         if (buttonText == "") {
-                            buttonText = "<b>" + ODB.features[i].caption + "</b> " + ODB.features[i].date
-                            // console.log("buttonText set by deafult " + ODB.features[i].type + " " + i)
+                            buttonText = "<b>" + ODB.features[i].caption + "</b><br>&emsp;" + ODB.features[i].date + "<br>"
                         }
                         var newLink = getHyperlink(buttonText)
-                        if (newLink == "none"){
+                        if (newLink == "no link"){
                             newLink = "<a href='" + ODB.features[i].link + "'>link</a>"
                         }
-                        buttonText = buttonText + "<br>" + newLink 
                         if (detailLevel == 1){
+                            buttonText = buttonText + "<br>" + newLink
                             buttonText = buttonText + "<button onclick='detail(" + i + ")'>abstract</button>"
                         }
                         if (detailLevel == 2){
                             buttonText = buttonText + ODB.features[i].brief
+                            buttonText = buttonText + "<br>" + newLink 
                             buttonText = buttonText + "<button onclick='detail(" + i + ")'>legal description</button>"
                         }
                         if (detailLevel == 3){
                             buttonText = buttonText + ODB.features[i].legal
+                            buttonText = buttonText + "<br>" + newLink 
                             buttonText = buttonText + "<button onclick='detail(" + i + ")'>title history</button>"
                         }
                         if (detailLevel == 4){
                             buttonText = ""
                             for (var k = 0; k < ODB.features[i].history.length; k++){
                                 if (ODB.features[i].history[k][0] != "end"){
-                                    buttonText = buttonText + "<b>" + ODB.features[i].history[k][0] + "</b> " + ODB.features[i].history[k][1] + "<br>"
+                                    buttonText = buttonText + "<b>" + ODB.features[i].history[k][0] + "</b><br>&emsp;" + ODB.features[i].history[k][1] + "&emsp;" + getHyperlink(ODB.features[i].history[k][0]) + "<br>"
                                 }                                
                             }
-                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>simple captionless</button>"
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>simple caption</button>"
                         }
                         buttonText = buttonText + " <button onclick='hide(" + i + ")'>hide this tract</button>"
+                        buttonText = buttonText + " <button onclick='labelCorners(" + i + ",0)'>label corners</button>"
                         var Color = "red"
                         if (i != closestPolygon){Color = randomColor();}
                         var center = mymap.getCenter()
@@ -767,7 +745,8 @@
         document.getElementById("button5").style.display = "none";
         document.getElementById("button6").style.display = "none";
         document.getElementById("button7").style.display = "none";
-//        document.getElementById("mapButton").style.display = "none";
+        document.getElementById("button11").style.display = "none";
+        document.getElementById("instruction").style.display = "none";
         document.getElementById("sliderStuff").style.display = "none";
         document.getElementById("myfirstmap").style.display = "none";
         document.getElementById("mysecondmap").style.display = "none";
@@ -1324,10 +1303,13 @@
         var minLong = -180
         var maxLong = 0
         for (var i = 0; i < petitionArray.length; i++){
-            console.log("Trip " + i + " through the petition array")
             document.getElementById('searchInput2').value = petitionArray[i]
             Color = randomColor()
-            search(2)
+            Opacity = 1
+            search(2) //narrow search
+            document.getElementById('searchInput1').value = petitionArray[i]
+            Opacity = 0.25
+            search(1) //wider search
         }
         for (var i = 0; i < searchResult.length; i++){
             for (var j = 0; j < ODB.features[searchResult[i]].coords.length; j++){
@@ -1572,17 +1554,18 @@
             deedLayer.clearLayers();
             grantLayer.clearLayers();
             document.getElementById("button7").innerText = "show all parcels"
+            document.getElementById("button11").innerText = "show all parcels"
             document.getElementById("instruction").style.display = "none";
             document.getElementById("sliderStuff").style.display = "none";
         }
         else{
             document.getElementById("button7").innerText = "hide all parcels"
+            document.getElementById("button11").innerText = "hide all parcels"
             document.getElementById("instruction").style.display = "block";
             document.getElementById("sliderStuff").style.display = "block";
             document.getElementById("button1").style.visibility = "hidden"
             setup()
         }
-
     }
 
     function sliderMove(){
@@ -1697,6 +1680,66 @@
         hiddenPolygons = []
         setup();
     }
+
+    function Counter(){
+        var clicker = 0
+        for (var i = 0; i < ODB.features.length; i++){
+            if (ODB.features[i].coords.length > 0 && ODB.features[i].coords[0][0] > 0 & ODB.features[i].lid == 0){
+                for (var j = 0; j < ODB.features[i].history.length; j++){
+                    if (ODB.features[i].history[j][0] != "end"){clicker++}
+                }
+            }
+        }
+        console.log("I counted " + clicker +" deeds")
+    }
+
+    function labelCorners(x,y){
+        var lengthScreen = y
+        var limit = ODB.features[x].coords.length
+        if (limit > ODB.features[x].corners.length) {limit = ODB.features[x].corners.length}
+        for (var i = 0; i < limit; i++){
+            var rawCorner = ODB.features[x].corners[i]
+            try{
+                var cornerSplitByTo = rawCorner.split("to ")
+                var cornerLabel = cornerSplitByTo[cornerSplitByTo.length - 1]
+                if (cornerSplitByTo.length > 1){
+                    console.log("found a line description!")
+                    var edgeLabel = ""
+                    for (var j = 0; j < cornerSplitByTo.length - 1; j++) 
+                    edgeLabel = edgeLabel + cornerSplitByTo[j]
+                    if (j < cornerSplitByTo.length - 2) {
+                        edgeLabel = edgeLabel + " to "
+                    }
+                    console.log(x,y)
+                }
+            }
+            catch{
+                console.log("using the catch")
+                var cornerLabel = rawCorner
+            }
+            if (cornerLabel != "first station " && cornerLabel != "begin " && cornerLabel.length > lengthScreen){
+                console.log(cornerLabel + " " + i )
+                console.log(ODB.features[x].coords[i])
+                L.marker(ODB.features[x].coords[i]).addTo(searchLayer)
+                .bindPopup(cornerLabel,{closeOnClick:false, autoClose:false}).openPopup();
+                console.log("marker successful")
+            }
+            try {
+                console.log("line 1411")
+                if (edgeLabel.length > lengthScreen){
+                    try{
+                        var thisCorner = ODB.features[x].coords[i]
+                        var previousCorner = ODB.features[x].coords[i-1] 
+                        L.polyline([thisCorner,previousCorner], {color:"yellow",weight:10}).addTo(searchLayer)
+                        .bindPopup(edgeLabel,{closeOnClick:false, autoClose:false}).openPopup();
+                    }
+                    catch{}
+                }
+            }
+            catch{}
+        }
+    }
+
 
 </script>
 </html>
