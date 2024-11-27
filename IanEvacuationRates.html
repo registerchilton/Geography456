@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evacuations reported by Spectus</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+<script src="./ianData.js"></script>
+
+<style>
+    #myfirstmap { height: 650px; width: 100pct}
+    .slider-container {
+        margin-right: 20px;
+        display: flex;
+        align-items: left;
+        flex-direction: column;
+    }
+
+    .slider {
+        width: 545px; 
+    }
+    .tick-container {
+        display: flex;
+        justify-content: space-between;
+        width: 550px;
+        margin-top: 5px;
+    }
+
+    .tick {
+        font-size: 12px; 
+        color: #888; 
+    }
+</style>
+
+<body>
+    <button id="button1" onclick="markerTable()">markerTable</button><br>
+    <div id="legend"> red is high ; green is low </div>
+    <div id="myfirstmap"></div>
+    <table id="mytable">
+        <tr>
+            <th></th>
+        </tr>
+    </table>
+    </body>
+
+<script>
+    var mymap = L.map('myfirstmap').setView([28.497660832963472, -83.682861328125], 7);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mymap);
+
+    var theTable = document.getElementById('mytable')
+    var mapLayer = L.layerGroup().addTo(mymap);
+    var markerLayer = L.layerGroup().addTo(mymap);
+    var mode = "observation"
+    var markerOnTheMove = -1
+
+    mymap.on('mousemove', onMouseMove);
+    mymap.on('click', placeMarker);
+
+    setup();
+
+    function setup(){
+        markerLayer.clearLayers();
+        for (var i = 0; i < florida.features.length; i++){
+            var popupText = florida.features[i].county + " " + florida.features[i].evac + "% evacuated"
+            // popupText = popupText + "<input id ='evac" + i + "' type='text' style='width: 100px' placeholder = 'evac rate'>"
+            // popupText = popupText + "<input id ='error" + i + "' type='text' style='width: 100px' placeholder = 'max error' onchange='newData(" + i + ")'>"
+            Color = "#BA533A"
+//            var RADIUS = florida.features[i].pop/100
+            var RADIUS = 10000
+            var evacsInThisCounty = florida.features[i].evac
+            console.log(evacsInThisCounty)
+            if (evacsInThisCounty < 10){ Color = "#E0AB3D"}
+            if (evacsInThisCounty < 7.5){ Color = "#F0DC71"}
+            if (evacsInThisCounty < 6.3){ Color = "#8ABF67"}
+            if (evacsInThisCounty < 5.3){ Color = "#4C9150"}
+            L.circle(florida.features[i].coords, {color:Color, radius:RADIUS, fillOpacity:1}).addTo(markerLayer)
+            .bindTooltip(popupText)
+        }
+    }
+
+    function newData(i){
+        var evacID = "evac" + i
+        var errorID = "error" + i
+        florida.features[i].evac = document.getElementById(evacID).value
+        florida.features[i].error = document.getElementById(errorID).value
+        console.log("" + florida.features[i].evac + " " + florida.features[i].error)
+        setup();
+    }
+
+    function onMouseMove(e) {
+        console.log('firing on mouse move')
+        clickLat = e.latlng['lat'] 
+        clickLong = e.latlng['lng']
+        // if (mode == "markerMove"){
+        //     markerLayer.clearLayers();
+        //     for (var i = 0; i < hbo.features.length; i++){
+        //         var popupText = hbo.features[i].lot
+        //         if (hbo.features[i].lot == markerOnTheMove){
+        //             console.log("not displaying the mover")
+        //             L.marker([clickLat,clickLong]).addTo(markerLayer)
+        //         }
+        //         else{
+        //             Color = "red"
+        //             L.circle(hbo.features[i].coords, {color:Color, radius:5}).addTo(markerLayer)
+        //             .bindPopup(popupText)
+        //         }
+        //     }
+        // }
+    }
+
+
+    function placeMarker(e){
+        clickLat = e.latlng['lat']
+        clikcLong = e.latlng['lng']
+        console.log([clickLat,clickLong])
+    //     hbo.features[markerOnTheMove].coords = [clickLat,clickLong]
+    //     markerOnTheMove = -1
+    //     mode = "observation"
+    //     setup()
+    }
+
+    function markerTable(){
+        theTable.innerHTML=""
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerText = "var florida = {'features':["
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+        for (var i = 0; i < florida.features.length; i++){
+            var myNewRow = document.createElement('tr');
+            var myNewCell1 = document.createElement('td');
+            var updatedData = ""
+            
+            updatedData = updatedData + "{'FIPS':" + florida.features[i].FIPS + ","
+            updatedData = updatedData + "'county':'" + florida.features[i].county + "',"
+            updatedData = updatedData + "'seat':'" + florida.features[i].seat + "',"
+            updatedData = updatedData + "'coords':[" + florida.features[i].coords + "],"
+            updatedData = updatedData + "'evac':" + florida.features[i].evac + ","
+            updatedData = updatedData + "'error':" + florida.features[i].error + "},"
+            myNewCell1.innerText = updatedData
+            myNewRow.append(myNewCell1)
+            theTable.append(myNewRow);
+        }
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerText = "]}"
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+    }
+
+
+    function moveMarker(i){
+        mode = "markerMove"
+        markerOnTheMove = i
+    }
+</script>
+</html>
