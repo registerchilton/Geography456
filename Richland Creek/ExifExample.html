@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,57 +50,63 @@
     var long
     var markers = ""
     var image = 1
-        function getExif() {
-            var img1 = document.getElementById(markerImage);
-            console.log(img1)
-            EXIF.getData(img1, function() {
-                lat = EXIF.getTag(this, "GPSLatitude");
-                var longref = EXIF.getTag(this, "GPSLongitudeRef");
-                var latref = EXIF.getTag(this, "GPSLatitudeRef");
-                long = EXIF.getTag(this, "GPSLongitude");
-                var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
-                var longitude= long[0] + (long[1]/60) + (long[2]/3600)
-                var time = EXIF.getTag(this, "DateTimeOriginal");
-                if (longref == "W") {longitude = longitude * -1}
-                if (latref == "S") {latitude = latitude * -1}
-                var coords = document.getElementById("LatLong");
-                coords.innerHTML = `${latitude} ${longitude}`;
-                var coordinates = []
-                coordinates.push(latitude)
-                coordinates.push(longitude)
-                console.log(coordinates[0] + "," + coordinates[1])
-                mymap.flyTo(coordinates, 14)
-                if (markers != "done") {
-                    var source = document.getElementById(markerImage).src
-                    var picture = "<img src='" + source + "' style='width:100px'/><br>" + time
-                    var marker = L.marker(coordinates).addTo(mymap).bindPopup(picture).openPopup();
-                }
-            });
-        }
-        function imageChange(){
-            document.getElementById(markerImage).style="width:50px"
-            image = image + 1
-            if (image == 15) {
-                image = 1
-                markers = "done"
+
+    for (var i = 1; i < 15; i++){
+        imageChange()
+    }
+
+    function getExif() {
+        var img1 = document.getElementById(markerImage);
+        console.log(img1)
+        EXIF.getData(img1, function() {
+            lat = EXIF.getTag(this, "GPSLatitude");
+            var longref = EXIF.getTag(this, "GPSLongitudeRef");
+            var latref = EXIF.getTag(this, "GPSLatitudeRef");
+            long = EXIF.getTag(this, "GPSLongitude");
+            var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
+            var longitude= long[0] + (long[1]/60) + (long[2]/3600)
+            var time = EXIF.getTag(this, "DateTimeOriginal");
+            if (longref == "W") {longitude = longitude * -1}
+            if (latref == "S") {latitude = latitude * -1}
+            var coords = document.getElementById("LatLong");
+            coords.innerHTML = `${latitude} ${longitude}`;
+            var coordinates = []
+            coordinates.push(latitude)
+            coordinates.push(longitude)
+            console.log(coordinates[0] + "," + coordinates[1])
+            mymap.flyTo(coordinates, 14)
+            if (markers != "done") {
+                var source = document.getElementById(markerImage).src
+                var picture = "<img src='" + source + "' style='width:100px'/><br>" + time
+                var marker = L.marker(coordinates).addTo(mymap).bindPopup(picture).openPopup();
             }
-            if (image == 1) {markerImage = "img1"}
-            if (image == 2) {markerImage = "img2"}
-            if (image == 3) {markerImage = "img3"}
-            if (image == 4) {markerImage = "img4"}
-            if (image == 5) {markerImage = "img5"}
-            if (image == 6) {markerImage = "img6"}
-            if (image == 7) {markerImage = "img7"}
-            if (image == 8) {markerImage = "img8"}
-            if (image == 9) {markerImage = "img9"}
-            if (image == 10) {markerImage = "img10"}
-            if (image == 11) {markerImage = "img11"}
-            if (image == 12) {markerImage = "img12"}
-            if (image == 13) {markerImage = "img13"}
-            if (image == 14) {markerImage = "img14"}
-            document.getElementById(markerImage).style="width:500px"
-            getExif();
+        });
+    }
+
+    function imageChange(){
+        document.getElementById(markerImage).style="width:50px"
+        image = image + 1
+        if (image == 15) {
+            image = 1
+            markers = "done"
         }
-    </script>
+        if (image == 1) {markerImage = "img1"}
+        if (image == 2) {markerImage = "img2"}
+        if (image == 3) {markerImage = "img3"}
+        if (image == 4) {markerImage = "img4"}
+        if (image == 5) {markerImage = "img5"}
+        if (image == 6) {markerImage = "img6"}
+        if (image == 7) {markerImage = "img7"}
+        if (image == 8) {markerImage = "img8"}
+        if (image == 9) {markerImage = "img9"}
+        if (image == 10) {markerImage = "img10"}
+        if (image == 11) {markerImage = "img11"}
+        if (image == 12) {markerImage = "img12"}
+        if (image == 13) {markerImage = "img13"}
+        if (image == 14) {markerImage = "img14"}
+        document.getElementById(markerImage).style="width:500px"
+        getExif();
+    }
+</script>
 </body>
 </html>
