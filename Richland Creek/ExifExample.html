@@ -51,10 +51,6 @@
     var markers = ""
     var image = 1
 
-    for (var i = 1; i < 15; i++){
-        imageChange()
-    }
-
     function getExif() {
         var img1 = document.getElementById(markerImage);
         console.log(img1)
@@ -82,7 +78,6 @@
             }
         });
     }
-
     function imageChange(){
         document.getElementById(markerImage).style="width:50px"
         image = image + 1
