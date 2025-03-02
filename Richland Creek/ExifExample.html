@@ -61,6 +61,7 @@
             long = EXIF.getTag(this, "GPSLongitude");
             var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
             var longitude= long[0] + (long[1]/60) + (long[2]/3600)
+            console.log("" + latitude + "," + longitude)
             var time = EXIF.getTag(this, "DateTimeOriginal");
             if (longref == "W") {longitude = longitude * -1}
             if (latref == "S") {latitude = latitude * -1}
