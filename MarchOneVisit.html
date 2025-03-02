@@ -44,17 +44,11 @@
 </style>
 
 <body>
-<!-- <button onclick="display()">Display the map</button> -->
-<button onclick="toggleLIDAR()">toggle LIDAR</button><br>
-<div id="instruction">Adjust the opacity of the LIDAR hillshade with this slider.</div>
-<div class="slider-container">
-    <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider" oninput='display()'>
-      <div class="tick-container">
-          <span class="tick">25</span>
-          <span class="tick">50</span>
-          <span class="tick">100</span>
-      </div>
-    </div>
+    <h4>1 March 2025: Peter Sandbeck, Joe Liles, Ken Hermey & I walked under a mile cross country into Eno River State Park.</h4>
+    <h4>Ken was leading us back to site of Norman Beasley's grave. Greg Bell & I had been here in July 2024, but it was overgrown.</h4>
+    <h4>We had found Norman Beasley's grave in July 2024, but we could not discern any other graves at the time.</h4>
+    <h4>Returning in early Spring, we saw much that Greg and I had missed.</h4>
+    <button onclick="toggleLIDAR()">toggle LIDAR</button><br>
     <div id="myfirstmap"></div><br><br>
     <img src="./1.jpg" id="img1" style="width:500px"/>
     <h4>An umistakeable headstone has no inscription</h4><br><br>
@@ -118,6 +112,8 @@ L.marker([36.088927833, -79.02531383]).addTo(mymap).bindTooltip('<img src="./4.j
 L.marker([36.087922167, -79.02749050]).addTo(mymap).bindTooltip('<img src="./2.jpg" id="img2" style="height:250px"/><br><br>Norman Beasley grave [36.087922167, -79.02749050]')
 L.marker([36.088347167, -79.02464167]).addTo(mymap).bindTooltip('<img src="./6.jpg" id="img6" style="height:250px"/><br><br>pump station [36.088347167, -79.02464167]')
 L.marker([36.087505500, -79.02430000]).addTo(mymap).bindTooltip('<img src="./7.jpg" id="img7" style="height:250px"/><br><br>tobacco barn [36.087505500, -79.02430000]')
+
+
 
 
 var layerClick = L.layerGroup().addTo(mymap);
