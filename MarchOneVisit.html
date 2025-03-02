@@ -45,9 +45,7 @@
 
 <body>
 <!-- <button onclick="display()">Display the map</button> -->
-<button onclick="placeMarkers()">placeMarkers</button><br>
-
-
+<button onclick="toggleLIDAR()">toggle LIDAR</button><br>
 <div id="instruction">Adjust the opacity of the LIDAR hillshade with this slider.</div>
 <div class="slider-container">
     <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider" oninput='display()'>
@@ -57,14 +55,21 @@
           <span class="tick">100</span>
       </div>
     </div>
-    <div id="myfirstmap"></div>
-    <img src="./1.jpg" id="img1" style="width:50px"/>
-    <img src="./2.jpg" id="img2" style="width:50px"/>
-    <img src="./3.jpg" id="img3" style="width:50px"/>
-    <img src="./4.jpg" id="img4" style="width:50px"/>
-    <img src="./5.jpg" id="img5" style="width:50px"/>
-    <img src="./6.jpg" id="img6" style="width:50px"/>
-    <img src="./7.jpg" id="img7" style="width:50px"/>
+    <div id="myfirstmap"></div><br><br>
+    <img src="./1.jpg" id="img1" style="width:500px"/>
+    <h4>An umistakeable headstone has no inscription</h4><br><br>
+    <img src="./2.jpg" id="img2" style="width:500px"/>
+    <h4>Norman Beasley's grave with metal & paper marker</h4><br><br>
+    <img src="./3.jpg" id="img3" style="width:500px"/>
+    <h4>Joe Liles and Ken Hermey share their knowledge of the site</h4><br><br>
+    <img src="./4.jpg" id="img4" style="width:500px"/>
+    <h4>Peter Sandbeck points out the type of notching - circa 1900; definitely not from the Holden era.</h4><br><br>
+    <img src="./5.jpg" id="img5" style="width:500px"/>
+    <h4>The Beasley house has mortared stone at the center of the chimney stack, though most of the chimney is brick. Perhaps there was an earlier building here?</h4><br><br>
+    <img src="./6.jpg" id="img6" style="width:500px"/>
+    <h4>Some sort of fresh water pump station.</h4><br><br>
+    <img src="./7.jpg" id="img7" style="width:500px"/>
+    <h4>This old tobacco barn burned wood to cure the tobacco.</h4>
 </body>
 
 <script>
@@ -104,8 +109,19 @@ var erroneousLong
 var firstCorrectedLocation = []
 var imageUrl = './Holden1.png'
 var imageBounds = [[36.082390873840595,-79.03390606337304],[36.089570473840595,-79.02019446337304]]
-display();
-//L.marker([36.08792,-79.02758]).addTo(mymap).bindTooltip("the land mark tree")
+
+var toggle = 0
+toggleLIDAR();
+
+L.marker([36.08792,-79.02758]).addTo(mymap).bindTooltip("the land mark tree")
+L.marker([36.088927833, -79.02531383]).addTo(mymap).bindTooltip('<img src="./4.jpg" id="img4" style="height:250px"/><br><br>Norman Beasley house')
+L.marker([36.087922167, -79.02749050]).addTo(mymap).bindTooltip('<img src="./2.jpg" id="img2" style="height:250px"/><br><br>Norman Beasley grave')
+L.marker([36.088347167, -79.02464167]).addTo(mymap).bindTooltip('<img src="./6.jpg" id="img6" style="height:250px"/><br><br>pump station')
+L.marker([36.087505500, -79.02430000]).addTo(mymap).bindTooltip('<img src="./7.jpg" id="img7" style="height:250px"/><br><br>tobacco barn')
+
+
+
+
 var layerClick = L.layerGroup().addTo(mymap);
 var popup = L.popup();
 var upordown = 0
@@ -115,48 +131,15 @@ var correctedLong
 var EWputdownscale = 10
 var NSputdownscale = 10
 var NSadjust = 0
+var Opacity = 1
 
 
 
-function display() {
-    var opacityslider = document.getElementById('opacitySlider');
-    var Opacity = opacityslider.value/100
+function toggleLIDAR() {
+    maplayer.clearLayers();
+    toggle += 1
+    Opacity = toggle%2
     L.imageOverlay(imageUrl, imageBounds, {opacity: Opacity}).addTo(maplayer);
-}
-
-
-function placeMarkers(){
-    getExif(1)
-}
-
-
-function getExif(x) {
-    searchID = "img" + x
-    var subjectImage = document.getElementById(searchID);
-    console.log(subjectImage)
-    EXIF.getData(subjectImage, function() {
-        lat = EXIF.getTag(this, "GPSLatitude");
-        var longref = EXIF.getTag(this, "GPSLongitudeRef");
-        var latref = EXIF.getTag(this, "GPSLatitudeRef");
-        long = EXIF.getTag(this, "GPSLongitude");
-        var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
-        var longitude= long[0] + (long[1]/60) + (long[2]/3600)
-        var time = EXIF.getTag(this, "DateTimeOriginal");
-        if (longref == "W") {longitude = longitude * -1}
-        if (latref == "S") {latitude = latitude * -1}
-        var coords = document.getElementById("LatLong");
-        coords.innerHTML = `${latitude} ${longitude}`;
-        var coordinates = []
-        coordinates.push(latitude)
-        coordinates.push(longitude)
-        console.log(coordinates[0] + "," + coordinates[1])
-        mymap.flyTo(coordinates, 14)
-        if (markers != "done") {
-            var source = document.getElementById(markerImage).src
-            var picture = "<img src='" + source + "' style='width:100px'/><br>" + time
-            var marker = L.marker(coordinates).addTo(mymap).bindPopup(picture).openPopup();
-        }
-    });
 }
 
 
