@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map Overlay Utility</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+<style>
+#myfirstmap { height: 550px; width: 100pct}
+.slider-container {
+    margin-right: 20px;
+    display: flex;
+    align-items: left;
+    flex-direction: column;
+}
+
+.slider {
+    width: 545px; 
+}
+.tick-container {
+    display: flex;
+    justify-content: space-between;
+    width: 550px;
+    margin-top: 5px;
+}
+
+.tick {
+    font-size: 12px; 
+    color: #888; 
+}
+</style>
+
+<body>
+<!-- <button onclick="display()">Display the map</button> -->
+<button onclick="placeMarkers()">placeMarkers</button><br>
+
+
+<div id="instruction">Adjust the opacity of the LIDAR hillshade with this slider.</div>
+<div class="slider-container">
+    <input type="range" min="0" max="100" value="70" class="slider" id="opacitySlider" oninput='display()'>
+      <div class="tick-container">
+          <span class="tick">25</span>
+          <span class="tick">50</span>
+          <span class="tick">100</span>
+      </div>
+    </div>
+    <div id="myfirstmap"></div>
+    <img src="./1.jpg" id="img1" style="width:50px"/>
+    <img src="./2.jpg" id="img2" style="width:50px"/>
+    <img src="./3.jpg" id="img3" style="width:50px"/>
+    <img src="./4.jpg" id="img4" style="width:50px"/>
+    <img src="./5.jpg" id="img5" style="width:50px"/>
+    <img src="./6.jpg" id="img6" style="width:50px"/>
+    <img src="./7.jpg" id="img7" style="width:50px"/>
+</body>
+
+<script>
+var mymap = L.map('myfirstmap').setView([36.086,-79.027], 16);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+
+var SWchangelat
+var SWchangeLong
+var NEchangelat
+var NEchangeLong
+var maplayer = L.layerGroup().addTo(mymap);
+var imageWidth
+var imageHeight
+var imageScale
+var EWScale = 100
+var EWscaleSlider = 100
+var NSscale = 100
+var NSscaleSlider = 100
+var NEcornerLat = 35.919869995668265
+var NEcornerLong = -79.03320932572984
+var SWcornerLat = 35.89850543644488
+var SWcornerLong = -79.06230138377042
+let NSlength = mymap.distance([36,-79], [36.1,-79]); // this gives us the distance of 0.1 degrees NS in meters
+let EWlength = mymap.distance([36,-79], [36,-79.1]); // this gives us the distance of 0.1 degrees EW in meters
+// var NSscaling = 0.1/NSlength 
+// var EWscaling = 0.1/EWlength
+var NSscaling = .00001 
+var EWscaling = NSscaling
+console.log("NS scale is " + NSscaling + " & EW is " + EWscaling)
+var allMetaDataSpan
+var adjustmode = 0
+var erroneousLat
+var erroneousLong
+var firstCorrectedLocation = []
+var imageUrl = './Holden1.png'
+var imageBounds = [[36.082390873840595,-79.03390606337304],[36.089570473840595,-79.02019446337304]]
+display();
+//L.marker([36.08792,-79.02758]).addTo(mymap).bindTooltip("the land mark tree")
+var layerClick = L.layerGroup().addTo(mymap);
+var popup = L.popup();
+var upordown = 0
+var image
+var correctedLat
+var correctedLong
+var EWputdownscale = 10
+var NSputdownscale = 10
+var NSadjust = 0
+
+
+
+function display() {
+    var opacityslider = document.getElementById('opacitySlider');
+    var Opacity = opacityslider.value/100
+    L.imageOverlay(imageUrl, imageBounds, {opacity: Opacity}).addTo(maplayer);
+}
+
+
+function placeMarkers(){
+    getExif(1)
+}
+
+
+function getExif(x) {
+    searchID = "img" + x
+    var subjectImage = document.getElementById(searchID);
+    console.log(subjectImage)
+    EXIF.getData(subjectImage, function() {
+        lat = EXIF.getTag(this, "GPSLatitude");
+        var longref = EXIF.getTag(this, "GPSLongitudeRef");
+        var latref = EXIF.getTag(this, "GPSLatitudeRef");
+        long = EXIF.getTag(this, "GPSLongitude");
+        var latitude = lat[0] + (lat[1]/60) + (lat[2]/3600)
+        var longitude= long[0] + (long[1]/60) + (long[2]/3600)
+        var time = EXIF.getTag(this, "DateTimeOriginal");
+        if (longref == "W") {longitude = longitude * -1}
+        if (latref == "S") {latitude = latitude * -1}
+        var coords = document.getElementById("LatLong");
+        coords.innerHTML = `${latitude} ${longitude}`;
+        var coordinates = []
+        coordinates.push(latitude)
+        coordinates.push(longitude)
+        console.log(coordinates[0] + "," + coordinates[1])
+        mymap.flyTo(coordinates, 14)
+        if (markers != "done") {
+            var source = document.getElementById(markerImage).src
+            var picture = "<img src='" + source + "' style='width:100px'/><br>" + time
+            var marker = L.marker(coordinates).addTo(mymap).bindPopup(picture).openPopup();
+        }
+    });
+}
+
+
+
+</script>
+</html>
