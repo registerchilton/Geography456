@@ -19,7 +19,7 @@
 <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
 <style>
-#myfirstmap { height: 550px; width: 100pct}
+#myfirstmap { height: 500px; width: 800px}
 .slider-container {
     margin-right: 20px;
     display: flex;
@@ -47,7 +47,7 @@
     <h4>1 March 2025: Peter Sandbeck, Joe Liles, Ken Hermey & I walked under a mile cross country into Eno River State Park.</h4>
     <h4>Ken was leading us back to site of Norman Beasley's grave. Greg Bell & I had been here in July 2024, but it was overgrown.</h4>
     <h4>We had found Norman Beasley's grave in July 2024, but we could not discern any other graves at the time.</h4>
-    <h4>Returning in early Spring, we saw much that Greg and I had missed.</h4>
+    <h4>Now in early Spring, we saw many graves that Greg and I had missed - perhaps 10 that were obvious, plus perhaps 2 or 3 dozen more that were less certain.</h4>
     <button onclick="toggleLIDAR()">toggle LIDAR</button><br>
     <div id="myfirstmap"></div><br><br>
     <img src="./1.jpg" id="img1" style="width:500px"/>
@@ -57,13 +57,17 @@
     <img src="./3.jpg" id="img3" style="width:500px"/>
     <h4>Joe Liles and Ken Hermey share their knowledge of the site</h4><br><br>
     <img src="./4.jpg" id="img4" style="width:500px"/>
-    <h4>Peter Sandbeck points out the type of notching - circa 1900; definitely not from the Holden era.</h4><br><br>
+    <h4>Peter Sandbeck points out the type of notching - circa 1900; definitely not from the Holden era. Presumably where Norman Beasley lived.</h4><br><br>
     <img src="./5.jpg" id="img5" style="width:500px"/>
     <h4>The Beasley house has mortared stone at the center of the chimney stack, though most of the chimney is brick. Perhaps there was an earlier building here?</h4><br><br>
     <img src="./6.jpg" id="img6" style="width:500px"/>
     <h4>Some sort of fresh water pump station.</h4><br><br>
     <img src="./7.jpg" id="img7" style="width:500px"/>
-    <h4>This old tobacco barn burned wood to cure the tobacco.</h4>
+    <h4>This old tobacco barn burned wood to cure the tobacco.</h4><br><br>
+    <img src="./8.jpg" id="img8" style="width:500px"/>
+    <h4>The main water source.</h4><br><br>
+    <img src="./9.jpg" id="img9" style="width:500px"/>
+    <h4>The last remanants of the grand two-story Holden plantation house, a hunting lodge in the 20th century.</h4>
 </body>
 
 <script>
@@ -103,18 +107,23 @@ var erroneousLong
 var firstCorrectedLocation = []
 var imageUrl = './Holden1.png'
 var imageBounds = [[36.082390873840595,-79.03390606337304],[36.089570473840595,-79.02019446337304]]
-
+mymap.on('click', mouseClick);
 var toggle = 0
 toggleLIDAR();
 
+
+L.marker([36.088542,-79.032201]).addTo(mymap).bindTooltip("start of hike [36.088542,-79.032201]")
 L.marker([36.08792,-79.02758]).addTo(mymap).bindTooltip("the land mark tree [36.08792,-79.02758]")
-L.marker([36.088927833, -79.02531383]).addTo(mymap).bindTooltip('<img src="./4.jpg" id="img4" style="height:250px"/><br><br>Norman Beasley house [36.088927833, -79.02531383]')
-L.marker([36.087922167, -79.02749050]).addTo(mymap).bindTooltip('<img src="./2.jpg" id="img2" style="height:250px"/><br><br>Norman Beasley grave [36.087922167, -79.02749050]')
-L.marker([36.088347167, -79.02464167]).addTo(mymap).bindTooltip('<img src="./6.jpg" id="img6" style="height:250px"/><br><br>pump station [36.088347167, -79.02464167]')
-L.marker([36.087505500, -79.02430000]).addTo(mymap).bindTooltip('<img src="./7.jpg" id="img7" style="height:250px"/><br><br>tobacco barn [36.087505500, -79.02430000]')
+L.marker([36.088927833, -79.02531383]).addTo(mymap).bindTooltip('<img src="./4.jpg" id="img4" style="height:250px"/><br><br>Norman Beasley house [36.088928, -79.025314]')
+L.marker([36.087922167, -79.02749050]).addTo(mymap).bindTooltip('<img src="./2.jpg" id="img2" style="height:250px"/><br><br>Norman Beasley grave [36.087922, -79.027491]')
+L.marker([36.088347167, -79.02464167]).addTo(mymap).bindTooltip('<img src="./6.jpg" id="img6" style="height:250px"/><br><br>pump station [36.088347, -79.024642]')
+L.marker([36.087505500, -79.02430000]).addTo(mymap).bindTooltip('<img src="./7.jpg" id="img7" style="height:250px"/><br><br>tobacco barn [36.087506, -79.024300]')
+L.marker([36.088498425692194,-79.02587056159973]).addTo(mymap).bindTooltip('<img src="./8.jpg" id="img7" style="height:250px"/><br><br>main water source [36.0884985,-79.025871]')
+L.marker([36.087641114648086,-79.02423709630968]).addTo(mymap).bindTooltip('<img src="./9.jpg" id="img7" style="height:250px"/><br><br>Chimney of the Holden plantation house [36.087641,-79.024237]')
 
-
-
+L.polygon([[36.08597388046924,-79.02036666870119],[36.09290984504017,-79.02023792266847],[36.09289866767325,-79.03094563283204],[36.08566174767326,-79.03094563283204],[36.08534961363792,-79.03066635131837],[36.084829387491716,-79.0294647216797],[36.084482568148395,-79.02882099151613],[36.08368487785236,-79.02779102325441],[36.08326868839797,-79.02688980102539],[36.08306059284461,-79.02620315551758],[36.08247098578556,-79.02538776397706],[36.08254035155143,-79.02495861053468],[36.082713765698294,-79.02427196502687],[36.082332254070266,-79.02328491210939],[36.082280229613914,-79.02178012223513],[36.083788924871726,-79.0213966369629],[36.08524556868409,-79.02101039886476]],{fillOpacity:0.1})
+    .addTo(mymap)
+    .bindPopup("ODB 15/62 Jacob Dishon to Isaac Holden 1812<br>Isaac Holden estate to Thomas W Holden 1820<br>entered into partnership with son-in-law John F Lyon 1844")
 
 var layerClick = L.layerGroup().addTo(mymap);
 var popup = L.popup();
@@ -136,7 +145,11 @@ function toggleLIDAR() {
     L.imageOverlay(imageUrl, imageBounds, {opacity: Opacity}).addTo(maplayer);
 }
 
-
+function mouseClick(e){
+    var mouseLat = e.latlng['lat'] 
+    var mouseLong = e.latlng['lng']
+    console.log("[" + mouseLat + "," + mouseLong + "]");
+}
 
 </script>
 </html>
