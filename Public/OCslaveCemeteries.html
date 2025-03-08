@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slave Cemeteries of Orange County, North Carolina</title>
+</head>
+
+<script src="OCcemeteries.js"></script>
+<script src="ModernOrange6.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+<style>
+#myfirstmap { height: 750px; width: 750px}
+</style>
+
+<body>
+    <button onclick="toggleLIDAR()"></button><br>
+    <div id="myfirstmap"></div><br><br>
+</body>
+
+<script>
+var mymap = L.map('myfirstmap').setView([36.06974826996016,-79.10980224609376], 11);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+var maplayer = L.layerGroup().addTo(mymap);
+mymap.on('click', mouseClick);
+
+var slaveCemeteryList = ["196","272","276","273","258","141","142","101","242","088","105","153","204","146"]
+
+for (var j = 0; j < slaveCemeteryList.length; j++){
+    var searchTerm = "http://cemeterycensus.com/nc/orng/cem" + slaveCemeteryList[j] + ".htm"
+    for (var i = 0; i < cems.features.length; i++){
+        if (cems.features[i].properties.Website == searchTerm){
+            var cemCoords = [cems.features[i].geometry.coordinates[1],cems.features[i].geometry.coordinates[0]]
+            var popUpText = "<b>" + cems.features[i].properties.CEM_NAME + "</b><br>" + slaveCemeteryList[j]
+            L.marker(cemCoords).addTo(mymap)
+            .bindPopup(popUpText)
+        }
+    }
+}
+
+var holdenCem = [36.087921,-79.027536]
+L.marker(holdenCem).addTo(mymap).bindPopup("Holden Slave Cemetery")
+L.polygon(ODB.features[880].coords,{color:"yellow"}).addTo(mymap).bindTooltip("Holden plantation")
+L.polygon(ODB.features[399].coords,{color:"yellow"}).addTo(mymap).bindTooltip("Hogg/Norwood plantation")
+L.polygon(ODB.features[423].coords,{color:"yellow"}).addTo(mymap).bindTooltip("Hogg/Norwood plantation")
+L.polygon(ODB.features[1138].coords,{color:"yellow"}).addTo(mymap).bindTooltip("William/Samuel Strayhorn plantation")
+
+
+
+function mouseClick(e){
+    var mouseLat = e.latlng['lat'] 
+    var mouseLong = e.latlng['lng']
+    console.log("[" + mouseLat + "," + mouseLong + "]");
+}
+
+
+// https://www.findagrave.com/cemetery/2380351/christopher-and-william-barbee-family-cemetery
+// https://www.findagrave.com/cemetery/2324616/morgan-and-mason-family-cemetery
+
+
+
+
+</script>
+</html>
