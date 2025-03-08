@@ -43,7 +43,8 @@ for (var j = 0; j < slaveCemeteryList.length; j++){
     for (var i = 0; i < cems.features.length; i++){
         if (cems.features[i].properties.Website == searchTerm){
             var cemCoords = [cems.features[i].geometry.coordinates[1],cems.features[i].geometry.coordinates[0]]
-            var popUpText = "<b>" + cems.features[i].properties.CEM_NAME + "</b><br>" + slaveCemeteryList[j]
+            var popUpText = "<b>" + cems.features[i].properties.CEM_NAME + "</b><br>#" + slaveCemeteryList[j]
+            popUpText = popUpText + " on <a href='" + cems.features[i].properties.Website + "' title='description'>Cemetery Census</a>"
             L.marker(cemCoords).addTo(mymap)
             .bindPopup(popUpText)
         }
@@ -51,7 +52,20 @@ for (var j = 0; j < slaveCemeteryList.length; j++){
 }
 
 var holdenCem = [36.087921,-79.027536]
-L.marker(holdenCem).addTo(mymap).bindPopup("Holden Slave Cemetery")
+var popUpText = "<b>Holden Slave Cemetery</b><br>"
+popUpText = popUpText + "<a href='https://registerchilton.github.io/Geography456/MarchOneVisit.html' title='description'>Cemetery Census</a>"
+L.marker(holdenCem).addTo(mymap).bindPopup(popUpText)
+
+var morganMasonCem = [35.89560, -79.02190]
+var popUpText = "<b>Morgan/Mason Slave Cemetery</b><br>"
+popUpText = popUpText + "<a href='https://www.findagrave.com/cemetery/2324616/morgan-and-mason-family-cemetery' title='description'>Find-A-Grave</a>"
+L.marker(morganMasonCem).addTo(mymap).bindPopup(popUpText)
+
+var barbeeCem = [35.91038, -79.00484]
+var popUpText = "<b>Christopher/William Barbee Slave Cemetery</b><br>"
+popUpText = popUpText + "<a href='https://www.findagrave.com/cemetery/2380351/christopher-and-william-barbee-family-cemetery' title='description'>Find-A-Grave</a>"
+L.marker(barbeeCem).addTo(mymap).bindPopup(popUpText)
+
 L.polygon(ODB.features[880].coords,{color:"yellow"}).addTo(mymap).bindTooltip("Holden plantation")
 L.polygon(ODB.features[399].coords,{color:"yellow"}).addTo(mymap).bindTooltip("Hogg/Norwood plantation")
 L.polygon(ODB.features[423].coords,{color:"yellow"}).addTo(mymap).bindTooltip("Hogg/Norwood plantation")
@@ -66,8 +80,8 @@ function mouseClick(e){
 }
 
 
-// https://www.findagrave.com/cemetery/2380351/christopher-and-william-barbee-family-cemetery
-// https://www.findagrave.com/cemetery/2324616/morgan-and-mason-family-cemetery
+// 
+// 
 
 
 
