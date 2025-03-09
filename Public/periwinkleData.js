@@ -1,0 +1,42 @@
+var slaveCems = {"features":[
+    {"coords":[35.89560, -79.02190],"cemetery":"Morgan/Mason Slave Cemetery","link":"<a href='https://www.findagrave.com/cemetery/2324616/morgan-and-mason-family-cemetery' title='description'>Find-A-Grave</a>","parcelID":2301},
+    {"coords":[35.91038, -79.00484],"cemetery":"Kit/Wm Barbee Slave Cemetery","link":"<a href='https://www.findagrave.com/cemetery/2380351/christopher-and-william-barbee-family-cemetery' title='description'>Find-A-Grave</a>","parcelID":2517},
+    {"coords":[35.96142914400008,-79.13052741699994],"cemetery":"Stephen Lloyd Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem153.htm' title='description'>Cemetery Census</a>","parcelID":85},
+    {"coords":[35.96306455700005,-79.13223801999999],"cemetery":"Stephen Lloyd white Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem153.htm' title='description'>Cemetery Census</a>","parcelID":0},
+    {"coords":[35.97653496400005,-79.04250120099994],"cemetery":"Johnston-Riggsbee-Nunn Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem146.htm' title='description'>Cemetery Census</a>","parcelID":320},
+    {"coords":[35.984457107000026,-79.15806633899996],"cemetery":"Archibald Andrews (Justice?) Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem088.htm' title='description'>Cemetery Census</a>","parcelID":0},
+    {"coords":[35.984525344000076,-79.15874698499994],"cemetery":"Archibald Andrews white Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem088.htm' title='description'>Cemetery Census</a>","parcelID":0},
+    {"coords":[36.01776012800008,-79.08327348399996],"cemetery":"Samuel Strayhorn Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem272.htm' title='description'>Cemetery Census</a>","parcelID":1138},
+    {"coords":[36.03426163700004,-79.03939992199997],"cemetery":"Gilbert Strayhorn Slave cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem196.htm' title='description'>Cemetery Census</a>","parcelID":736},
+    {"coords":[36.06288765600004,-79.00954185299997],"cemetery":"William Cabe Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem258.htm' title='description'>Cemetery Census</a>","parcelID":2458},
+    {"coords":[36.06386442100006,-79.00938980299998],"cemetery":"William Cabe White Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem105.htm' title='description'>Cemetery Census</a>","parcelID":0},
+    {"coords":[36.07189573100004,-79.08664062499997],"cemetery":"Hogg-Webb-Norwood Slave","link":"<a href='https://cemeterycensus.com/nc/orng/cem141.htm' title='description'>Cemetery Census</a>","parcelID":423},
+    {"coords":[36.087921,-79.027536],"cemetery":"Holden Slave Cemetery","link":"<a href='https://registerchilton.github.io/Geography456/MarchOneVisit.html' title='description'>Cemetery Census</a>","parcelID":880},
+    {"coords":[36.09426338600008,-79.00415045699998],"cemetery":"Link Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem101.htm' title='description'>Cemetery Census</a>","parcelID":721},
+    {"coords":[36.13872545100003,-79.16502195199996],"cemetery":"Tinnin Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem273.htm' title='description'>Cemetery Census</a>","parcelID":510},
+    {"coords":[36.169856279000044,-79.10582488199998],"cemetery":"Ray Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem242.htm' title='description'>Cemetery Census</a>","parcelID":0},
+    {"coords":[36.18717094600004,-78.96505766099995],"cemetery":"Turrentine Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem204.htm' title='description'>Cemetery Census</a>","parcelID":269},
+    {"coords":[36.23598541900003,-78.99559909799996],"cemetery":"Holleman Slave Cemetery","link":"<a href='https://cemeterycensus.com/nc/orng/cem142.htm' title='description'>Cemetery Census</a>","parcelID":279},
+    {"coords":[36.24028490300003,-79.18869321099999],"cemetery":"Statlers/Stadlers Slave","link":"<a href='https://cemeterycensus.com/nc/orng/cem276.htm' title='description'>Cemetery Census</a>","parcelID":300},
+]}
+
+
+
+var plantationHouses = {"features":[
+    {"coords":[36.05289044949695,-79.10250395536424],"name":"Tusculum","owner":"John K Whitherspoon","parcelID":343},
+    {"coords":[35.9752469196722,-79.00469720363618],"name":"","owner":"Mann Patterson","parcelID":2156},
+    {"coords":[35.87207016375808,-79.0813708305359],"name":"","owner":"James S Smith","parcelID":15},
+    {"coords":[35.87207016375808,-79.0813708305359],"name":"","owner":"James S Smith","parcelID":2178},
+    {"coords":[36.07348066462829,-79.11680817604066],"name":"West Hill","owner":"Cadwallader Jones Sr","parcelID":785},
+    {"coords":[36.08574281561496,-79.10775840282442],"name":"The Grove","owner":"George W B Burgwyn","parcelID":1532},
+    {"coords":[36.087641,-79.024237],"name":"","owner":"Isaac/Thomas W Holden","parcelID":880},
+    {"coords":[36.02434178989983,-79.04954910278322],"name":"","owner":"Bryant Strayhorn","parcelID":998},
+    {"coords":[36.08822987010344,-79.06446754932405],"name":"Sunnyside","owner":"John Berry (1845)","parcelID":1408},
+    {"coords":[36.0334331629039,-79.04324054718019],"name":"","owner":"Gilbert/James Strayhorn","parcelID":736},
+    {"coords":[36.018449,-79.080302],"name":"","owner":"William/Samuel Strayhorn","parcelID":1138},
+    {"coords":[35.91240205505925,-79.06556189060213],"name":"Fur Craigs","owner":"John/James Craig","parcelID":1195},
+    {"coords":[35.91240205505925,-79.06556189060213],"name":"Fur Craigs","owner":"John/James Craig","parcelID":1196},
+    {"coords":[36.079697,-79.084813],"name":"Ayr Mount","owner":"Kirkland","parcelID":278},
+    {"coords":[36.069961,-79.095607],"name":"Over The River","owner":"John W Norwood/James Webb Jr","parcelID":0},
+    {"coords":[36.06986274153562,-79.09561872482301],"name":"Poplar Hill","owner":"Hogg/Norwood","parcelID":0},
+]}

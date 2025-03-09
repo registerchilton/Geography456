@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Periwinkle Project</title>
+</head>
+
+<script src="periwinkleData.js"></script>
+<script src="ModernOrange6.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+<style>
+#myfirstmap { height: 750px; width: 750px}
+</style>
+
+<body>
+    <!-- <button onclick="toggleLIDAR()"></button><br> -->
+    <div id="lastClick"></div>
+    <div id="myfirstmap"></div><br><br>
+</body>
+
+<script>
+var mymap = L.map('myfirstmap').setView([36.06974826996016,-79.10980224609376], 11);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+var maplayer = L.layerGroup().addTo(mymap);
+mymap.on('click', mouseClick);
+var cemetery = L.icon({iconUrl: 'cemetery.png', iconSize: [20, 20], popupAnchor: [1, 1]});
+var house = L.icon({iconUrl: 'house.png', iconSize: [20, 20], popupAnchor: [1, 1]});
+
+for (var i = 0; i < slaveCems.features.length; i++){
+    var popUpText = "<b>" + slaveCems.features[i].cemetery + "</b><br>" + slaveCems.features[i].link
+    L.marker(slaveCems.features[i].coords, {icon:cemetery}).addTo(mymap)
+    .bindPopup(popUpText)
+    if (slaveCems.features[i].parcelID != 0){
+        L.polygon(ODB.features[slaveCems.features[i].parcelID].coords, {color:"yellow",weight:5}).addTo(mymap)
+    }
+}
+
+for (var i = 0; i < plantationHouses.features.length; i++){
+    var popUpText = "<b>" + plantationHouses.features[i].name + "</b><br>" + plantationHouses.features[i].owner
+    L.marker(plantationHouses.features[i].coords, {icon:house}).addTo(mymap)
+    .bindPopup(popUpText)
+    if (plantationHouses.features[i].parcelID != 0){
+        L.polygon(ODB.features[plantationHouses.features[i].parcelID].coords, {color:"yellow",weight:5}).addTo(mymap)
+    }
+}
+
+function mouseClick(e){
+    var mouseLat = e.latlng['lat'] 
+    var mouseLong = e.latlng['lng']
+    var clickCoords = "[" + mouseLat + "," + mouseLong + "]"
+    console.log(clickCoords);
+    document.getElementById("lastClick").innerText = clickCoords
+}
+
+
+// 
+// 
+
+
+
+
+</script>
+</html>
