@@ -6,6 +6,7 @@
     <title>The Periwinkle Project</title>
 </head>
 
+<script src="OCcemeteries.js"></script>
 <script src="periwinkleData.js"></script>
 <script src="ModernOrange6.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -23,7 +24,7 @@
 </style>
 
 <body>
-    <!-- <button onclick="toggleLIDAR()"></button><br> -->
+    <button onclick="showAllCemeteries()">showAllCemeteries</button><br>
     <div id="lastClick"></div>
     <div id="myfirstmap"></div><br><br>
 </body>
@@ -38,6 +39,7 @@ var maplayer = L.layerGroup().addTo(mymap);
 mymap.on('click', mouseClick);
 var cemetery = L.icon({iconUrl: 'cemetery.png', iconSize: [20, 20], popupAnchor: [1, 1]});
 var house = L.icon({iconUrl: 'house.png', iconSize: [20, 20], popupAnchor: [1, 1]});
+var toggle = 0
 
 for (var i = 0; i < slaveCems.features.length; i++){
     var popUpText = "<b>" + slaveCems.features[i].cemetery + "</b><br>" + slaveCems.features[i].link
@@ -57,6 +59,9 @@ for (var i = 0; i < plantationHouses.features.length; i++){
     }
 }
 
+var piperPlantation = [[36.09173077424265,-79.02092456817628],[36.085502212641245,-79.02088165283205],[36.08685478188474,-79.01912212371828],[36.086681376871994,-79.01663303375246],[36.086646695823546,-79.01491641998292],[36.08588370888668,-79.01268482208253],[36.0851900779725,-79.01118278503418],[36.083951931585226,-79.00976657867433],[36.08341435495103,-79.00751352310182],[36.082772726414504,-79.00538921356203],[36.081506795296164,-79.00506734848024],[36.08060502371248,-79.0056037902832],[36.08027552766935,-79.00616168975831],[36.079599189360216,-79.00661230087282],[36.079304373404845,-79.0071487426758],[36.079148293922145,-79.00783538818361],[36.07772622214293,-79.00920867919923],[36.07708454718827,-79.0090799331665],[36.07541963640263,-79.00770664215088],[36.074691226850106,-79.00766372680665],[36.074084213736036,-79.00841474533081],[36.07380672046633,-79.00953054428102],[36.07333844835352,-79.01049613952637],[36.07281814273598,-79.0125346183777],[36.07163877059304,-79.01373624801637],[36.070320627858734,-79.01418685913087],[36.06936669499726,-79.0141010284424],[36.068135237287926,-79.01399374008179],[36.06763917985571,-79.0131998062134],[36.069273035517455,-79.00376915931703],[36.07050794422869,-79.00376915931703],[36.070523553907414,-78.99837255477907],[36.07408334657607,-78.99837255477907],[36.075849741735595,-78.99607658386232],[36.07870259858607,-78.99608731269838],[36.0789219781269,-78.99831354618074],[36.07922980214004,-78.99831891059877],[36.07876156231848,-79.00040566921236],[36.08147991572076,-79.00042176246644],[36.081484251137574,-79.00353848934175],[36.087948091692695,-79.0035331249237],[36.08795242675282,-79.00183260440828],[36.09083518879303,-79.00182187557222],[36.090843858594596,-79.01009917259218],[36.09174984758583,-79.01009380817415],[36.09173770999832,-79.02086019515993]]
+L.polygon(piperPlantation, {color:"yellow",weight:5}).addTo(mymap).bindPopup("John/Wm Piper 1800 to 1840")
+
 function mouseClick(e){
     var mouseLat = e.latlng['lat'] 
     var mouseLong = e.latlng['lng']
@@ -65,12 +70,17 @@ function mouseClick(e){
     document.getElementById("lastClick").innerText = clickCoords
 }
 
-
-// 
-// 
-
-
-
+function showAllCemeteries(){
+    toggle = toggle + 1
+    maplayer.clearLayers();
+    if (toggle  % 2 == 1){
+        for (var i = 0; i < cems.features.length; i++){
+            var nextCemCoords = [cems.features[i].geometry.coordinates[1],cems.features[i].geometry.coordinates[0]]
+            popUpText = "<b>" + cems.features[i].properties.CEM_NAME + "</b><br><a href='" + cems.features[i].properties.Website + "' title='description'>Cemetery Census</a><br>" + nextCemCoords 
+            L.marker(nextCemCoords).addTo(maplayer).bindPopup(popUpText)
+        }
+    }
+}
 
 </script>
 </html>
