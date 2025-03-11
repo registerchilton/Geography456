@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Landscape of Bondage</title>
+
+</head>
+
+<!-- <script src="./AllGrants.js"></script> -->
+<script src="./ModernOrange3.js"></script>
+<script src="./Enslavers1850.js"></script>
+<script src="./exportable5.js"></script>
+<script src="./parser2.js"></script>
+<!-- <script src="./equivalency.js"></script> -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<style>
+    #myfirstmap {height: 600px; width: 1200px}
+    #mysecondmap {height: 500px; width: 550px}
+
+    .div-img{
+        justify-content: center;
+        align-items: center;
+        display:flex;
+        padding-top:0%;
+    }
+    img:hover{
+        transform:scale(1.0);
+    }
+    .crosshair {
+        cursor: crosshair;
+        background: #000
+    }
+    .slider-container {
+        margin-right: 20px;
+        display: flex;
+        align-items: left;
+        flex-direction: column;
+    }
+
+    .slider {
+        width: 545px; 
+    }
+    .tick-container {
+        display: flex;
+        justify-content: space-between;
+        width: 550px;
+        margin-top: 5px;
+    }
+
+    .tick {
+        font-size: 12px; 
+        color: #888; 
+    }
+
+    .leaflet-layer,
+    .leaflet-control-zoom-in,
+    .leaflet-control-zoom-out,
+    .leaflet-control-attribution {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    }
+
+</style>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/screen.css" />
+ 
+     <link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.css" />
+     <link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.Default.css" />
+     <script src="https://leaflet.github.io/Leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
+</head>
+
+<body>
+    <audio id="explanation">
+        <source src="intro.mp3" type="audio/mpeg">
+    </audio>
+    <button onclick="intro()" id = "button1">Listen to one minute presentation</button>
+    <br>
+    <input type="text" placeholder = "wider search" id="searchInput1" style="width: 100px" onchange="search(1)">
+    <input type="text" placeholder = "narrower search" id="searchInput2" style="width: 100px" onchange="search(2)">
+    <br>
+    <div id="selected">Enter a name like Joseph Marlett or just Marlett. Or you can enter a comma-space separated list of search terms:</div>
+    <input type="text" placeholder = "comma separated list" id="ofile" style="width: 1000px" onchange="petitionSearch()">
+    <div id="spacer"></div>
+    <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
+    <div class="crosshair", id="mysecondmap" style="display:inline-block;"></div>
+    <br>
+    <div id="instruction">Displaying grants prior to 1 Jan 1853</div>
+    <div class="slider-container" id = "sliderStuff">
+        <input type="range" min="1752" max="1853" value="1853" class="slider" id="dateSlider" oninput='sliderMove()'>
+        <button onclick="nearbyPopups()" id = "button8" style="display:inline-block;"">open popups</button>
+        <button onclick="hoverLabels()" id = "button9" style="display:inline-block;"">hover labels on</button>
+        <button onclick="unhide()" id = "button10" style="display:inline-block;"">restore hidden polygons</button>
+        <button onclick="clearSearchLayer()" id = "button12">clear old searches</button>
+        <button onclick="showAll()" id = "button11">show all parcels</button>
+        <div class="tick-container">
+            <span class="tick">1752</span>
+            <span class="tick">1777</span>
+            <span class="tick">1802</span>
+            <span class="tick">1827</span>
+            <span class="tick">1852</span>
+        </div>
+    </div>
+    <button onclick="Counter()" id = "button2">Counter</button>
+    <button onclick="newHopePresbyterian()" id = "button2">founders of New Hope Presbyterian</button>
+    <button onclick="FPOC()" id = "button3">free landowners of color</button>
+    <button onclick="clusterMe()" id = "button4">spatial distribution of slavery</button>
+    <button onclick="clearSearchLayer()" id = "button5">clear old searches</button>
+    <button onclick="Export()" id = "button6">export a JSON of deed data</button>
+    <button onclick="showAll()" id = "button7">show all parcels</button>
+    <table id="mytable">
+        <tr>
+            <th></th>
+        </tr>
+    </table>
+    <div class="div-img"><img src="" id ="currentImage" width=1000px></div>
+</body>
+
+<script>
+    // var mostRecent = [36.039445, -79.119208]
+    var mymap = L.map('myfirstmap').setView([36.050764426908515,-79.09263610839845], 11);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mymap);
+    var secondmap = L.map('mysecondmap').setView(recentPlacement, 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 22,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(secondmap);
+    var grantLayer = L.layerGroup().addTo(mymap);
+    var deedLayer = L.layerGroup().addTo(mymap);
+    var searchLayer = L.layerGroup().addTo(mymap);
+    var tempLayer = L.layerGroup().addTo(mymap);
+    var nearestLayer = L.layerGroup().addTo(mymap);
+    var enslavedLayer = L.layerGroup().addTo(mymap);
+    var secondLayer = L.layerGroup().addTo(secondmap);
+    var secondTempLayer = L.layerGroup().addTo(secondmap);
+    var secondSearchLayer = L.layerGroup().addTo(secondmap);
+    mymap.on('mousemove', onMouseMove);
+    var zoomNow = mymap.getZoom()
+    mymap.on('click', affix);
+    // mymap.on('zoom', secondZoom)
+    // mymap.on('drag', setup)
+    secondmap.on('zoom', firstZoom)
+    secondmap.on('drag', firstZoom)
+    secondmap.on('mousemove', showOnSecond)
+    secondmap.on('click', storeOnSecond);
+    var ODBSearchResult = []
+    var theTable = document.getElementById('mytable')
+    var searchResult = []
+    var ODBSearchResult = []
+    var hiddenPolygons = []
+    var mode = "map"
+    var selection = -1
+    // var recentPlacement = [36.03903600798149,-79.20069694519043]
+    var mouseLat
+    var mouseLong
+    var hoverMode = false
+    var clickLat
+    var clickLong
+    var directions = []
+    var distances = []
+    var corners = []
+    var convertedDistances = []
+    var tempCorners = []
+    var tempArray = []
+    var NSscaling = 0.000180923
+    var EWscaling = 0.000223644
+    var inPlacement = - 1
+    var inEditting = -1
+    var movingCorner = -1
+    var target = -1
+    var functionName = "nearbySearch"
+    var functionCaption = "show related items"
+    var searchResultScore = []
+    var SCORE = []
+    var problem = "no"
+    var historyToggle = 1
+    var historyInsertionChoice = -1
+    var historyEditChoice = -1
+    var andNext = 0
+    var enslaverNumber = -1
+    var Color = "red"
+    var movingMarker = -1
+    var x = document.getElementById("test"); 
+    var toggle = 0
+    var popupToggle = 0
+    var toggleParcels = 0
+    var markers
+    var thresholdDate = 1853
+    var randomColorMode = "yes"
+    var openAll = "no"
+    var detailLevel = 1
+    var closestPolygon = - 1
+    document.getElementById("instruction").style.display = "none";
+    document.getElementById("sliderStuff").style.display = "none";
+    document.getElementById("searchInput1").style.display = "none";
+    document.getElementById("searchInput2").style.display = "none";    
+    document.getElementById("mysecondmap").style.display = "none";
+    ODB.features.sort((a, b) => (a.sortabledate > b.sortabledate ? 1 : -1));
+    clusterMe();
+
+    function search(j){
+        searchResult = []
+        if (j==1){
+            var searchTerm = document.getElementById('searchInput1').value
+            console.log("firing wider search function for " + searchTerm)
+            for (var i = 0; i < ODB.features.length; i++){
+                var thisSearch = ""
+                for (var j = 0; j < ODB.features[i].history.length; j++){
+                    thisSearch = thisSearch + ODB.features[i].history[j][0]
+                }
+                thisSearch = thisSearch + ODB.features[i].brief + ODB.features[i].legal
+                if (thisSearch.includes(searchTerm)){
+                        searchResult.push(i)
+                }
+            }
+        }
+        if (j=2){
+            var searchTerm = document.getElementById('searchInput2').value
+            console.log("firing narrower search function for " + searchTerm)
+            for (var i = 0; i < ODB.features.length; i++){
+                var titleHistory = JSON.stringify(ODB.features[i].history);
+                var thisSearch = ODB.features[i].caption + titleHistory 
+                if (thisSearch.includes(searchTerm) && ODB.features[i].centroid[0] != 0){
+                    searchResult.push(i)
+                }
+            }
+        }
+        console.log(searchResult)
+        searchResultTable()
+    }
+
+    function searchResultTable(){
+    //    grantLayer.clearLayers();
+        console.log("firing Search Result Table Function")
+        if (mode == "data"){
+            document.getElementById("button2").style.visibility = "visible";
+        }
+        theTable.innerHTML=""
+        for (var j = 0; j < searchResult.length; j++){
+            //First lets only show searchResults that have not been deleted
+            if (ODB.features[searchResult[j]].type != "delete"){
+                if (ODB.features[searchResult[j]].coords.length == 0 && ODB.features[searchResult[j]].caption != ""){
+                    //Here's how to handle items in the table without coordinates
+                    var myNewRow = document.createElement('tr');
+                    var myNewCell1 = document.createElement('td');
+                    myNewCell1.innerHTML = '<button onclick="placeSurvey(' + searchResult[j] + ')" id = "button">select</button>'
+                    myNewRow.append(myNewCell1)
+                    var myNewCell3 = document.createElement('td');
+                    myNewCell3.innerText = ODB.features[searchResult[j]].history
+                    myNewRow.append(myNewCell3)
+                    var myNewCell4 = document.createElement('td');
+                    myNewCell4.innerText = ODB.features[searchResult[j]].date
+                    myNewRow.append(myNewCell4)
+                    var myNewCell5 = document.createElement('td');
+                    myNewCell5.innerText = ODB.features[searchResult[j]].brief
+                    myNewRow.append(myNewCell5)
+                    if (searchResultScore.length == searchResult.length){
+                        var myNewCell6 = document.createElement('td');
+                        myNewCell6.innerText = "score " + searchResultScore[j]
+                        myNewRow.append(myNewCell6)
+                    }
+                    var myNewCell7 = document.createElement('td');
+                    myNewCell7.innerText = "item " + searchResult[j]
+                    myNewRow.append(myNewCell7)
+                    theTable.append(myNewRow);
+                }
+                else{ //Display items in the table that have coordinates
+                    var myNewRow = document.createElement('tr');
+                    var myNewCell1 = document.createElement('td');
+                    myNewCell1.innerHTML = '<button onclick="placeSurvey(' + searchResult[j] + ')" id = "button">select</button>'
+                    myNewRow.append(myNewCell1)
+                    var myNewCell3 = document.createElement('td');
+                    myNewCell3.innerHTML = "<b>" + ODB.features[searchResult[j]].history + "</b>"
+                    myNewRow.append(myNewCell3)
+                    var myNewCell4 = document.createElement('td');
+                    myNewCell4.innerHTML = "<b>" + ODB.features[searchResult[j]].date + "</b>"
+                    myNewRow.append(myNewCell4)
+                    var myNewCell5 = document.createElement('td');
+                    myNewCell5.innerHTML = "<b>" + ODB.features[searchResult[j]].brief + "</b>"
+                    myNewRow.append(myNewCell5)
+                    var myNewCell6 = document.createElement('td');
+                    if (ODB.features[searchResult[j]].coords.length > 0){
+                        if (ODB.features[searchResult[j]].coords[0][0] < 30){
+                            myNewCell6.innerHTML = 'floating'
+                    }
+                    else{
+                        myNewCell6.innerHTML = '<button onclick="zoomToThis(' + searchResult[j] + ')" id = "button">zoom</button>'
+                    }
+                }
+                    myNewRow.append(myNewCell6)
+                    theTable.append(myNewRow);
+                }
+            }
+        }
+
+        //Now highlight the searchResult ploygons that have coordinates
+
+        for (var i = 0; i < searchResult.length; i ++){
+            if (ODB.features[searchResult[i]].coords.length > 0){
+                var popupText = ""
+                for (var j = 0; j < ODB.features[searchResult[i]].history.length - 1; j ++){
+                    popupText = popupText + "<b>" + ODB.features[searchResult[i]].history[j][0] + "</b> ~ " + ODB.features[searchResult[i]].history[j][1] + " "
+                    var myLink = getHyperlink(ODB.features[searchResult[i]].history[j][0])
+                    if (myLink == "none"){myLink = "<a href='" + ODB.features[searchResult[i]].link + "'>link</a><br>"}
+                    popupText = popupText + " ~ " + myLink + "<br>"
+                }
+    //            popupText = popupText + "<a href='" + ODB.features[searchResult[i]].link + "'>original</a><br>" + Color
+    //            popupText = popupText + "<br><button onclick='placeHere(" + searchResult[i] + ")'>placeHere?</button>"
+                if (ODB.features[searchResult[i]].lid == 0){// put some tracts on the main map
+                    L.polygon(ODB.features[searchResult[i]].coords, {color:Color,opacity:1,fillColor:Color,fillOpacity:0.5}).addTo(searchLayer)
+                    .bindPopup(popupText)
+                }
+                if (ODB.features[searchResult[i]].lid == 1){// but put others in the box lid
+                    L.polygon(ODB.features[searchResult[i]].coords, {color:Color,opacity:0.25,fillColor:Color,fillOpacity:0.25}).addTo(searchLayer)
+                    .bindPopup(popupText)
+                }
+            }
+        }
+        //setTimeout(function(){searchLayer.clearLayers();},5000);
+    }
+
+
+
+    function showSurvey(j){ //display the digital image of the survey
+        console.log("firing showSurvey")
+        selection = j
+        document.getElementById("currentImage").style.display = "inline";
+        var imageFileName = "./OCSLGs/" //we are now going to build up the image file path name
+        if (ODB.features[selection].grantor=="NC"){
+            var fileNumber = ODB.features[selection].shortRef
+            var fnum = fileNumber.split(' ')
+            imageFileName = imageFileName + "F" + fnum[1] + ".jpg"
+        }
+        document.getElementById('currentImage').src = imageFileName //now show the image
+        document.getElementById('currentImage').innerText = ODB.features[j].brief 
+        window.scrollTo(0,0)
+    }
+
+    function newLegal(){ //The legal description has been typed in or editted.
+        var newDescription = document.getElementById('description').value
+        document.getElementById("deleteButton").style.display = "none";
+        ODB.features[selection].legal = newDescription
+        console.log("new description of " + ODB.features[selection].caption + " is " + newDescription)
+        theTable.innerHTML = ""
+        document.getElementById("currentImage").style.display = "none"; //turn off the scanned survey display
+        document.getElementById("myfirstmap").style.display = "display:inline-block";
+        document.getElementById("mysecondmap").style.display = "display:inline-block";
+        placeSurvey(selection); //Go place this parcel on the map!
+    }
+
+    function placeSurvey(j){ //We are going to place a parcel on the map
+        document.getElementById("myfirstmap").style.display = "display:inline-block";
+        document.getElementById("mysecondmap").style.display = "display:inline-block";
+        document.getElementById("deleteButton").style.display = "inline";
+        inPlacement = j
+        selection = inPlacement
+        theTable.innerHTML = ""
+        console.log(inPlacement)
+        // show the details of the parcel we are placing
+        var display = ODB.features[inPlacement].caption + " " + ODB.features[inPlacement].date + " " + ODB.features[inPlacement].brief + " " + ODB.features[inPlacement].legal + " " + "<a href='" + ODB.features[inPlacement].link + "''>link</a>"
+        document.getElementById("description").value = ODB.features[inPlacement].legal
+        document.getElementById("selected").innerHTML = display
+        // now go parse the legal description into ghost coordinates (starting at Lat = 0, Long = 0)
+        if (ODB.features[inPlacement].legal.length > 3){
+            ODB.features[inPlacement].legal = document.getElementById("description").value
+            parse(inPlacement)
+        }
+        if (problem ="yes"){
+            console.log("problematic description");
+            fixProblem();
+        }
+    }
+
+    function mapMode(){ //In map mode, we are working on editing the map or a parcel on the map
+        mode = "map" 
+        document.getElementById("button2").style.visibility = "visible";
+        document.getElementById("ofile").style.display ="inline";
+        document.getElementById("currentImage").src = "" // if we were looking at a scanned survey, then hide that
+        document.getElementById("myfirstmap").style.display = "display:inline-block";
+//        document.getElementById("mysecondmap").style.display = "display:inline-block";
+        searchResult = []
+        grantLayer.clearLayers(); //clear the old map
+        deedLayer.clearLayers();
+        setup();
+        search(2);
+    }
+
+    function noMetes(){
+        ODB.features[inPlacement].type = "nometes"
+        searchResultTable();
+    }
+
+    function onMouseMove(e){ //fired whenever we move the mouse over the map
+        mouseLat = e.latlng['lat'] 
+        mouseLong = e.latlng['lng']
+        if (mode=="map" && inPlacement > -1 && ODB.features[inPlacement].legal.length > 3){ //if placing a parcel, then show it as though it starts at current mouse location
+            if (ODB.features[inPlacement].coords[0][0] == 0){
+                for (var i = 0; i < ODB.features[inPlacement].coords.length - 1; i++){
+                    var thisLat = ODB.features[inPlacement].coords[i][0] + mouseLat
+                    var thisLong = ODB.features[inPlacement].coords[i][1] + mouseLong
+                    var nextLat = ODB.features[inPlacement].coords[i+1][0] + mouseLat
+                    var nextLong = ODB.features[inPlacement].coords[i+1][1] + mouseLong
+                    var line = L.polyline([[thisLat,thisLong],[nextLat,nextLong]], {color:"red"}).addTo(tempLayer)
+                } //note that we show this as a series of lines, not a polygon, so if description doesn't close then we won't
+                //see the last side, but when placed the last side of the polygon will be filled in automatically
+            }
+        }
+        if (mode == "marker" && movingMarker > -1){
+            enslavers.features[movingMarker].coords = [mouseLat,mouseLong]
+            L.marker(enslavers.features[movingMarker].coords).addTo(tempLayer)
+        }
+        if (hoverMode == true){
+            var nearestCorner = 10_000_000
+            for (var i = 0; i < ODB.features.length; i++){
+                var testPoint = [mouseLat,mouseLong]
+                var latestDistance = 0
+                try{latestDistance = mymap.distance(ODB.features[i].centroid,testPoint)}
+                catch {latestDistance = 5000}
+                if (latestDistance < nearestCorner && ODB.features[i].lid == 0){
+                    nearestCorner = latestDistance
+                    closestPolygon = i
+                }
+            }
+            nearestLayer.clearLayers();
+            try {
+                var Content = ODB.features[closestPolygon].caption + " " + closestPolygon
+                var popup = L.popup(ODB.features[closestPolygon].centroid, {content:Content}).addTo(nearestLayer);
+            }
+            catch{ODB.features[closestPolygon].caption + " is nearest"}
+        }
+    }
+
+    function affix(e){ //fired when you click on the map
+        clickLat = e.latlng['lat'] 
+        clickLong = e.latlng['lng']
+        recentPlacement = [clickLat,clickLong]
+        if (inPlacement > -1){ //if there is a parcel being moved, then place it where you just clicked
+            if (mode=="map" && ODB.features[inPlacement].coords[0][0] == 0){
+                tempLayer.clearLayers();
+                for (var i = 0; i - 0 < ODB.features[inPlacement].coords.length; i++){
+                    var nextLat = ODB.features[inPlacement].coords[i][0] + mouseLat
+                    var nextLong = ODB.features[inPlacement].coords[i][1] + mouseLong
+                    tempArray.push([nextLat,nextLong])
+                }
+                console.log("inPlacment is " + inPlacement)
+                ODB.features[inPlacement].coords = tempArray
+                var buttonText = ODB.features[inPlacement].caption + " " + ODB.features[inPlacement].legal + "<button onclick='remove(" + inPlacement + ")'>remove?</button>"
+                L.polygon(ODB.features[inPlacement].coords, {color:"red"}).addTo(grantLayer)
+                    .bindPopup(buttonText)
+                getCentroid(inPlacement)
+                L.marker(ODB.features[inPlacement].centroid).addTo(grantLayer)
+                    .bindTooltip(ODB.features[inPlacement].caption)
+                ODB.features[inPlacement].lid = 0
+                directions = []
+                distances = []
+                corners = []
+                convertedDistances = []
+                tempCorners = []
+                tempArray = []
+                inPlacement = -1
+                secondTempLayer.clearLayers();
+            }
+        }
+
+        if (mode == "marker" && movingMarker > - 1){ // if we are editting a corner, then place it where clicked
+            enslavers.features[movingMarker].coords = [clickLat,clickLong]
+            movingMarker = -1
+            tempLayer.clearLayers();
+            grantLayer.clearLayers();
+            deedLayer.clearLayers();
+            showEnslavers();
+            mymap.flyTo(recentPlacement,15)
+        }
+        //regardless of what we are doing, show the latest click coords in the console
+        console.log("["+clickLat+","+clickLong+"]")
+    }
+
+    function setup(){  //This function draws or re-draws the map
+        zoomNow = mymap.getZoom()
+        grantLayer.clearLayers();
+        deedLayer.clearLayers();
+        secondLayer.clearLayers();
+        console.log("firing setup function & functionName is " + functionName)    
+        for (var i = 0; i < ODB.features.length; i++){
+            if (hiddenPolygons.includes(i)){}
+            else{
+                if (ODB.features[i].coords.length > 0 && ODB.features[i].sortabledate < thresholdDate){
+                    if (ODB.features[i].lid == 0){
+                        // We need to build up the buton text & here is where we start
+                        var buttonText = ""
+                        // use the title history feature to select a label
+                        for (var j = ODB.features[i].history.length - 1; j > 0 ; j = j - 1){
+                            if (thresholdDate > ODB.features[i].history[j][2] && ODB.features[i].history[j][0] != "end"){
+                                buttonText = buttonText + "<b>" + ODB.features[i].history[j][0] + "</b><br>&emsp;" + ODB.features[i].history[j][1] + "<br>"
+                                j = 0
+                            }
+                        }
+                        // if that fails then just use the caption
+                        if (buttonText == "") {
+                            buttonText = "<b>" + ODB.features[i].caption + "</b><br>&emsp;" + ODB.features[i].date + "<br>"
+                        }
+                        var newLink = getHyperlink(buttonText)
+                        if (newLink == "no link"){
+                            newLink = "<a href='" + ODB.features[i].link + "'>link</a>"
+                        }
+                        if (detailLevel == 1){
+                            buttonText = buttonText + "<br>" + newLink
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>abstract</button>"
+                        }
+                        if (detailLevel == 2){
+                            buttonText = buttonText + ODB.features[i].brief
+                            buttonText = buttonText + "<br>" + newLink 
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>legal description</button>"
+                        }
+                        if (detailLevel == 3){
+                            buttonText = buttonText + ODB.features[i].legal
+                            buttonText = buttonText + "<br>" + newLink 
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>title history</button>"
+                        }
+                        if (detailLevel == 4){
+                            buttonText = ""
+                            for (var k = 0; k < ODB.features[i].history.length; k++){
+                                if (ODB.features[i].history[k][0] != "end"){
+                                    buttonText = buttonText + "<b>" + ODB.features[i].history[k][0] + "</b><br>&emsp;" + ODB.features[i].history[k][1] + "&emsp;" + getHyperlink(ODB.features[i].history[k][0]) + "<br>"
+                                }                                
+                            }
+                            buttonText = buttonText + "<button onclick='detail(" + i + ")'>simple caption</button>"
+                        }
+                        buttonText = buttonText + " <button onclick='hide(" + i + ")'>hide this tract</button>"
+                        buttonText = buttonText + " <button onclick='labelCorners(" + i + ",0)'>label corners</button>"
+                        var Color = "red"
+                        if (i != closestPolygon){Color = randomColor();}
+                        var center = mymap.getCenter()
+                        var testPoint = [center.lat,center.lng]
+                        var latestDistance = 0
+                        try{latestDistance = mymap.distance(ODB.features[i].coords[0],testPoint)}
+                        catch {latestDistance = 5000}
+                        if (i == closestPolygon || (openAll == "yes" && latestDistance < 1500)){
+                            if (ODB.features[i].type == "grant"){
+                                L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(grantLayer)
+                                .bindPopup(buttonText,{closeOnClick:false, autoClose:false}).openPopup();
+                            }
+                            else{
+                                L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(deedLayer)
+                                .bindPopup(buttonText,{closeOnClick:false, autoClose:false}).openPopup();
+                            }
+                        }
+                        else{
+                            if (ODB.features[i].type == "grant"){
+                                L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(grantLayer)
+                                .bindPopup(buttonText)
+                            }
+                            else{
+                                L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(deedLayer)
+                                .bindPopup(buttonText)
+                            }
+                        }
+                    }
+                    if (ODB.features[i].lid == 1){
+                        var buttonText = ""
+                        for (var j = 0; j < ODB.features[i].history.length; j = j + 1){
+                            buttonText = buttonText + "<b>" + ODB.features[i].history[j][0] + " " + ODB.features[i].history[j][1] + "</b><br>"
+                        }
+                        buttonText = buttonText + "item " + i +" " +  ODB.features[i].brief + "<br>" +  ODB.features[i].legal  + " "+ "<button onclick='remove(" + i + ")'>remove?</button>"
+                        buttonText = buttonText + "<br>"+ "<button onclick='" + functionName + "(" + i + ")'>" + functionCaption + "</button>"
+                        buttonText = buttonText + "<br>" + ODB.features[i].source
+                        if (ODB.features[i].type == "grant"){
+                            Color = "blue"
+                            L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(secondLayer)
+                            .bindPopup(buttonText)
+                        }
+                        else{
+                            Color = "purple"
+                            L.polygon(ODB.features[i].coords, {color:Color, fillColor:Color}).addTo(secondLayer)
+                            .bindPopup(buttonText)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function remove(n){ //remove the specified parcel from the map - invoked from popup button
+        var removing = n
+        console.log("removing is "+ removing)
+        ODB.features[removing].coords = []
+        grantLayer.clearLayers(); //erase the old map
+        deedLayer.clearLayers();
+        setup(); // and re-draw it without the removed parcel
+        mapMode();
+        placeSurvey(removing) // automatically start moving the parcel we just removed
+    }
+
+    function parcelEdit(j){ //edit the corners of the specified parcel - invoked from popup button
+        inEditting = j
+        for (var i = 0; i < ODB.features[inEditting].coords.length; i++){
+            editButton = "corner" + i + "<button onclick='moveCorner(" + inEditting + "," + i + ")'>move</button>"
+            L.marker(ODB.features[inEditting].coords[i]).addTo(tempLayer).bindPopup(editButton);
+        }
+    }
+
+    function moveCorner(a,b){ //we are going to move corner b of parcel a
+        tempLayer.clearLayers();
+        mode = "parcel"
+        movingCorner = b
+    }
+
+    function showNotMapped(){ // show a table of everything in the JSON that isn't yet on the map
+        searchResult = []
+        for (var i = 1021; i < ODB.features.length; i++){
+            if (ODB.features[i].coords.length == 0){
+                searchResult.push(i)
+            }
+        }
+        searchResultTable();
+    }
+
+    function ODBSearch(){
+        searchResult = []
+        ODBSearchResult = []
+        var searchTerm = document.getElementById('ODBsearching').value
+        for (var i = 0; i < ODB.features.length; i++){
+            var thisSearch = ODB.features[i].caption
+            if (thisSearch.includes(searchTerm)){
+                ODBSearchResult.push(i)
+            }
+        }
+        ODBSearchResultTable();
+    }
+
+    function unmapped(){
+        for (var i = 0; i < ODB.features.length; i++){
+            if (ODB.features[i].legal != "") {
+                console.log("found one")
+                ODB.features.push(ODB.features[i])
+            }
+            console.log("done looking!")
+        }
+    }
+
+    function xrefSearch(x){
+        searchResult = []
+        var searchTerm = ODB.features[x].shortRef
+        console.log(searchTerm)
+        for (var i = 0; i < ODB.features.length; i++){
+            var thisSearch = ODB.features[i].caption + ODB.features[i].brief + ODB.features[i].legal
+            if (thisSearch.includes(searchTerm)){
+                console.log("found one!")
+                searchResult.push(i)
+            }
+        }
+        searchResultTable();
+    }
+
+    function deleteThis(){
+        console.log("deleting " + selection + " " + ODB.features[selection].caption)
+        ODB.features[selection].citations = ""
+        ODB.features[selection].grantor = ""
+        ODB.features[selection].grantee = ""
+        ODB.features[selection].date = ""
+        ODB.features[selection].brief = ""
+        ODB.features[selection].SCC = ""
+        ODB.features[selection].surveyed = ""
+        ODB.features[selection].shortRef = ""
+        ODB.features[selection].link = ""
+        ODB.features[selection].caption = ""
+        ODB.features[selection].legal = ""
+        ODB.features[selection].corners = []
+        ODB.features[selection].coords = []
+        ODB.features[selection].county = ""
+        ODB.features[selection].history = []
+        ODB.features[selection].acres = 0
+        ODB.features[selection].sortabledate = 0
+        ODB.features[selection].source = ""
+        ODB.features[selection].watershed = []
+        ODB.features[selection].adj = []
+        ODB.features[selection].nearby = []
+        searchResultTable();
+    }
+
+    function merge(j){
+        target = j
+        console.log("changing " + ODB.features[target].history)
+        var historyEnd = ODB.features[target].history.pop();
+        for (var i = 0; i < ODB.features[selection].history.length - 1; i++){
+            var extract = ODB.features[selection].history[i]
+            ODB.features[target].history.push(extract);
+        }
+        ODB.features[target].history.push(historyEnd);
+        for (var i = 0; i < ODB.features[selection].nearby.length; i++){
+            ODB.features[target].nearby.push(ODB.features[selection].nearby[i])
+        }
+        ODB.features[selection].type = "deed"
+        ODB.features[selection].citations=""
+        ODB.features[selection].grantor=""
+        ODB.features[selection].grantee=""
+        ODB.features[selection].date=""
+        ODB.features[selection].brief=""
+        ODB.features[selection].SCC=""
+        ODB.features[selection].surveyed=""
+        ODB.features[selection].shortRef=""
+        ODB.features[selection].link=""
+        ODB.features[selection].caption=""
+        ODB.features[selection].legal=""
+        ODB.features[selection].corners=[]
+        ODB.features[selection].coords=[]
+        ODB.features[selection].county=""
+        ODB.features[selection].history=[]
+        ODB.features[selection].acres=0
+        ODB.features[selection].sortabledate=0
+        ODB.features[selection].source=""
+        ODB.features[selection].watershed=[]
+        ODB.features[selection].adj=[]
+        ODB.features[selection].nearby=[]
+        console.log("into " + ODB.features[target].history)
+        var functionName = "nearbySearch"
+        var functionCaption = "show related items"
+        deedLayer.clearLayers();
+        grantLayer.clearLayers();
+        checkAllDates()
+        mapMode();
+        setup();
+        searchResultTable();
+    }
+
+    function clearDeeds(){
+        deedLayer.clearLayers();
+    }
+
+    function Export(){
+        document.getElementById("button1").style.display = "none";
+        document.getElementById("button2").style.display = "none";
+        document.getElementById("button3").style.display = "none";
+        document.getElementById("button4").style.display = "none";
+        document.getElementById("button5").style.display = "none";
+        document.getElementById("button6").style.display = "none";
+        document.getElementById("button7").style.display = "none";
+        document.getElementById("button11").style.display = "none";
+        document.getElementById("instruction").style.display = "none";
+        document.getElementById("sliderStuff").style.display = "none";
+        document.getElementById("myfirstmap").style.display = "none";
+        document.getElementById("mysecondmap").style.display = "none";
+        document.getElementById("searchInput2").style.display = "none";
+        document.getElementById("ofile").style.display = "none";
+        document.getElementById("searchInput1").style.display = "none";
+        document.getElementById("selected").style.display = "none";
+        exportTable()
+    }
+
+    function nearbySearch(x){
+        console.log("firing nearbySearch for " + x)
+        searchLayer.clearLayers();
+        searchResult = []
+        searchResultScore = []
+        nearbySort(x);
+        for (var i = 0; i < ODB.features[x].nearby.length; i++){
+            console.log("found one nearby")
+            searchResult.push(ODB.features[x].nearby[i][0])
+            searchResultScore.push(ODB.features[x].nearby[i][1])
+        }
+        searchResultTable();
+    }
+
+    function combine(){
+        functionName = "merge"
+        functionCaption = "merge into this?"
+        deedLayer.clearLayers();
+        grantLayer.clearLayers
+        mapMode();
+        setup();
+        searchResultTable();
+    }
+
+    function nearbySort(x){
+            var runRecursively ="no"
+            for (var j = 0; j < ODB.features[x].nearby.length - 1; j++){
+                if (ODB.features[x].nearby[j][1] < ODB.features[x].nearby[j+1][1]){
+                    console.log("found one at " + j)
+                    var temp = ODB.features[x].nearby
+                    temp.splice(j+2,0,ODB.features[x].nearby[j])
+                    temp.splice(j,1)
+                    ODB.features[x].nearby = temp                
+                    j = ODB.features[x].nearby.length
+                    var runRecursively ="yes"
+                }
+            }
+            if (runRecursively == "yes"){nearbySort(x);}
+        }
+
+    function zoomToThis(x){
+        var avgLat = 0
+        var avgLong = 0
+        for (var i = 0; i < ODB.features[x].coords.length; i++){
+            avgLat = avgLat + ODB.features[x].coords[i][0]
+            avgLong = avgLong + ODB.features[x].coords[i][1]
+        }
+        avgLat = avgLat / (ODB.features[x].coords.length)
+        avgLong = avgLong / (ODB.features[x].coords.length)
+        recentPlacement = [avgLat,avgLong]
+        window.scrollTo(0,0)
+        mymap.flyTo([avgLat,avgLong], 14)
+        for (var i = 0; i < ODB.features[x].coords.length; i++){
+            L.circle(ODB.features[x].coords[i], {color:'red',radius:30}).addTo(searchLayer)
+        }
+        var buttonText =""
+        buttonText = buttonText + "<br>"+ "<button onclick='" + functionName + "(" + i + ")'>" + functionCaption + "</button>"
+        L.polygon(ODB.features[x].coords, {color:'red',fillColor:'red'}).addTo(searchLayer)
+            .bindPopup(buttonText);
+    }
+
+    function historyEdit(){
+        functionName = "historyTable"
+        functionCaption = "edit history?"
+        grantLayer.clearLayers();
+        deedLayer.clearLayers();
+        tempLayer.clearLayers();
+        setup();
+    }
+
+    function historyTable(x){
+        document.getElementById("myfirstmap").style.display = "none";
+        document.getElementById("mysecondmap").style.display = "none";
+        document.getElementById("searchInput2").style.display = "none";
+        document.getElementById("searchInput1").style.display = "none";
+        document.getElementById("deleteButton").style.display = "none";
+        document.getElementById("combineButton").style.display = "none";
+        document.getElementById("description").style.display = "none"; 
+        theTable.innerHTML=""
+        for (var j = 0; j < ODB.features[x].history.length; j++){
+            var myNewRow = document.createElement('tr');
+            var myNewCell1 = document.createElement('td');
+            if (historyInsertionChoice == - 1){
+                myNewCell1.innerHTML = "<button onclick ='insertHistory(" + x + "," + j + ")'>insert here?</button>"
+            }
+            if (historyInsertionChoice == j){
+                myNewCell1.innerHTML = "<input id ='insertHere' type='text' style='width: 500px' onchange='updateHistory(" + x + ")'>"
+            }
+            myNewRow.append(myNewCell1)
+            theTable.append(myNewRow);
+
+            var myNewRow2 = document.createElement('tr');
+            var myNewCell2 = document.createElement('td');
+            if (historyEditChoice == - 1){
+                myNewCell2.innerHTML = ODB.features[x].history[j] + "<button onclick ='editHistory(" + x + "," + j + ")'>edit this?</button>"
+            }
+            if (historyEditChoice == j){
+                myNewCell2.innerHTML = ODB.features[x].history[j] + "<input id ='editedHistory' type='text' style='width: 500px' onchange='changeHistory(" + x + ")'>"
+            }
+            myNewRow2.append(myNewCell2)
+            theTable.append(myNewRow2);
+        }
+        try{
+            document.getElementById('editedHistory').value = ODB.features[x].history[historyEditChoice]
+        }
+        catch{
+            console.log("failed to place existing history in input box")
+        }
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = "<button onclick ='doneWithHistoryEdit(" + x + "," + j + ")'>doneWithHistoryEdit</button>"
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+
+    }
+
+    function doneWithHistoryEdit(){
+        document.getElementById("myfirstmap").style.display = "display:inline-block";
+        document.getElementById("mysecondmap").style.display = "display:inline-block";
+        document.getElementById("searchInput2").style.display = "inline";
+        document.getElementById("searchInput1").style.display = "inline";
+        document.getElementById("deleteButton").style.display = "inline";
+        document.getElementById("combineButton").style.display = "inline";
+        document.getElementById("description").style.display = "block";
+        functionName = "nearbySearch"
+        functionCaption = "show related items"
+        console.log("functionName is now " + functionName);
+        checkAllDates();
+        mapMode();
+    }
+
+    function insertHistory(x,j){
+        historyInsertionChoice = j
+        historyTable(x)
+    }
+
+    function updateHistory(x){
+        console.log("updating " + x)
+        var entry = document.getElementById("insertHere").value
+        var insertion = entry.split(',')
+        var textDate = insertion[1].split("")
+        if (insertion.length == 3 ){
+            var textDate = insertion[1].split("")
+            console.log(textDate)
+            if (textDate[0] == " "){
+                var tempDateText = ""
+                for (i = 1; i < textDate.length; i ++){
+                    tempDateText = tempDateText + textDate[i]
+                }
+                insertion[1] = tempDateText
+            }
+        var SortableDateResult = makeDateSortable(insertion[1])
+        console.log("just followed this path " + SortableDateResult)
+        insertion[2] = SortableDateResult
+        }
+        if (insertion.length == 2 ){
+            var textDate = insertion[1].split("")
+            console.log(textDate)
+            if (textDate[0] == " "){
+                var tempDateText = ""
+                for (i = 1; i < textDate.length; i ++){
+                    tempDateText = tempDateText + textDate[i]
+                }
+                insertion[1] = tempDateText
+            }
+            var SortableDateResult = makeDateSortable(insertion[1])
+            insertion.push(SortableDateResult)
+        }
+        if (insertion.length == 1 ){
+            insertion.push('unknown');
+            insertion.push(0)
+        }
+        ODB.features[x].history.splice(historyInsertionChoice,0,insertion)
+        historyInsertionChoice = - 1
+        checkAllDates()
+        historyTable(x)
+    }
+
+    function editHistory(x,j){
+        historyEditChoice = j
+        historyTable(x)
+    }
+
+    function changeHistory(x){
+        console.log("changing " + x)
+        var entry = document.getElementById("editedHistory").value
+        var insertion = entry.split(',')
+        if (insertion.length == 3 ){
+            var textDate = insertion[1].split("")
+            if (textDate[0] == " "){
+                var tempDateText = ""
+                for (i = 1; i < textDate.length; i ++){
+                    tempDateText = tempDateText + textDate[i]
+                }
+                insertion[1] = tempDateText
+            }
+            var SortableDateResult = makeDateSortable(insertion[1])
+            insertion[2] = SortableDateResult
+        }
+        if (insertion.length == 2 ){
+            var textDate = insertion[1].split("")
+            console.log(textDate)
+            if (textDate[0] == " "){
+                var tempDateText = ""
+                for (i = 1; i < textDate.length; i ++){
+                    tempDateText = tempDateText + textDate[i]
+                }
+                insertion[1] = tempDateText
+            }
+            var SortableDateResult = makeDateSortable(insertion[1])
+            insertion.push(SortableDateResult)
+        }
+        if (insertion.length == 1 ){
+            insertion.push('unknown');
+            insertion.push(0)
+        }
+        ODB.features[x].history[historyEditChoice] = insertion
+        historyEditChoice = - 1
+        checkAllDates()
+        historyTable(x)
+    }
+
+    function clearSearchLayer(){
+        searchLayer.clearLayers();
+        secondSearchLayer.clearLayers();
+    }
+
+    function newRecord(){
+        var newRecordNumber = ODB.features.length
+        var blankRecord = {"id":newRecordNumber,"type":"","citations":"","grantor":"","grantee":"","date":"","brief":"","SCC":"","surveyed":"","shortRef":"","link":"","caption":"","legal":"","corners":[],"coords":[],"county":"","history":[["end","2000",2000]],"acres":0,"sortabledate":0,"source":[],"watershed":["none"],"adj":[],"nearby":[]}
+        ODB.features.push(blankRecord)
+        editRecord(newRecordNumber);
+    }
+
+    function editRecord(x){
+        document.getElementById("button1").style.display = "none";
+        document.getElementById("button2").style.display = "none";
+        document.getElementById("button3").style.display = "none";
+        document.getElementById("mapButton").style.display = "none";
+        document.getElementById("myfirstmap").style.display = "none";
+        document.getElementById("mysecondmap").style.display = "none";
+        document.getElementById("searchInput2").style.display = "none";
+        document.getElementById("ofile").style.display = "none";
+        document.getElementById("searchInput1").style.display = "none";
+        document.getElementById("ODBsearching").style.display = "none";
+        document.getElementById("deleteButton").style.display = "none";
+        document.getElementById("combineButton").style.display = "none";
+        document.getElementById("historyButton").style.display = "none";
+        document.getElementById("newRecordButton").style.display = "none";
+        document.getElementById("selected").style.display = "none";
+        document.getElementById("description").style.display = "none";
+        theTable.innerHTML=""
+        
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = "Citation"
+        myNewRow.append(myNewCell1)
+        var myNewCell2 = document.createElement('td');
+        myNewCell2.innerHTML = "<input id ='CITATION' type='text' style='width: 500px'>"
+        myNewRow.append(myNewCell2)
+        theTable.append(myNewRow);
+        
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = "Grantor"
+        myNewRow.append(myNewCell1)
+        var myNewCell2 = document.createElement('td');
+        myNewCell2.innerHTML = "<input id ='GRANTOR' type='text' style='width: 500px'>"
+        myNewRow.append(myNewCell2)
+        theTable.append(myNewRow);
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = "Grantee"
+        myNewRow.append(myNewCell1)
+        var myNewCell2 = document.createElement('td');
+        myNewCell2.innerHTML = "<input id ='GRANTEE' type='text' style='width: 500px'>"
+        myNewRow.append(myNewCell2)
+        theTable.append(myNewRow);
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = "Date"
+        myNewRow.append(myNewCell1)
+        var myNewCell2 = document.createElement('td');
+        myNewCell2.innerHTML = "<input id ='DATE' type='text' style='width: 500px'>"
+        myNewRow.append(myNewCell2)
+        theTable.append(myNewRow);
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = "abstract"
+        myNewRow.append(myNewCell1)
+        var myNewCell2 = document.createElement('td');
+        myNewCell2.innerHTML = "<input id ='BRIEF' type='text' style='width: 500px'>"
+        myNewRow.append(myNewCell2)
+        theTable.append(myNewRow);
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = "Legal desc"
+        myNewRow.append(myNewCell1)
+        var myNewCell2 = document.createElement('td');
+        myNewCell2.innerHTML = "<input id ='LEGAL' type='text' style='width: 500px'>"
+        myNewRow.append(myNewCell2)
+        theTable.append(myNewRow);
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = '<button onclick="submitAndDone(' + x +')" id = "submit">submitAndDone</button>'
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerHTML = '<button onclick="submitNewandNext(' + x +')" id = "submit">submit & create another</button>'
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+
+        //NOW WE NEED TO FILL THE TABLE WITH THE VALUES OF THIS RECORD (if any)
+        document.getElementById('CITATION').value = ODB.features[x].shortRef
+        document.getElementById('GRANTOR').value = ODB.features[x].grantor
+        document.getElementById('GRANTEE').value = ODB.features[x].grantee
+        document.getElementById('DATE').value = ODB.features[x].date
+        document.getElementById('BRIEF').value = ODB.features[x].brief
+        document.getElementById('LEGAL').value = ODB.features[x].legal
+    }
+
+    function submitNewRecord(x){
+        ODB.features[x].shortRef = document.getElementById('CITATION').value
+        ODB.features[x].grantor = document.getElementById('GRANTOR').value
+        ODB.features[x].grantee = document.getElementById('GRANTEE').value
+        ODB.features[x].date = document.getElementById('DATE').value
+        ODB.features[x].brief = document.getElementById('BRIEF').value
+        ODB.features[x].legal = document.getElementById('LEGAL').value
+        if (ODB.features[x].citations == ""){
+            ODB.features[x].citations = document.getElementById('CITATION').value
+        }
+        if (ODB.features[x].caption == ""){
+            ODB.features[x].caption = document.getElementById('CITATION').value + " " + document.getElementById('GRANTOR').value + " to " + document.getElementById('GRANTEE').value
+            ODB.features[x].history.push([ODB.features[x].caption,ODB.features[x].date,0])
+        }
+        if (ODB.features[x].type == "" && ODB.features[x].shortRef.includes("ODB")){
+            ODB.features[x].type = "deed"
+        }
+        else{
+            ODB.features[x].type = "other"
+        }
+        if (andNext == 0){
+            document.getElementById("button1").style.display = "inline";
+            document.getElementById("button2").style.display = "inline";
+            document.getElementById("button3").style.display = "inline";
+            document.getElementById("button4").style.display = "inline";
+            document.getElementById("mapButton").style.display = "inline";
+            document.getElementById("myfirstmap").style.display = "display:inline-block";
+            document.getElementById("mysecondmap").style.display = "display:inline-block";
+            document.getElementById("searchInput2").style.display = "inline";
+            document.getElementById("ofile").style.display = "inline";
+            document.getElementById("searchInput1").style.display = "inline";
+            document.getElementById("ODBsearching").style.display = "inline";
+            document.getElementById("deleteButton").style.display = "inline";
+            document.getElementById("combineButton").style.display = "inline";
+            document.getElementById("historyButton").style.display = "inline";
+            document.getElementById("newRecordButton").style.display = "inline";
+            document.getElementById("selected").style.display = "block";
+            document.getElementById("description").style.display = "block";
+            console.log("andNext = " + andNext)
+            mapMode();
+        }
+        if (andNext == 1){
+            var newRecordNumber = ODB.features.length
+            var blankRecord = {"id":newRecordNumber,"type":"","citations":"","grantor":"","grantee":"","date":"","brief":"","SCC":"","surveyed":"","shortRef":"","link":"","caption":"","legal":"","corners":[],"coords":[],"county":"","history":[["end","2000",2000]],"acres":0,"sortabledate":0,"source":[],"watershed":["none"],"adj":[],"nearby":[]}
+            ODB.features.push(blankRecord)
+            ODB.features[newRecordNumber].grantor = ODB.features[newRecordNumber-1].grantor
+            ODB.features[newRecordNumber].date = ODB.features[newRecordNumber-1].date
+            ODB.features[newRecordNumber].shortRef = ODB.features[newRecordNumber-1].shortRef
+            console.log("andNext = " + andNext)
+            editRecord(newRecordNumber);
+        }
+    }
+
+
+    function submitNewandNext(x){
+        andNext = 1
+        submitNewRecord(x);
+    }
+
+    function submitAndDone(x){
+        andNext = 0
+        submitNewRecord(x);
+    }
+
+    function OLDsources(){
+        for (var i = 0; i < ODB.features.length; i++){
+                if (ODB.features[i].coords.length > 0){
+                    if (ODB.features[i].coords[0][0] != 0){
+                        var lowestDistance = 50000000
+                        var nearestRecord = -1
+                        for (var j = 0; j < ODB.features.length; j++){
+                            var distance = mymap.distance(ODB.features[i].centroid , ODB.features[j].centroid);
+                            if (distance < lowestDistance && ODB.features[j].type == "grant" && j != i){
+                                lowestDistance = distance
+                                nearestRecord = j
+                            }
+                        }
+                        console.log("presently " + i + " has source = " + ODB.features[i].source)
+                        console.log("nearest record to " + i + " is " + nearestRecord)
+                        var newSource = ODB.features[nearestRecord].caption
+                        ODB.features[i].source.push(newSource);
+                        console.log("but now " + i + " has source = " + ODB.features[i].source)
+                    }
+                }
+        }
+    }
+
+    function multisources(){
+        for (var i = 0; i < ODB.features.length; i++){
+            console.log("i is now " + i)
+                if (ODB.features[i].source.length > 1){
+                    L.circle(ODB.features[i].centroid,{color:"magenta", radius:(ODB.features[i].source.length*50)}).addTo(mymap)
+                }
+        }
+        grantLayer.clearLayers();
+        deedLayer.clearLayers();
+        tempLayer.clearLayers();
+    }
+
+    function sources(){
+        for (var i = 0; i < ODB.features.length; i++){
+            try{
+                var temp = ODB.features[i].source[0]
+                console.log("temp is of type " + typeof temp)
+                console.log("ODB.features[i].source is " + typeof ODB.features[i].source)
+                console.log("i is " + i)
+                // for (var j = 0; j < ODB.features[i].source.length; j++){
+                //     console.log("j source " + j + " is " + ODB.features[i].source[j])
+                // }
+                temp.replace("[", "");
+                temp.replace("]", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                temp.replace(",", "");
+                console.log("pre-split temp is of type " + typeof temp)
+                console.log("pre-split temp is " + temp)
+                temp = temp.split(",")
+                console.log("temp is now " + temp)
+                ODB.features[i].source = temp
+                console.log("ODB.features[i].source is now is " + typeof ODB.features[i].source)
+                ODB.features[i].source = temp
+            }
+            catch{}
+
+        }
+    }
+
+    function secondZoom(){
+        secondmap.setView(mymap.getCenter(), mymap.getZoom());
+    }
+
+    function firstZoom(){
+        mymap.setView(secondmap.getCenter(), secondmap.getZoom());
+    }
+
+    function showOnSecond(e){ //fired whenever we move the mouse over the second map
+        mouseLat = e.latlng['lat'] 
+        mouseLong = e.latlng['lng']
+        if (mode=="map" && inPlacement > -1 && ODB.features[inPlacement].legal.length > 3){ //if placing a parcel, then show it as though it starts at current mouse location
+            secondTempLayer.clearLayers(); //erase previous temporary location
+            if (ODB.features[inPlacement].coords[0][0] == 0){
+                for (var i = 0; i < ODB.features[inPlacement].coords.length - 1; i++){
+                    var thisLat = ODB.features[inPlacement].coords[i][0] + mouseLat
+                    var thisLong = ODB.features[inPlacement].coords[i][1] + mouseLong
+                    var nextLat = ODB.features[inPlacement].coords[i+1][0] + mouseLat
+                    var nextLong = ODB.features[inPlacement].coords[i+1][1] + mouseLong
+                    var line = L.polyline([[thisLat,thisLong],[nextLat,nextLong]], {color:"red"}).addTo(secondTempLayer)
+                }
+            }
+        }
+    }
+
+    function storeOnSecond(e){ //fired when you click on the map
+        clickLat = e.latlng['lat'] 
+        clickLong = e.latlng['lng']
+        if (inPlacement > -1){ //if there is a parcel being moved, then place it where you just clicked
+            if (mode=="map" && ODB.features[inPlacement].coords[0][0] == 0){
+                tempLayer.clearLayers();
+                for (var i = 0; i - 0 < ODB.features[inPlacement].coords.length; i++){
+                    var nextLat = ODB.features[inPlacement].coords[i][0] + mouseLat
+                    var nextLong = ODB.features[inPlacement].coords[i][1] + mouseLong
+                    tempArray.push([nextLat,nextLong])
+                }
+                console.log("inPlacment is " + inPlacement)
+                ODB.features[inPlacement].coords = tempArray
+                var buttonText = ODB.features[inPlacement].caption + " " + ODB.features[inPlacement].legal + "<button onclick='remove(" + inPlacement + ")'>remove?</button>"
+                L.polygon(ODB.features[inPlacement].coords, {color:"red"}).addTo(secondLayer)
+                    .bindPopup(buttonText)
+                getCentroid(inPlacement)
+                L.marker(ODB.features[inPlacement].centroid).addTo(secondLayer)
+                    .bindTooltip(ODB.features[inPlacement].caption)
+                ODB.features[inPlacement].lid = 1
+                directions = []
+                distances = []
+                corners = []
+                convertedDistances = []
+                tempCorners = []
+                tempArray = []
+                inPlacement = -1
+            }
+        }
+        //regardless of what we are doing, show the latest click coords in the console
+        console.log("["+clickLat+","+clickLong+"]")
+        setup();
+    }
+
+    function noLegal(){
+        searchResult = []
+        for (var i = 0; i < ODB.features.length; i++){
+            if (ODB.features[i].caption != " to " && ODB.features[i].legal == ""){
+                console.log("found one");
+                searchResult.push(i)
+            }
+        }
+        console.log(searchResult)
+        searchResultTable();
+    }
+
+    function petitionSearch(){
+        searchLayer.clearLayers();
+        var petition = document.getElementById('ofile').value
+        var petitionArray = petition.split(", ")
+        console.log("detected " + petitionArray.length + " search terms")
+        var maxLat = 0
+        var minLat = 90
+        var minLong = -180
+        var maxLong = 0
+        for (var i = 0; i < petitionArray.length; i++){
+            document.getElementById('searchInput2').value = petitionArray[i]
+            Color = randomColor()
+            Opacity = 1
+            search(2) //narrow search
+            document.getElementById('searchInput1').value = petitionArray[i]
+            Opacity = 0.25
+            search(1) //wider search
+        }
+        for (var i = 0; i < searchResult.length; i++){
+            for (var j = 0; j < ODB.features[searchResult[i]].coords.length; j++){
+                if (ODB.features[searchResult[i]].lid == 0){
+                    if (minLat > ODB.features[searchResult[i]].coords[j][0]){minLat = ODB.features[searchResult[i]].coords[j][0]}
+                    if (maxLat < ODB.features[searchResult[i]].coords[j][0]){maxLat = ODB.features[searchResult[i]].coords[j][0]}
+                    if (minLong < ODB.features[searchResult[i]].coords[j][1]){minLong = ODB.features[searchResult[i]].coords[j][1]}
+                    if (maxLong > ODB.features[searchResult[i]].coords[j][1]){maxLong = ODB.features[searchResult[i]].coords[j][1]}
+                }
+            }
+        }
+        var avgLat = (minLat + maxLat) / 2
+        var avgLong = (minLong + maxLong) / 2
+        var span = mymap.distance([minLat,minLong],[maxLat,maxLong])
+        console.log(span)
+        if (avgLat != 45){
+            var zoomLevel = Math.round(Math.log2(75_000_000/span))
+            console.log(zoomLevel)
+            if (zoomLevel < 12){zoomLevel = 12}
+            mymap.flyTo([avgLat,avgLong], zoomLevel)
+        }
+    }
+
+    function nextEnslaver(){
+        searchLayer.clearLayers();
+        if (enslaverNumber < enslavers.features.length - 1){enslaverNumber = enslaverNumber + 1}
+        if (enslavers.features[enslaverNumber].coords[0] != 0){nextEnslaver();}
+        document.getElementById('searchInput2').value = enslavers.features[enslaverNumber].enslaver
+        console.log(enslaverNumber)
+        console.log(enslavers.features[enslaverNumber].enslaver)
+        search(2); 
+        if (searchResult.length == 0){
+            console.log("No results by narrow search, so widening criteria...")
+            document.getElementById('searchInput1').value = enslavers.features[enslaverNumber].enslaver
+            search(1);
+            if (searchResult.length == 0){
+                var enslaverNameArray = enslavers.features[enslaverNumber].lastFirst.split(', ')
+                document.getElementById('searchInput1').value = enslaverNameArray[0]
+                search(1);
+            }
+        }
+        if (searchResult.length == 1 && ODB.features[searchResult[0]].centroid[0] > 1){
+            console.log("only one result so auto assigning " + enslavers.features[enslaverNumber].enslaver + " to centroid of " + ODB.features[searchResult[0]].caption)
+            enslavers.features[enslaverNumber].coords = ODB.features[searchResult[0]].centroid
+            console.log(enslavers.features[enslaverNumber].coords)
+        }
+    }
+
+    function placeHere(x){
+        enslavers.features[enslaverNumber].coords = ODB.features[x].centroid
+        nextEnslaver();
+    }
+
+    function enslaverOutput(){
+        document.getElementById("button6").style.display = "none";
+        document.getElementById("button2").style.display = "none";
+        document.getElementById("button3").style.display = "none";
+        document.getElementById("button4").style.display = "none";
+        document.getElementById("mapButton").style.display = "none";
+        document.getElementById("enslaversButton").style.display = "none";
+        document.getElementById("myfirstmap").style.display = "none";
+        document.getElementById("mysecondmap").style.display = "none";
+        document.getElementById("searchInput2").style.display = "none";
+        document.getElementById("ofile").style.display = "none";
+        document.getElementById("searchInput1").style.display = "none";
+        document.getElementById("selected").style.display = "none";
+        theTable.innerHTML=""
+        var myNewRow = document.createElement('tr');
+        var myNewCell1 = document.createElement('td');
+        myNewCell1.innerText = "var enslavers = {'features':["
+        myNewRow.append(myNewCell1)
+        theTable.append(myNewRow);
+        for (var j = 0; j < enslavers.features.length; j = j + 1){
+            myNewRow = document.createElement('tr');
+            myNewCell1 = document.createElement('td');
+            var tableText = '{"enslaver":"' + enslavers.features[j].enslaver + '"'
+            tableText = tableText + ',"searchName":"' + enslavers.features[j].searchName + '"'
+            tableText = tableText + ',"lastFirst":"' + enslavers.features[j].lastFirst + '"'
+            tableText = tableText + ',"gender":"' + enslavers.features[j].gender + '"'
+            tableText = tableText + ',"lineNumber":' + enslavers.features[j].lineNumber
+            tableText = tableText + ',"citation":"' + enslavers.features[j].citation + '"'
+            tableText = tableText + ',"numberEnslaved":' + enslavers.features[j].numberEnslaved
+            tableText = tableText + ',"modernCounty":"' + enslavers.features[j].modernCounty + '"'
+            tableText = tableText + ',"notes":"' + enslavers.features[j].notes + '"'
+            tableText = tableText + ',"coords":[' + enslavers.features[j].coords[0] + ',' + enslavers.features[j].coords[1] + "]"
+            tableText = tableText + ',"individuals":[' 
+            for (var k = 0; k < enslavers.features[j].individuals.length; k++){
+                tableText = tableText + '"'+ enslavers.features[j].individuals[k] + '"'
+                if (k < enslavers.features[j].individuals.length - 1){
+                    tableText = tableText + ","
+                }
+            }
+            tableText = tableText + "]},"
+            myNewCell1.innerText = tableText
+            myNewRow.append(myNewCell1)
+            theTable.append(myNewRow);
+        }
+        var myNewRow2 = document.createElement('tr');
+        var myNewCell2 = document.createElement('td');
+        myNewCell2.innerText = "]}"
+        myNewRow2.append(myNewCell2)
+        theTable.append(myNewRow2);
+    }
+
+    function showEnslavers(){
+        enslavedLayer.clearLayers();
+        for (var i = 0; i < enslavers.features.length; i++){
+            if (enslavers.features[i].coords[0] > 1){
+                var tooltipText = enslavers.features[i].enslaver + " enslaved " + enslavers.features[i].numberEnslaved 
+                tooltipText = tooltipText + "<br><button onclick='moveButton(" + i + ")' id = 'button2'>move</button>"
+                tooltipText = tooltipText + "<button onclick='showExtent(" + i + ")' id = 'button2'>showExtent</button>"
+                L.marker(enslavers.features[i].coords).addTo(enslavedLayer).bindPopup(tooltipText,{closeOnClick:false, autoClose:false}).openPopup()
+            }
+        }
+    }
+
+    function moveButton(i){
+        mode = "marker"
+        movingMarker = i
+        console.log("clearing polygons")
+        searchLayer.clearLayers()
+        grantLayer.clearLayers()
+        deedLayer.clearLayers()
+    }
+
+    function showExtent(i){
+        document.getElementById('searchInput2').value = enslavers.features[i].enslaver
+            var randomNumber = Math.floor(Math.random() * 1677216)
+            var hexColor = randomNumber.toString(16).toUpperCase()
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            console.log(hexColor)
+            Color = "#" + hexColor
+            search(2)
+    }
+
+    function returnToRecent(){
+        mymap.flyTo(recentPlacement,15)
+    }
+
+    function clusterMe(){
+        toggle = toggle + 1
+        if (toggle/2 == Math.floor(toggle/2)){
+            markers.clearLayers();
+            document.getElementById("button4").innerText = "spatial distribution of slavery"
+        }
+        else{
+            mymap.flyTo([36.01303988438674,-79.07220840454103], 14);
+            document.getElementById('selected').innerText = "Owing to the shortness of time, I have not yet included slave ownership in the Town of Hillsborough proper."
+            markers = L.markerClusterGroup();
+            for (var i = 0; i < enslavers.features.length; i++) {
+                for (var j = 0; j < enslavers.features[i].numberEnslaved; j++){
+                    var a = enslavers.features[i].coords
+                    //var title = enslavers.features[i].enslaver + " enslaved " + enslavers.features[i].individuals[j] + "<input type='text' id = 'enslaver" + i + "enslaved" + j + "' style='width: 50px' onchange='changeName(" + i + "," + j + ")'>"
+                    var title = "person enslaved by " + enslavers.features[i].enslaver
+                    var marker = L.marker(new L.LatLng(a[0], a[1]), {title: title});
+                    marker.bindTooltip(title);
+                    markers.addLayer(marker);
+                }
+            }
+            mymap.addLayer(markers);
+            document.getElementById("button4").innerText = "turn off slavery cluster markers"
+        }
+    }
+
+    function changeName(i,j){
+        var individualID = "enslaver" + i + "enslaved" + j
+        enslavers.features[i].individuals[j] = document.getElementById(individualID).value
+    }
+
+    function enslaverSearch(){
+        var searchTerm = document.getElementById('searchInput3').value
+        for (var i = 0; i < enslavers.features.length; i++){
+            if (searchTerm == enslavers.features[i].enslaver && enslavers.features[i].coords[0] > 1){
+                mymap.flyTo(enslavers.features[i].coords,16)
+            }
+        }
+    }
+
+    function randomColor(){
+        var randomNumber = Math.floor(Math.random() * 16_777_216) // 16_777_216 is the max
+            var hexColor = randomNumber.toString(16).toUpperCase()
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            if (hexColor.length < 6) {hexColor = "0" + hexColor}
+            Color = "#" + hexColor
+            return Color
+    }
+
+    function newHopePresbyterian(){
+        document.getElementById('selected').innerText = "David I Craig's Historical Sketch of New Hope Church (1898) gives us a list of founders of New Hope Presbyterian church."
+        document.getElementById('ofile').value = "Gilbert Strayhorn, Samuel Strayhorn, William Blackwood, Andrew Mitchell, William Craig, James Freeland, Joseph Kirkland, Hugh Currie, William Burns"
+        petitionSearch()
+    }
+
+    function FPOC(){
+        document.getElementById('selected').innerText = "I pulled the names of free people of color from census records, then searched for those names in deed books."
+        document.getElementById('ofile').value = "Neverson Stewart, Robert B Corn, Drew Jeffers, Andrew Jeffers, David Haithcock, Willis Jeffers, Joshua Jeffers, Richardson Corn, Viney Guy, Dixon Corn"
+        petitionSearch()        
+    }
+
+    function intro(){
+        x = document.getElementById("explanation");
+        x.play()
+        setTimeout(function(){setup()}, 4000)
+        setTimeout(function(){
+            grantLayer.clearLayers()
+            deedLayer.clearLayers()
+        }, 20000)
+        setTimeout(function(){
+            mymap.flyTo([36.02730584200934,-79.09117698669435], 14)
+            document.getElementById('ofile').value = "Joseph Marlett"
+            petitionSearch()
+        }, 20000)
+        setTimeout(function(){
+            FPOC()
+        }, 42000)
+        setTimeout(function(){
+            newHopePresbyterian()
+            mymap.flyTo([36.013065919508186,-79.07216548919679], 13)
+        }, 60000)
+        setTimeout(function(){
+            searchLayer.clearLayers();
+            clusterMe()
+        }, 70000)
+        setTimeout(function(){setup()}, 80000)
+    }
+    function slavesOff(){
+        markerClusterGroup.removeLayers()
+        document.getElementById('selected').innerText = ""
+    }
+
+    function showAll(){
+        document.getElementById('instruction').innerText = "Use the slider to lower the date restriction & make some areas easier to understand."
+        toggleParcels = toggleParcels + 1
+        if (toggleParcels/2 == Math.floor(toggleParcels/2)){
+            deedLayer.clearLayers();
+            grantLayer.clearLayers();
+            document.getElementById("button7").innerText = "show all parcels"
+            document.getElementById("button11").innerText = "show all parcels"
+            document.getElementById("instruction").style.display = "none";
+            document.getElementById("sliderStuff").style.display = "none";
+        }
+        else{
+            document.getElementById("button7").innerText = "hide all parcels"
+            document.getElementById("button11").innerText = "hide all parcels"
+            document.getElementById("instruction").style.display = "block";
+            document.getElementById("sliderStuff").style.display = "block";
+            document.getElementById("button1").style.visibility = "hidden"
+            setup()
+        }
+    }
+
+    function sliderMove(){
+        mode = "date"
+        randomColorMode = "yes"
+        hoverMode = false
+        detailLevel = 1
+        closestPolygon = -1
+        var sliderValue = document.getElementById("dateSlider").value
+        thresholdDate = sliderValue
+        deedLayer.clearLayers();
+        grantLayer.clearLayers();
+        document.getElementById("instruction").innerText = "Displaying records prior to " + thresholdDate + "."
+        setup();
+    }
+
+    function fixDates(){
+        console.log("firing fixDates")
+        for (var i = 0; i < ODB.features.length; i++){
+            console.log("one is " + ODB.features[i].date + " other is " + ODB.features[i].sortabledate)
+            if (ODB.features[i].date != "" && ODB.features[i].sortabledate == 0){
+                console.log("found one!")
+                var nextDateArray = ODB.features[i].date.split(" ")
+                if (nextDateArray.length == 1) {ODB.features[i].sortabledate = Number(ODB.features[i].date)}
+                if (nextDateArray.length == 3) {
+                    ODB.features[i].sortabledate = Number(nextDateArray[2]) + (nextDateArray[0]/10000)
+                    if (nextDateArray[1] == "Jan") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (1/100)}
+                    if (nextDateArray[1] == "Feb") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (2/100)}
+                    if (nextDateArray[1] == "Mar") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (3/100)}
+                    if (nextDateArray[1] == "Apr") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (4/100)}
+                    if (nextDateArray[1] == "May") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (5/100)}
+                    if (nextDateArray[1] == "Jun") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (6/100)}
+                    if (nextDateArray[1] == "Jul") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (7/100)}
+                    if (nextDateArray[1] == "Aug") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (8/100)}
+                    if (nextDateArray[1] == "Sep") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (9/100)}
+                    if (nextDateArray[1] == "Oct") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (10/100)}
+                    if (nextDateArray[1] == "Nov") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (11/100)}
+                    if (nextDateArray[1] == "Dec") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (12/100)}
+                }
+                if (nextDateArray.length == 2) {
+                    ODB.features[i].sortabledate = Number(nextDateArray[1])
+                    if (nextDateArray[0] == "Jan") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (1/100)}
+                    if (nextDateArray[0] == "Feb") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (2/100)}
+                    if (nextDateArray[0] == "Mar") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (3/100)}
+                    if (nextDateArray[0] == "Apr") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (4/100)}
+                    if (nextDateArray[0] == "May") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (5/100)}
+                    if (nextDateArray[0] == "Jun") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (6/100)}
+                    if (nextDateArray[0] == "Jul") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (7/100)}
+                    if (nextDateArray[0] == "Aug") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (8/100)}
+                    if (nextDateArray[0] == "Sep") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (9/100)}
+                    if (nextDateArray[0] == "Oct") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (10/100)}
+                    if (nextDateArray[0] == "Nov") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (11/100)}
+                    if (nextDateArray[0] == "Dec") {ODB.features[i].sortabledate = ODB.features[i].sortabledate + (12/100)}
+                }
+                var temp = Math.round(ODB.features[i].sortabledate * 10000)
+                temp = temp/10000
+                ODB.features[i].sortabledate = temp
+                console.log("fixed " + i + " so it is now " + ODB.features[i].sortabledate + " which was " + ODB.features[i].date)
+            }
+        }
+    }
+
+    function nearbyPopups(){
+        popupToggle = popupToggle + 1
+        if (popupToggle/2 == Math.floor(popupToggle/2)){
+            tempLayer.clearLayers();
+            openAll = "no"
+            closestPolygon = - 1
+            document.getElementById("button8").innerText = "open popups"
+            grantLayer.clearLayers();
+            deedLayer.clearLayers();
+            setup()
+        }
+        else{
+            openAll = "yes"
+            hoverMode = false
+            document.getElementById("button8").innerText = "close popups"
+            closestPolygon = -1
+            hoverMode = false
+            setup()
+        }
+    }
+
+    function detail(i){
+        detailLevel = detailLevel + 1
+        if (detailLevel > 4){detailLevel = detailLevel - 4}
+        console.log("detailLevel is " + detailLevel)
+        grantLayer.clearLayers();
+        deedLayer.clearLayers();
+        closestPolygon = i
+        setup()
+    }
+
+    function hoverLabels(){
+        if (hoverMode == true){
+            hoverMode = false
+            document.getElementById("button9").innerText = "hover labels off"
+        }
+        else{
+            hoverMode = true
+            document.getElementById("button9").innerText = "hover labels on"
+        }
+        console.log ("hover mode is now " + hoverMode)
+    }
+
+    function hide(i){
+        hiddenPolygons.push(i)
+        setup();
+    }
+
+    function unhide(){
+        hiddenPolygons = []
+        setup();
+    }
+
+    function Counter(){
+        var clicker = 0
+        for (var i = 0; i < ODB.features.length; i++){
+            if (ODB.features[i].coords.length > 0 && ODB.features[i].coords[0][0] > 0 & ODB.features[i].lid == 0){
+                for (var j = 0; j < ODB.features[i].history.length; j++){
+                    if (ODB.features[i].history[j][0] != "end"){clicker++}
+                }
+            }
+        }
+        console.log("I counted " + clicker +" deeds")
+    }
+
+    function labelCorners(x,y){
+        var lengthScreen = y
+        var limit = ODB.features[x].coords.length
+        if (limit > ODB.features[x].corners.length) {limit = ODB.features[x].corners.length}
+        for (var i = 0; i < limit; i++){
+            var rawCorner = ODB.features[x].corners[i]
+            try{
+                var cornerSplitByTo = rawCorner.split("to ")
+                var cornerLabel = cornerSplitByTo[cornerSplitByTo.length - 1]
+                if (cornerSplitByTo.length > 1){
+                    console.log("found a line description!")
+                    var edgeLabel = ""
+                    for (var j = 0; j < cornerSplitByTo.length - 1; j++) 
+                    edgeLabel = edgeLabel + cornerSplitByTo[j]
+                    if (j < cornerSplitByTo.length - 2) {
+                        edgeLabel = edgeLabel + " to "
+                    }
+                    console.log(x,y)
+                }
+            }
+            catch{
+                console.log("using the catch")
+                var cornerLabel = rawCorner
+            }
+            if (cornerLabel != "first station " && cornerLabel != "begin " && cornerLabel.length > lengthScreen){
+                console.log(cornerLabel + " " + i )
+                console.log(ODB.features[x].coords[i])
+                L.marker(ODB.features[x].coords[i]).addTo(searchLayer)
+                .bindPopup(cornerLabel,{closeOnClick:false, autoClose:false}).openPopup();
+                console.log("marker successful")
+            }
+            try {
+                console.log("line 1411")
+                if (edgeLabel.length > lengthScreen){
+                    try{
+                        var thisCorner = ODB.features[x].coords[i]
+                        var previousCorner = ODB.features[x].coords[i-1] 
+                        L.polyline([thisCorner,previousCorner], {color:"yellow",weight:10}).addTo(searchLayer)
+                        .bindPopup(edgeLabel,{closeOnClick:false, autoClose:false}).openPopup();
+                    }
+                    catch{}
+                }
+            }
+            catch{}
+        }
+    }
+
+
+</script>
+</html>
