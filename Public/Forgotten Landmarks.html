@@ -10,7 +10,7 @@
 <!-- <script src="./AllGrants.js"></script> -->
 <script src="./ModernOrange3.js"></script>
 <script src="./Enslavers1850.js"></script>
-<script src="./exportable2.js"></script>
+<script src="./exportable5.js"></script>
 <script src="./parser2.js"></script>
 <!-- <script src="./equivalency.js"></script> -->
 
@@ -809,10 +809,10 @@
         recentPlacement = [avgLat,avgLong]
         window.scrollTo(0,0)
         mymap.flyTo([avgLat,avgLong], 14)
-        
         for (var i = 0; i < ODB.features[x].coords.length; i++){
             L.circle(ODB.features[x].coords[i], {color:'red',radius:30}).addTo(searchLayer)
         }
+        var buttonText =""
         buttonText = buttonText + "<br>"+ "<button onclick='" + functionName + "(" + i + ")'>" + functionCaption + "</button>"
         L.polygon(ODB.features[x].coords, {color:'red',fillColor:'red'}).addTo(searchLayer)
             .bindPopup(buttonText);

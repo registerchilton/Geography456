@@ -380,6 +380,10 @@ function score(x){
     function JSONmaintenance(){
         checkAllDates();
         for (var i = 0; i < ODB.features.length; i++){
+            if (ODB.features[i].date.includes("-")){
+                ODB.features[i].date = fixDateFormat(ODB.features[i].date)
+                ODB.features[i].sortabledate = makeDateSortable(ODB.features[i].date)
+            }
             if (ODB.features[i].grantor=="NC" || ODB.features[i].grantor=="Granville"){ODB.features[i].type = "grant"}
             ODB.features[i].id = i
             // CHECK FOR MISSING ACRES
@@ -476,6 +480,31 @@ function score(x){
             // thisData.features[i].inModelAlready = InModelAlready(i);
         }
         for (var i = 0; i < inModelUpdates.length; i++){
-            thisData.features[inModelUpdates[i]].inModelAlready = true
+            try{thisData.features[inModelUpdates[i]].inModelAlready = true}
+            catch{
+                inModelUpdates.splice(i,1);
+                console.log(inModelUpdates[i])
+            }
         }
+    }
+
+    function fixDateFormat(x){
+        var docDate = x
+        dateArray = docDate.split("-")
+        var month = ""
+        if (dateArray[1]== "01" || dateArray[1]== "1"){month = "Jan"}
+        if (dateArray[1]== "02" || dateArray[1]== "2"){month = "Feb"}
+        if (dateArray[1]== "03" || dateArray[1]== "3"){month = "Mar"}
+        if (dateArray[1]== "04" || dateArray[1]== "4"){month = "Apr"}
+        if (dateArray[1]== "05" || dateArray[1]== "5"){month = "May"}
+        if (dateArray[1]== "06" || dateArray[1]== "6"){month = "Jun"}
+        if (dateArray[1]== "07" || dateArray[1]== "7"){month = "Jul"}
+        if (dateArray[1]== "08" || dateArray[1]== "8"){month = "Aug"}
+        if (dateArray[1]== "09" || dateArray[1]== "9"){month = "Sep"}
+        if (dateArray[1]== "10"){month = "Oct"}
+        if (dateArray[1]== "11"){month = "Nov"}
+        if (dateArray[1]== "12"){month = "Dec"}
+        docDate = dateArray[2] + " " + month + " " + dateArray[0]
+        if (month==""){docDate = dateArray[0]}
+        return docDate
     }
