@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northside Taxes</title>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+<script src="northside.js"></script>
+
+<style>
+#myfirstmap { height: 550px; width: 100pct}
+.slider-container {
+    margin-right: 20px;
+    display: flex;
+    align-items: left;
+    flex-direction: column;
+}
+
+.crosshair {cursor: crosshair;}
+
+.slider {
+    width: 545px; 
+}
+.tick-container {
+    display: flex;
+    justify-content: space-between;
+    width: 550px;
+    margin-top: 5px;
+}
+
+.tick {
+    font-size: 12px; 
+    color: #888; 
+}
+</style>
+
+<body>
+<div class="slider-container">
+    <input type="range" min="2003" max="2024" value="2003" class="slider" id="yearSlider" oninput='display()'>
+      <div class="tick-container">
+          <span class="tick">2003</span>
+          <span class="tick">2012</span>
+          <span class="tick">2024</span>
+      </div>
+    <div class="crosshair", id="myfirstmap"></div>
+    <div id="array"></div>
+    <div id="theMap" src=""></div>
+</body>
+
+<script>
+var mymap = L.map('myfirstmap').setView([35.915496, -79.063821], 16);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+    var layerClick = L.layerGroup().addTo(mymap);
+    var year
+    var yearslider = document.getElementById('yearSlider');
+    var taxRates = [0,0,0,0.01598,0.01655,0.015484,0.016135,0.016755,0.01809,0.015404,0.015404,0.015404,0.015404,0.015804,0.016104,0.016104,0.016104,0.015475,0.015802,0.016137,0.016137,0.015157,0.015362,0.016053,0.016529]
+    display();
+
+function display(){
+    year = yearslider.value
+    layerClick.clearLayers()
+    for (var i = 0; i < northside.features.length; i++){
+        if (northside.features[i].lastownedbyAFAM >= year){
+            var taxBill = northside.features[i].taxValue[year-2000] * taxRates[year-2000]
+            var formattedBill = taxBill.toFixed(2)
+            var message = "$" + formattedBill
+            L.polygon(northside.features[i].coords).addTo(layerClick).bindPopup(message,{autoClose: false}).openPopup()
+        }
+    }
+}
+
+</script>
+</html>
