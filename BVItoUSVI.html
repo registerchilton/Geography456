@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OC Land Grant Map</title>
+
+</head>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+     <link rel="stylesheet" href="https://jjimenezshaw.github.io/Leaflet.Control.Resizer/L.Control.Resizer.css" crossorigin=""/>
+     <script src="https://jjimenezshaw.github.io/Leaflet.Control.Resizer/L.Control.Resizer.js"></script>
+
+<style>
+    #myfirstmap {height: 500px; width: 1000px}
+    #mysecondmap {height: 500px; width: 500px} /* formerly 500 by 550 */
+
+    .div-img{
+        justify-content: center;
+        align-items: center;
+        display:flex;
+        padding-top:0%;
+    }
+    img:hover{
+        transform:scale(1.0);
+    }
+    .crosshair {cursor: crosshair;}
+
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+</head>
+
+<body>
+    <div class="crosshair", id="myfirstmap" style="display:inline-block;"></div>
+</body>
+
+<script>
+    var mymap = L.map('myfirstmap').setView([18.3858049312974,-64.59514617919923], 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+
+    mymap.on('click', affix);
+    L.marker([18.392350, -64.491600]).addTo(mymap).bindPopup("Alice's Backside - an snorkelable offshore reef")
+    L.marker([18.392788, -64.474366]).addTo(mymap).bindPopup("Rocky Bay - not withstanding the name it looks like we could land here.")
+    L.marker([18.388439, -64.474724]).addTo(mymap).bindPopup("Wedego Bay - looks quite approachable, but would involve being on the outside where waves are rougher.")
+    L.marker([18.392350, -64.491600]).addTo(mymap).bindPopup("Round Rock - said to be unassailabel and look like it on Google Earth.")
+    L.marker([18.404492, -64.456777]).addTo(mymap).bindPopup("Skylar Island - pretty much looks like just rocks on Google Earth.")
+    L.marker([18.419781, -64.452276]).addTo(mymap).bindPopup("Fallen Jerusalem - definitely allowed on the beach here and definitely should go.")
+    L.marker([18.430543, -64.444525]).addTo(mymap).bindPopup("Gorda Baths beach (end of Gorda Baths visit) - fairly certain this is a no boats beach and we cannot launch here.")
+    L.marker([18.429147, -64.442223]).addTo(mymap).bindPopup("Gorda Baths parking area (begin Gorda Baths visit) - the hike down through the baths takes maybe one hour.")
+    L.marker([18.432643, -64.443776]).addTo(mymap).bindPopup("Spring Bay - Not sure but we might be able to launch kayaks here.")
+    L.marker([18.435360, -64.443860]).addTo(mymap).bindPopup("Little Trunk Bay - Not sure but we might be able to launch kayaks here.")
+    L.marker([18.438423, -64.443315]).addTo(mymap).bindPopup("Valley Trunk Bay - Pretty sure boat launching is allowed, but a bit hard to get to.")
+    L.marker([18.388955975810312,-64.51358020305635]).addTo(mymap).bindPopup("Quart-A-Nancy Point - This is our VRBO.")
+    L.marker([18.368700, -64.535600]).addTo(mymap).bindPopup("1867 wreck of the RMS Rhone.")
+    L.marker([18.366755, -64.563231]).addTo(mymap).bindPopup("Dead Chest - I have never been to this National Park; we are definitely going. This island supposedly gave rise to the pirate chanty 'yo ho ho and a dead man's chest,' which in turn is the name of a Pirates of the Carribean movie.")
+    L.marker([18.358331, -64.576292]).addTo(mymap).bindPopup("Peter Island Spa & Resoirt - must stop for the most expensive coffee or beer you have ever had.")
+    L.marker([18.31804610234015,-64.61317598819734]).addTo(mymap).bindPopup("Norman Island - Pirates Bight runs a ferry to Road Town supposedly as late as 9 PM (i.e. after you have a nice dinner at their restaurant).")
+    L.marker([18.355300, -64.572685]).addTo(mymap).bindPopup("Deadman's Bay is the public(ish) beach.")
+    L.marker([18.37358708977435,-64.53169584274293]).addTo(mymap).bindPopup("Good landing site on Salt Island.")
+    L.marker([18.331607, -64.628792]).addTo(mymap).bindPopup("The Indians - supposed to be a great snorkeling spot!")
+    L.marker([18.309530, -64.628189]).addTo(mymap).bindPopup("Angelfish Reef - said to be very cool diving here - supposedly the most unusual underwater ladscape in the BVI's.")
+    L.marker([18.327124, -64.651384]).addTo(mymap).bindPopup("Flanagan Island - doesn't look like much and can find little information online; best land site would probably be here; too far off our route to be worthwhile?")
+    L.marker([18.322099752025665,-64.60488796234132]).addTo(mymap).bindPopup("Benures Bay - said to be good snorkeling.")
+    L.marker([18.319366, -64.599600]).addTo(mymap).bindPopup("Money Bay - said to be a very private spot, though only good in the calmest of seas.")
+    L.marker([18.387006305628347,-64.73844051361085]).addTo(mymap).bindPopup("Great Thatch - unihabited island <a href='https://en.wikipedia.org/wiki/Great_Thatch_ruin'>home of a ruined plantation house</a>")
+    L.marker([18.354315, -64.602376]).addTo(mymap).bindPopup("Little Harbor - said to be good spot for dolphins, squid & sea turtles.")
+    L.marker([18.380713, -64.515953]).addTo(mymap).bindPopup("Cistern Point - is excellent for the volume of tropical fish. This bay also has great topography; because it is a rock, you can snorkel around and reach out of the water. If you get around to the other side of the point because it is flat, you will see Tarpon.")
+    L.marker([18.375292, -64.510098]).addTo(mymap).bindPopup("Haulover Bay -  is around where the dive wrecks are, is generally excellent. It is also called Wreck Alley. It is tricky to anchor as there is a reef and rocks, but mooring balls by the wrecks are generally calm enough to pick up and enjoy the reef.")
+    L.marker([18.36979938315708,-64.75552082061769]).addTo(mymap).bindPopup("Whistling Cay")
+    L.marker([18.353792350145074,-64.7556495666504]).addTo(mymap).bindPopup("Cinnamon Bay Campground")
+    L.marker([18.361179, -64.773599]).addTo(mymap).bindPopup("Johnsons Reef - about a mile offshore and seldom snorkeled by anyone; great spot to drift across with snorkel masks in the water.")
+    L.marker([18.364339, -64.795127]).addTo(mymap).bindPopup("Set a course for Blunder Rock!")
+    L.marker([18.355966, -64.796808]).addTo(mymap).bindPopup("Rata Cay")
+    L.marker([18.353319, -64.793069]).addTo(mymap).bindPopup("Henley Cey")
+    L.marker([18.355124, -64.789338]).addTo(mymap).bindPopup("Ramgoat Cay")
+    L.marker([18.381619, -64.715383]).addTo(mymap).bindPopup("Little Thatch - this island is currently inhabited.")
+    L.marker([18.32884713667425,-64.79230463504793]).addTo(mymap).bindPopup("St John Inn - where we are staying June 4")
+    L.marker([18.326631986581997,-64.84913527965547]).addTo(mymap).bindPopup("Red Hook - nearest point in St Thomas, where we can get a taxi to airport.")
+
+
+
+
+
+
+function affix(e){ //fired when you click on the map
+    clickLat = e.latlng['lat'] 
+    clickLong = e.latlng['lng']
+    console.log("["+clickLat+","+clickLong+"]")
+}
+
+</script>
